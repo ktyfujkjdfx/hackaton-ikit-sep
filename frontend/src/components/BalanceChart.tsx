@@ -212,6 +212,9 @@ export function BalanceChart({ dashboard }: { dashboard: Dashboard }) {
           )}
         </div>
       </div>
+      {visible.length === 0 ? (
+        <p className="sub">Все линии скрыты — включи хотя бы одну в легенде выше.</p>
+      ) : (
       <div
         className="chart-wrap"
         onMouseMove={(e) => moveTo(e.clientX, e.currentTarget.getBoundingClientRect())}
@@ -387,6 +390,7 @@ export function BalanceChart({ dashboard }: { dashboard: Dashboard }) {
           </div>
         )}
       </div>
+      )}
     </div>
   )
 }

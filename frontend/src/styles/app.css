@@ -305,6 +305,16 @@ button {
   gap: 16px;
   min-width: 0;
 }
+.dash-content {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  transition: opacity 0.15s;
+}
+.dash-content.refreshing {
+  opacity: 0.55;
+  pointer-events: none;
+}
 .card {
   background: var(--surface);
   border: 1px solid var(--line);
@@ -933,7 +943,7 @@ input.err {
   padding: 0 14px 12px;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1024px) {
   .panel {
     position: static;
     height: auto;
@@ -1157,7 +1167,7 @@ td.fail {
   gap: 4px;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1024px) {
   .app-grid {
     grid-template-columns: 1fr;
   }

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { DASHBOARD_MOCK_UNSUPPORTED, getDashboard } from '../api/client'
 import { TopBar } from '../components/TopBar'
 import { Hero } from '../components/Hero'
@@ -13,6 +13,7 @@ import { useAppDispatch, useAppState } from '../state/store'
 export function Dashboard() {
   const { situation, purchase, dashboard, personaId, loading, error } = useAppState()
   const dispatch = useAppDispatch()
+  const [retryTick, setRetryTick] = useState(0)
 
   useEffect(() => {
     if (!situation || !personaId) return
@@ -36,9 +37,12 @@ export function Dashboard() {
       cancelled = true
       clearTimeout(timer)
     }
-  }, [personaId, purchase, situation, dispatch])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [personaId, purchase, situation, dispatch, retryTick])
 
   if (!situation) return null
+
+  const refreshing = loading && !!dashboard
 
   return (
     <section id="app">
@@ -48,22 +52,27 @@ export function Dashboard() {
           {error && (
             <div className="card">
               <p className="errmsg">{error}</p>
+              <div className="hero-actions" style={{ marginTop: 8 }}>
+                <button className="btn sm" type="button" onClick={() => setRetryTick((t) => t + 1)}>
+                  Повторить
+                </button>
+              </div>
             </div>
           )}
-          {loading && !dashboard && (
+          {loading && !dashboard && !error && (
             <div className="card">
-              <p className="sub">Считаем...</p>
+              <p className="sub">Считаем прогноз на 30 дней...</p>
             </div>
           )}
           {dashboard && (
-            <>
+            <div className={`dash-content${refreshing ? ' refreshing' : ''}`} aria-busy={refreshing}>
               <Hero dashboard={dashboard} situation={situation} />
               <InlineBuy />
               {dashboard.purchase && <BuyCard dashboard={dashboard} />}
               <BalanceChart dashboard={dashboard} />
               <TypesCard dashboard={dashboard} />
               <ExplainDrawer dashboard={dashboard} situation={situation} />
-            </>
+            </div>
           )}
         </div>
         {dashboard && <AskPanel />}

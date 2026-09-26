@@ -6,21 +6,31 @@ import { useAppDispatch } from '../state/store'
 export function Start() {
   const dispatch = useAppDispatch()
   const [personas, setPersonas] = useState<Persona[]>([])
+  const [personasLoading, setPersonasLoading] = useState(true)
+  const [personasError, setPersonasError] = useState<string | null>(null)
+  const [pickError, setPickError] = useState<string | null>(null)
 
   useEffect(() => {
     getPersonas()
-      .then(setPersonas)
-      .catch(() => setPersonas([]))
+      .then((p) => {
+        setPersonas(p)
+        setPersonasLoading(false)
+      })
+      .catch(() => {
+        setPersonasError('Не удалось загрузить список демо-профилей. Можно всё равно заполнить анкету.')
+        setPersonasLoading(false)
+      })
   }, [])
 
   async function loadPersona(id: string) {
+    setPickError(null)
     dispatch({ type: 'LOAD_PERSONA_START', personaId: id })
     try {
       const detail = await getPersona(id)
       dispatch({ type: 'LOAD_PERSONA_DONE', personaId: id, who: detail.who, situation: detail.situation })
       dispatch({ type: 'GO', screen: 'app' })
     } catch {
-      dispatch({ type: 'DASHBOARD_ERROR', error: 'Не удалось загрузить профиль' })
+      setPickError('Не удалось загрузить профиль — сервер недоступен. Попробуй ещё раз.')
     }
   }
 
@@ -55,7 +65,10 @@ export function Start() {
             <span>У каждой суммы метка: факт, ожидается или оценка</span>
           </div>
         </div>
+        {pickError && <p className="errmsg">{pickError}</p>}
         <div className="choices">
+          {personasLoading && <p className="sub">Загружаем демо-профили...</p>}
+          {personasError && <p className="errmsg">{personasError}</p>}
           {personas.map((p) => (
             <button key={p.id} className="choice main" type="button" onClick={() => loadPersona(p.id)}>
               <span className="ico">{p.title.charAt(0)}</span>
