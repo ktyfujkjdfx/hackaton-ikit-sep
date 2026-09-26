@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { postChat } from '../api/client'
 import { buildChatResponse } from '../lib/chatMock'
 import { useAppDispatch, useAppState } from '../state/store'
@@ -21,6 +21,12 @@ export function AskPanel() {
   const [modal, setModal] = useState<AddModalPrefill | null>(null)
   const [collapsed, setCollapsed] = useState(false)
   const [sending, setSending] = useState(false)
+  const msgsRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = msgsRef.current
+    if (el) el.scrollTop = el.scrollHeight
+  }, [messages, sending])
 
   if (!situation) return null
 
@@ -94,7 +100,7 @@ export function AskPanel() {
         <b>Спросить</b>
         <span>Пиши как удобно. AI понимает вопрос, а все суммы считает код.</span>
       </div>
-      <div className="msgs" aria-live="polite">
+      <div className="msgs" aria-live="polite" ref={msgsRef}>
         {messages.map((m, i) =>
           m.role === 'user' ? (
             <div key={i} className="msg user">
