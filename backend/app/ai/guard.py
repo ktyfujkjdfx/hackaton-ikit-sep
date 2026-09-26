@@ -16,6 +16,8 @@ MONTH_WORDS = (
     "январ", "феврал", "март", "апрел", "мая", "май", "июн", "июл",
     "август", "сентябр", "октябр", "ноябр", "декабр",
 )
+# Месяц ищем только с начала слова: иначе «самая» читается как «мая», а «смарт» — как «март».
+MONTH_RE = re.compile(r"(?<![а-яёa-z])(" + "|".join(MONTH_WORDS) + ")")
 
 
 def _normalize(text: str) -> str:
@@ -35,8 +37,7 @@ def _numbers(text: str) -> set[str]:
 
 
 def _month_words(text: str) -> set[str]:
-    clean = _normalize(text)
-    return {word for word in MONTH_WORDS if word in clean}
+    return set(MONTH_RE.findall(_normalize(text)))
 
 
 def allowed_strings(facts: list[dict], extra: list[str] | None = None) -> list[str]:

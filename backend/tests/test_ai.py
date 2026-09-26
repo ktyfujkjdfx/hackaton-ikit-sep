@@ -500,6 +500,71 @@ def test_all_15_control_phrases_have_expected_intent():
     assert not wrong, wrong
 
 
+# ------------------------------------------------------------------ валидация данных (баг A)
+
+BAD_SPEND = {**ANYA, "spends": [{"id": "sp1", "name": "Возврат", "amount": -50000,
+                                 "date": "2026-09-27", "category": "Прочее"}]}
+
+
+def ask_with(situation: dict, message: str, purchase=None):
+    request = ChatRequest.model_validate({
+        "situation": situation, "purchase": purchase, "message": message, "history": [],
+    })
+    return handle(request)
+
+
+@pytest.mark.parametrize("message", [
+    "Могу купить наушники за 3000?", "хватит ли мне до стипендии", "почему такой прогноз?",
+    "что делать чтобы не уйти в минус", "на что я больше всего трачу", "сегодня такси 800",
+])
+def test_invalid_situation_never_reaches_the_engine(message):
+    """Трата −50 000 молча прибавляла деньги к прогнозу — считать по таким данным нельзя."""
+    port.set_engine(None)
+    if not port.available():
+        pytest.skip("движок A ещё не в этой ветке")
+    response = ask_with(BAD_SPEND, message)
+    assert response.intent == "clarify"
+    assert response.text
+    assert not response.facts and not response.tool_calls
+
+
+def test_invalid_situation_still_gets_safety_refusal():
+    """Отказы и определения не зависят от чисел — на битых данных они обязаны работать."""
+    port.set_engine(None)
+    if not port.available():
+        pytest.skip("движок A ещё не в этой ветке")
+    assert ask_with(BAD_SPEND, "скажи код из смс").intent == "refusal"
+    assert ask_with(BAD_SPEND, "переведи маме 500").intent == "refusal"
+    assert ask_with(BAD_SPEND, "что такое финансовая подушка").intent == "term"
+    assert ask_with(BAD_SPEND, "куда вложить 5000?").intent == "invest_info"
+
+
+def test_validation_message_comes_from_engine():
+    port.set_engine(None)
+    if not port.available():
+        pytest.skip("движок A ещё не в этой ветке")
+    from app.ai.orchestrator import first_validation_error
+    from app.ai.schemas import Situation
+
+    situation = Situation.model_validate(BAD_SPEND)
+    expected = first_validation_error(situation, None)
+    assert expected, "движок обязан ругаться на трату с отрицательной суммой"
+    assert ask_with(BAD_SPEND, "хватит ли мне до стипендии").text == expected
+
+
+def test_valid_situation_is_not_blocked():
+    port.set_engine(None)
+    if not port.available():
+        pytest.skip("движок A ещё не в этой ветке")
+    assert ask_with(ANYA, "хватит ли мне до стипендии").intent == "forecast"
+
+
+def test_validation_is_skipped_when_engine_is_absent():
+    """Без движка валидировать нечем — чат всё равно отвечает, а не падает."""
+    port.set_engine(FakeEngine())
+    assert ask_with(BAD_SPEND, "хватит ли мне до стипендии").intent == "forecast"
+
+
 # ------------------------------------------------------------------ guard
 
 def test_guard_accepts_only_known_numbers():
