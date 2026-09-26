@@ -101,7 +101,7 @@ export function AskPanel() {
               {m.text}
             </div>
           ) : (
-            <ChatMessage key={i} resp={m.resp} />
+            <ChatMessage key={i} resp={m.resp} greeting={m.greeting} />
           ),
         )}
         {sending && <div className="msg bot proto-note">Печатает...</div>}

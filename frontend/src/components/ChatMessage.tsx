@@ -6,9 +6,9 @@ const NLU_MODE_LABEL: Record<ChatResponse['nlu']['mode'], string> = {
   rules: 'правила',
 }
 
-export function ChatMessage({ resp }: { resp: ChatResponse }) {
-  const isRefusal = resp.intent === 'refusal'
-  const isClarify = resp.intent === 'clarify'
+export function ChatMessage({ resp, greeting }: { resp: ChatResponse; greeting?: boolean }) {
+  const isRefusal = !greeting && resp.intent === 'refusal'
+  const isClarify = !greeting && resp.intent === 'clarify'
 
   return (
     <div className={`msg bot${isRefusal ? ' refusal' : ''}${isClarify ? ' clarify' : ''}`}>
@@ -22,10 +22,12 @@ export function ChatMessage({ resp }: { resp: ChatResponse }) {
           <span aria-hidden="true">?</span> Нужно уточнение
         </div>
       )}
-      <div className="nlu-badge">
-        модель: {resp.nlu.label} · {Math.round(resp.nlu.confidence * 100)}%
-        <span className="nlu-mode">{NLU_MODE_LABEL[resp.nlu.mode]}</span>
-      </div>
+      {!greeting && (
+        <div className="nlu-badge">
+          модель: {resp.nlu.label} · {Math.round(resp.nlu.confidence * 100)}%
+          <span className="nlu-mode">{NLU_MODE_LABEL[resp.nlu.mode]}</span>
+        </div>
+      )}
       {resp.tool_calls.map((tc, i) => (
         <div className="tool" key={i}>
           → вызов: {tc.name}({Object.entries(tc.args).map(([k, v]) => `${k}=${v}`).join(', ')})
