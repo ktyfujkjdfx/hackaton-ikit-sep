@@ -84,8 +84,8 @@
     "actions": [],
     "nlu": {
       "mode": "sklearn",
-      "label": null,
-      "confidence": 0.0
+      "label": "add_income",
+      "confidence": 0.5989
     },
     "explainer": "templates",
     "guarded": false

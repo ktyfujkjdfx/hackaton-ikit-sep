@@ -23,9 +23,16 @@ FOLLOW_UP_RE = re.compile(r"^(?:а|ну|и)?\s*(?:если|за|на|по)?\s*[\
 
 @dataclass
 class Prediction:
+    """Что решили и что об этом показать.
+
+    `label` — чем отвечаем (None → clarify). `reported_label` и `mode` идут в `ChatResponse.nlu`,
+    где контракт требует строку и один из режимов onnx | sklearn | rules.
+    """
+
     label: str | None
     confidence: float
-    mode: str  # onnx | sklearn | rules | context
+    mode: str  # onnx | sklearn | rules
+    reported_label: str = "off_topic"
 
 
 def min_confidence() -> float:
@@ -84,22 +91,30 @@ def _is_follow_up(text: str) -> bool:
 
 def predict(text: str, history: list | None = None) -> Prediction:
     mode = current_mode()
+    follow_up = _is_follow_up(text)
 
-    # Контекст сильнее модели: «а за 1000?» после проверки покупки — снова проверка покупки
-    if _is_follow_up(text) and _last_intent(history) in ("purchase_check", "add_spend", "add_income"):
-        return Prediction(_last_intent(history), 1.0, "context")
-
-    # Только сумма и ничего больше («4000») — всегда уточняем, как в прототипе
-    if _is_follow_up(text):
-        return Prediction(None, 0.0, mode)
+    # Контекст сильнее модели: «а за 1000?» после проверки покупки — снова проверка покупки.
+    # Это правило, а не модель, поэтому в ответе показываем mode="rules".
+    if follow_up:
+        previous = _last_intent(history)
+        if previous in ("purchase_check", "add_spend", "add_income"):
+            return Prediction(previous, 1.0, "rules", previous)
 
     guess = _model_predict(text, mode)
+
+    # Только сумма и ничего больше («4000») — всегда уточняем, как в прототипе.
+    # Догадку модели всё равно показываем: из неё видно, почему мы переспросили.
+    if follow_up:
+        return Prediction(None, guess[1] if guess else 0.0, mode,
+                          guess[0] if guess else "off_topic")
+
     if guess is not None and guess[1] >= min_confidence():
-        return Prediction(guess[0], guess[1], mode)
+        return Prediction(guess[0], guess[1], mode, guess[0])
 
     fallback = rules.predict(text)
     if fallback is not None:
-        return Prediction(fallback[0], fallback[1], "rules")
+        return Prediction(fallback[0], fallback[1], "rules", fallback[0])
 
     # Никто не уверен: label=None → orchestrator ответит clarify (B.2, шаг 3)
-    return Prediction(None, guess[1] if guess else 0.0, mode)
+    return Prediction(None, guess[1] if guess else 0.0, mode,
+                      guess[0] if guess else "off_topic")

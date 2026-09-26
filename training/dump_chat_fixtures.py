@@ -48,15 +48,18 @@ CASES: list[tuple[str, str, dict | None, list[dict] | None]] = [
 def main() -> None:
     sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser()
-    parser.add_argument("--real", action="store_true", help="считать настоящим движком A")
+    parser.add_argument("--fake", action="store_true",
+                        help="считать дублёром движка, даже если настоящий доступен")
     args = parser.parse_args()
 
     from test_ai import ANYA, FakeEngine  # дублёр движка живёт рядом с тестами
 
-    if not args.real:
+    # По умолчанию берём настоящий движок A: фикстуры должны совпадать с продом
+    if args.fake or not port.available():
         port.set_engine(FakeEngine())
-    elif not port.available():
-        raise SystemExit("движок A ещё не подключён — запусти без --real")
+        print("движок: дублёр (эталонные значения контракта)\n")
+    else:
+        print("движок: настоящий app.engine\n")
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     for name, message, purchase, history in CASES:

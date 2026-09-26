@@ -58,17 +58,31 @@ class Term:
     source: dict
 
 
+def _source_of(raw: dict) -> dict:
+    """Источник из knowledge.json, если он уже заполнен; иначе fincult.info по умолчанию."""
+    source = raw.get("source")
+    if isinstance(source, dict) and str(source.get("url", "")).startswith("http"):
+        return {"title": source.get("title", DEFAULT_SOURCE["title"]), "url": source["url"]}
+    url = str(raw.get("source_url", ""))
+    if url.startswith("http"):
+        return {"title": raw.get("source_title") or DEFAULT_SOURCE["title"], "url": url}
+    return DEFAULT_SOURCE
+
+
 def _normalize_entry(raw: dict) -> dict | None:
     term = raw.get("term") or raw.get("title") or raw.get("name")
     definition = raw.get("definition") or raw.get("text") or raw.get("description") or raw.get("d")
     if not term or not definition:
         return None
-    aliases = raw.get("aliases") or raw.get("keys") or raw.get("synonyms") or []
+    # D пишет корень слова в "key" («вклад», «подушк») — это и есть главный синоним
+    aliases = list(raw.get("aliases") or raw.get("keys") or raw.get("synonyms") or [])
+    if raw.get("key"):
+        aliases.append(raw["key"])
     return {
         "term": str(term),
         "definition": str(definition),
         "aliases": [str(a) for a in aliases] + [str(term)],
-        "source": raw.get("source") or DEFAULT_SOURCE,
+        "source": _source_of(raw),
     }
 
 
@@ -84,12 +98,21 @@ def _entries() -> list[dict]:
             raw_entries = [item for item in data if isinstance(item, dict)]
         except Exception:  # noqa: BLE001
             log.exception("не удалось прочитать %s — беру встроенный словарь", KNOWLEDGE_PATH)
-    if not raw_entries:
-        raw_entries = FALLBACK_TERMS
     entries = [e for e in (_normalize_entry(r) for r in raw_entries) if e]
-    # длинные синонимы первыми: «кредитная карта» важнее «карта»
     for entry in entries:
         entry["aliases"] = sorted({normalize(a) for a in entry["aliases"]}, key=len, reverse=True)
+
+    # Встроенные термины прототипа добавляем только там, где у D пока пусто:
+    # так чат отвечает и про кэшбэк с депозитом, а тексты D всегда в приоритете.
+    covered = {alias for entry in entries for alias in entry["aliases"]}
+    for raw in FALLBACK_TERMS:
+        entry = _normalize_entry(raw)
+        aliases = [normalize(a) for a in entry["aliases"]]
+        # оставляем только те синонимы, которых у D нет: «вклад» уже описан, а «депозит» ещё нет
+        free = {a for a in aliases if not any(a in known or known in a for known in covered)}
+        if free:
+            entry["aliases"] = sorted(free, key=len, reverse=True)
+            entries.append(entry)
     return entries
 
 

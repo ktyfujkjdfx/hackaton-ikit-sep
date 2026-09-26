@@ -111,7 +111,7 @@
       },
       {
         "label": "Цель «Ноутбук» сдвинется",
-        "value": "на 50 дней",
+        "value": "на 17 дней",
         "tone": null
       },
       {
@@ -160,7 +160,7 @@
       }
     ],
     "nlu": {
-      "mode": "context",
+      "mode": "rules",
       "label": "purchase_check",
       "confidence": 1.0
     },

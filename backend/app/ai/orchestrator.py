@@ -28,7 +28,7 @@ def _today(situation: Any) -> date:
     return date.fromisoformat(str(value))
 
 
-def _response(execution: tools.Execution, mode: str, label: str | None,
+def _response(execution: tools.Execution, mode: str, label: str,
               confidence: float, explainer: str = "templates",
               guarded: bool = False) -> ChatResponse:
     return ChatResponse.model_validate({
@@ -50,7 +50,7 @@ def _response(execution: tools.Execution, mode: str, label: str | None,
 
 def _failure(mode: str, text: str) -> ChatResponse:
     return _response(
-        tools.Execution("clarify", templates.HEADLINE_CLARIFY, text=text), mode, None, 0.0
+        tools.Execution("clarify", templates.HEADLINE_CLARIFY, text=text), mode, "off_topic", 0.0
     )
 
 
@@ -88,5 +88,5 @@ def handle(request: Any) -> ChatResponse:
                 guarded = True
                 explainer = api_explainer.mode()
 
-    return _response(execution, prediction.mode, prediction.label,
+    return _response(execution, prediction.mode, prediction.reported_label,
                      prediction.confidence, explainer, guarded)

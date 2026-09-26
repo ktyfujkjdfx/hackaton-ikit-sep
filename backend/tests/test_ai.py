@@ -455,6 +455,29 @@ def test_all_15_control_phrases_pass_on_onnx(monkeypatch):
     assert ask("хватит ли мне до стипендии").nlu.mode == "onnx"
 
 
+def test_control_phrases_on_real_engine():
+    """Те же фразы, но на настоящем движке A и данных D — активируется после мержа в main.
+
+    Числа сверяем с эталоном контракта (раздел 8, проверки 1 и 2): если движок и AI-слой
+    разойдутся, это упадёт здесь, а не на защите.
+    """
+    port.set_engine(None)
+    if not port.available():
+        pytest.skip("движок A ещё не в этой ветке")
+
+    wrong = {text: ask(text).intent for text, intent in CONTROL_INTENTS.items()
+             if ask(text).intent != intent}
+    assert not wrong, wrong
+
+    purchase = ask("Могу купить наушники за 3000?")
+    values = facts_text(purchase)
+    assert "5 октября" in values and f"2{NBSP}400{NBSP}₽" in values
+    assert "с 15 октября" in values and "на 50 дней" in values
+
+    forecast = facts_text(ask("хватит ли мне до стипендии"))
+    assert "13 дней" in forecast and f"600{NBSP}₽" in forecast
+
+
 def test_all_15_control_phrases_have_expected_intent():
     expected = {
         "Могу купить наушники за 3000?": "purchase_check",
@@ -584,8 +607,16 @@ def test_missing_engine_is_reported_politely():
 # ------------------------------------------------------------------ фикстуры для C
 
 def test_chat_fixtures_match_current_answers():
-    """frontend/src/api/fixtures/chat_*.json должны совпадать с тем, что отдаёт чат."""
+    """frontend/src/api/fixtures/chat_*.json должны совпадать с тем, что отдаёт чат.
+
+    Фикстуры собраны на настоящем движке A и knowledge.json от D, поэтому сверяем их
+    только там, где эти файлы уже есть: до мержа в main тест пропускается.
+    """
     from pathlib import Path
+
+    port.set_engine(None)
+    if not port.available():
+        pytest.skip("движок A ещё не в этой ветке — фикстуры сверим после мержа")
 
     fixtures_dir = (Path(__file__).resolve().parents[2] / "frontend" / "src" / "api" / "fixtures")
     files = sorted(fixtures_dir.glob("chat_*.json"))
