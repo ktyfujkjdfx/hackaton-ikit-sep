@@ -27,6 +27,10 @@ def validate(sit: Situation, purchase: Purchase | None = None) -> list[Validatio
         if day_index(sit, o.date) < 0:
             err("obligations", "Дата платежа уже прошла.", k, "date")
 
+    for k, s in enumerate(sit.spends):
+        if s.amount <= 0:
+            err("spends", "Сумма траты должна быть больше нуля.", k, "amount")
+
     g = sit.goal
     if g is not None:
         if g.target <= 0:

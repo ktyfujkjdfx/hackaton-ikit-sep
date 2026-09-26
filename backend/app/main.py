@@ -21,7 +21,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-SECTIONS = {"balance", "daily", "incomes", "obligations", "goal", "purchase"}
+SECTIONS = {"balance", "daily", "incomes", "obligations", "spends", "goal", "purchase"}
 
 
 @app.exception_handler(HTTPException)
