@@ -7,6 +7,7 @@ import { TypesCard } from '../components/TypesCard'
 import { InlineBuy } from '../components/InlineBuy'
 import { BuyCard } from '../components/BuyCard'
 import { ExplainDrawer } from '../components/ExplainDrawer'
+import { AskPanel } from '../components/AskPanel'
 import { useAppDispatch, useAppState } from '../state/store'
 
 export function Dashboard() {
@@ -65,6 +66,7 @@ export function Dashboard() {
             </>
           )}
         </div>
+        {dashboard && <AskPanel />}
       </div>
     </section>
   )
