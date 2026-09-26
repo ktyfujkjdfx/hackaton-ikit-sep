@@ -13,7 +13,9 @@
 from __future__ import annotations
 
 import argparse
+import html
 import json
+import re
 import sys
 import urllib.error
 import urllib.request
@@ -41,14 +43,31 @@ def ask(base: str, message: str) -> dict:
 
 
 def link_alive(url: str) -> tuple[bool, str]:
+    """Жива ли статья. По коду ответа это понять НЕЛЬЗЯ.
+
+    fincult.info — одностраничное приложение: на любой путь, включая выдуманный, сервер
+    отдаёт 200 и пустую оболочку, так что проверка «код 200» пропускала бы битые ссылки.
+    Просим серверную версию страницы (`?_escaped_fragment_=`) и смотрим заголовок:
+    у несуществующей статьи там «Ошибка 404». Возвращаем заодно название статьи —
+    по нему видно, про тот ли термин она вообще.
+    """
     try:
-        request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        request = urllib.request.Request(url + "?_escaped_fragment_=",
+                                         headers={"User-Agent": "Mozilla/5.0"})
         with urllib.request.urlopen(request, timeout=40) as response:
-            return response.status == 200, str(response.status)
+            if response.status != 200:
+                return False, str(response.status)
+            page = response.read().decode("utf-8", "ignore")
     except urllib.error.HTTPError as error:
         return False, f"HTTP {error.code}"
     except Exception as error:  # noqa: BLE001 — сеть может отвалиться, это тоже результат
         return False, type(error).__name__
+
+    found = re.search(r"<title>(.*?)</title>", page, re.S)
+    title = html.unescape(found.group(1)).replace("\xa0", " ").strip() if found else ""
+    if not title or "404" in title:
+        return False, "страницы нет (404)"
+    return True, title
 
 
 def question_for(title: str) -> str:
@@ -78,7 +97,7 @@ def main() -> None:
         intent = answer.get("intent")
         source = answer.get("source") or {}
         url = str(source.get("url", ""))
-        problems = []
+        problems, article = [], ""
         if intent != "term":
             problems.append(f"intent={intent}, а не term")
         if not url:
@@ -88,12 +107,16 @@ def main() -> None:
         elif url.rstrip("/").endswith("fincult.info"):
             problems.append("ссылка на главную, а не на статью")
         else:
-            alive, code = link_alive(url)
-            if not alive:
-                problems.append(f"ссылка не открывается ({code})")
+            alive, note = link_alive(url)
+            if alive:
+                article = note
+            else:
+                problems.append(f"ссылка мёртвая: {note}")
 
         mark = "OK  " if not problems else "ПЛОХО"
         print(f"[{mark}] {title}\n        вопрос: «{message}»\n        {url or '—'}")
+        if article:
+            print(f"        статья: {article}")
         if problems:
             failures.append((title, "; ".join(problems)))
             print(f"        проблемы: {'; '.join(problems)}")
