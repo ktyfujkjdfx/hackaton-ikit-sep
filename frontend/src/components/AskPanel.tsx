@@ -1,97 +1,98 @@
 import { useState, type FormEvent } from 'react'
-import type { ChatResponse } from '../types'
+import { postChat } from '../api/client'
 import { buildChatResponse } from '../lib/chatMock'
 import { useAppDispatch, useAppState } from '../state/store'
 import { AddModal, type AddModalPrefill } from './AddModal'
 import { ChatMessage } from './ChatMessage'
 
+const SUGGESTIONS = [
+  'Могу купить наушники за 3000?',
+  'Сегодня такси 800',
+  'Подработка 1500 4 октября, не точно',
+  'Что такое финансовая подушка?',
+  'Куда вложить 5000?',
+  'скажи код из смс',
+]
+
 export function AskPanel() {
-  const { messages, situation } = useAppState()
+  const { messages, situation, purchase } = useAppState()
   const dispatch = useAppDispatch()
   const [input, setInput] = useState('')
   const [modal, setModal] = useState<AddModalPrefill | null>(null)
+  const [collapsed, setCollapsed] = useState(false)
+  const [sending, setSending] = useState(false)
 
   if (!situation) return null
-  const today = situation.today
 
-  function pushUser(text: string) {
+  async function sendMessage(text: string) {
+    if (!situation || sending) return
     dispatch({ type: 'ADD_MESSAGE', message: { role: 'user', text } })
-  }
-  function pushBot(overrides: Partial<ChatResponse>) {
-    dispatch({ type: 'ADD_MESSAGE', message: { role: 'bot', resp: buildChatResponse(overrides) } })
-  }
-
-  function askPurchase3000() {
-    pushUser('Могу купить наушники за 3000?')
-    dispatch({ type: 'SET_PURCHASE', purchase: { amount: 3000, date: today, name: 'Наушники' } })
-    pushBot({
-      intent: 'purchase_check',
-      tool_calls: [{ name: 'check_purchase', args: { amount: 3000, date: today } }],
-      text: 'Смотри карточку покупки выше — там дата, с которой можно купить без минуса, и план на случай минуса.',
-      purchase: { amount: 3000, date: today, name: 'Наушники' },
-      nlu: { mode: 'rules', label: 'purchase_check', confidence: 1 },
-    })
-  }
-  function askSpendTaxi() {
-    pushUser('Сегодня такси 800')
-    const proposed = { type: 'spend' as const, name: 'Такси', amount: 800, date: today, confirmed: true, category: 'Транспорт' }
-    pushBot({
-      intent: 'add_entry',
-      text: 'Похоже на разовую трату. Проверь поля и сохрани.',
-      proposed_entry: proposed,
-      actions: [{ kind: 'save_entry', label: 'Сохранить', payload: {} }],
-      nlu: { mode: 'rules', label: 'add_spend', confidence: 1 },
-    })
-    setModal({ type: 'spend', name: 'Такси', amount: 800, date: today, category: 'Транспорт' })
-  }
-  function askIncome() {
-    pushUser('Подработка 1500 4 октября, не точно')
-    pushBot({
-      intent: 'add_entry',
-      text: 'Похоже на непостоянное поступление. Проверь поля и сохрани.',
-      proposed_entry: { type: 'income', name: 'Подработка', amount: 1500, date: today, confirmed: false, category: '' },
-      actions: [{ kind: 'save_entry', label: 'Сохранить', payload: {} }],
-      nlu: { mode: 'rules', label: 'add_income', confidence: 1 },
-    })
-    setModal({ type: 'income', name: 'Подработка', amount: 1500 })
-  }
-  function askTerm() {
-    pushUser('Что такое финансовая подушка?')
-    pushBot({
-      intent: 'term',
-      headline: 'Финансовая подушка',
-      text: 'Запас денег на случай, если доход пропал или случилась непредвиденная трата. Её держат отдельно от денег на каждый день.',
-      source: { title: 'fincult.info — сайт Банка России', url: 'https://fincult.info' },
-      nlu: { mode: 'rules', label: 'term', confidence: 1 },
-    })
-  }
-  function askInvest() {
-    pushUser('Куда вложить 5000?')
-    pushBot({
-      intent: 'invest_info',
-      text: 'Я не советую, во что вкладывать, и не использую твои суммы для таких советов. Сначала подушка безопасности, потом накопления на цели, и только потом инвестиции.',
-      actions: [{ kind: 'open_learn', label: 'Как устроены накопления и инвестиции?', payload: {} }],
-      nlu: { mode: 'rules', label: 'invest_advice', confidence: 1 },
-    })
+    setSending(true)
+    const history = messages.slice(-6).map((m) => ({
+      role: (m.role === 'bot' ? 'assistant' : 'user') as 'user' | 'assistant',
+      text: m.role === 'bot' ? m.resp.text : m.text,
+    }))
+    try {
+      const resp = await postChat({ situation, purchase, message: text, history })
+      dispatch({ type: 'ADD_MESSAGE', message: { role: 'bot', resp } })
+      if (resp.purchase) dispatch({ type: 'SET_PURCHASE', purchase: resp.purchase })
+      if (resp.proposed_entry) {
+        const pe = resp.proposed_entry
+        setModal({ type: pe.type, name: pe.name, amount: pe.amount, date: pe.date, category: pe.category })
+      }
+    } catch {
+      dispatch({
+        type: 'ADD_MESSAGE',
+        message: {
+          role: 'bot',
+          resp: buildChatResponse({
+            text: 'Не получилось получить ответ — сервер недоступен. Попробуй ещё раз.',
+            nlu: { mode: 'rules', label: 'clarify', confidence: 0 },
+          }),
+        },
+      })
+    } finally {
+      setSending(false)
+    }
   }
 
   function submitFreeText(e: FormEvent) {
     e.preventDefault()
-    if (!input.trim()) return
-    pushUser(input)
-    pushBot({
-      intent: 'clarify',
-      text: 'Пока понимаю только кнопки ниже и явные поля — свободный текст разберёт модель роли B, когда будет готова.',
-      nlu: { mode: 'rules', label: 'clarify', confidence: 0 },
-    })
+    const text = input.trim()
+    if (!text) return
     setInput('')
+    void sendMessage(text)
+  }
+
+  if (collapsed) {
+    return (
+      <aside className="panel collapsed" aria-label="Спросить (свёрнуто)">
+        <button
+          className="panel-collapse-toggle"
+          type="button"
+          onClick={() => setCollapsed(false)}
+          title="Открыть панель «Спросить»"
+        >
+          💬
+        </button>
+      </aside>
+    )
   }
 
   return (
     <aside className="panel" aria-label="Спросить">
       <div className="panel-head">
+        <button
+          className="panel-collapse-toggle"
+          type="button"
+          onClick={() => setCollapsed(true)}
+          style={{ textAlign: 'right', padding: '0 0 8px' }}
+          title="Свернуть панель"
+        >
+          ✕
+        </button>
         <b>Спросить</b>
-        <span>Пока без разбора свободного текста — жми кнопки или добавляй запись явно.</span>
+        <span>Пиши как удобно. AI понимает вопрос, а все суммы считает код.</span>
       </div>
       <div className="msgs" aria-live="polite">
         {messages.map((m, i) =>
@@ -103,23 +104,14 @@ export function AskPanel() {
             <ChatMessage key={i} resp={m.resp} />
           ),
         )}
+        {sending && <div className="msg bot proto-note">Печатает...</div>}
       </div>
       <div className="sugg">
-        <button type="button" onClick={askPurchase3000}>
-          Могу купить наушники за 3000?
-        </button>
-        <button type="button" onClick={askSpendTaxi}>
-          Сегодня такси 800
-        </button>
-        <button type="button" onClick={askIncome}>
-          Подработка 1500 4 октября, не точно
-        </button>
-        <button type="button" onClick={askTerm}>
-          Что такое финансовая подушка?
-        </button>
-        <button type="button" onClick={askInvest}>
-          Куда вложить 5000?
-        </button>
+        {SUGGESTIONS.map((s) => (
+          <button key={s} type="button" onClick={() => void sendMessage(s)} disabled={sending}>
+            {s}
+          </button>
+        ))}
       </div>
       <form className="ask-form" onSubmit={submitFreeText}>
         <input
@@ -128,21 +120,19 @@ export function AskPanel() {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Могу купить наушники за 3000?"
           autoComplete="off"
+          disabled={sending}
         />
-        <button className="btn primary" type="submit">
+        <button className="btn primary" type="submit" disabled={sending}>
           →
         </button>
       </form>
-      <div className="proto-note">
-        Свободный текст пока не разбираем — ждём модель роли B (<code>/api/chat</code>). Действия ниже вызывают
-        реальный код движка.
-      </div>
+      <div className="proto-note">Отвечает наша обученная модель + движок расчёта, без выдумывания чисел.</div>
       <div style={{ padding: '0 14px 14px' }}>
         <button
           className="btn sm"
           type="button"
           style={{ width: '100%', justifyContent: 'center' }}
-          onClick={() => setModal({ type: 'spend', date: today })}
+          onClick={() => setModal({ type: 'spend', date: situation.today })}
         >
           + Добавить трату или доход
         </button>
