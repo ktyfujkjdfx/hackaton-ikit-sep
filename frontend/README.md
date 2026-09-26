@@ -1,32 +1,47 @@
-# React + TypeScript + Vite
+# Дотяну — фронтенд
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React 18 + TypeScript + Vite, чистый CSS (без UI-библиотек). Ничего не считает — все суммы и даты приходят из `/api/dashboard`, `/api/purchase/check`, `/api/chat` (описаны в `../docs/CONTRACT.md`).
 
-Currently, two official plugins are available:
+## Запуск локально (PowerShell)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```powershell
+cd frontend
+npm install
+npm run dev   # http://localhost:5173, /api проксируется на :8000 (см. vite.config.ts)
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Бэкенд поднимается отдельно (`../backend`, см. корневой `CLAUDE.md`).
+
+## Переменные окружения
+
+`.env` (не в git, см. `.env.example`):
+
+```
+VITE_API_URL=       # пусто — работает прокси Vite на localhost:8000
+VITE_USE_MOCKS=0    # 1 — брать данные из src/api/fixtures вместо реального бэкенда
+```
+
+`.env.production` (в git — там нет секретов, только публичный адрес прод-бэкенда) задаёт `VITE_API_URL` для собранной статики на Render.
+
+## Сборка
+
+```powershell
+npm run build   # tsc -b && vite build → dist/
+```
+
+## Структура
+
+```
+src/
+├─ screens/       Start, Form (анкета), Dashboard, Checks
+├─ components/    Hero, BalanceChart, TypesCard, BuyCard, InlineBuy, DeficitPlanCards,
+│                 ExplainDrawer, AskPanel, ChatMessage, AddModal, TopBar
+├─ state/store.tsx  useReducer + context — единственный источник состояния
+├─ api/client.ts    fetch к бэкенду + режим моков из api/fixtures
+├─ lib/             format.ts (rub/fd/fdShort/daysWord), dates.ts, chatMock.ts
+└─ styles/          tokens.css (палитра, см. ../docs/design-system.md), app.css
+```
+
+## Прогон вручную
+
+Путь для проверки: Start → демо-профиль или анкета → Dashboard (Hero, график, InlineBuy → BuyCard → план выхода из минуса) → «Как посчитали?» → чат (в т. ч. фразу с кодом из СМС — должен быть вежливый отказ) → «Как мы проверяли» (13/13).

@@ -1105,8 +1105,8 @@ td.fail {
   line-height: 1.15;
 }
 .safe-big.ok {
-  background: var(--good-soft);
-  color: var(--status-good);
+  background: var(--status-good);
+  color: var(--accent-ink);
 }
 .buy-why {
   font-size: 16px;
