@@ -438,3 +438,32 @@ def test_format_date_ru():
                                     (21, "21 день"), (22, "22 дня"), (50, "50 дней")])
 def test_days_word(n, text):
     assert days_word(n) == text
+
+
+def test_goal_plan_unreachable_goal_has_no_eta():
+    sit = anya()
+    sit.daily = 359  # в месяц остаётся 30 ₽
+    sit.goal.target = 10_000_000
+    g = goal_plan(sit, 3000)
+    assert g.monthly_surplus == 30
+    assert g.eta is None and g.late_days is None and g.eta_with_purchase is None
+
+
+def test_goal_plan_early_goal_has_negative_late_days():
+    sit = anya()
+    sit.goal.date = dt.date(2027, 12, 1)
+    assert goal_plan(sit).late_days < 0
+
+
+def test_purchase_on_last_horizon_day():
+    r = check_purchase(anya(), buy(100, "2026-10-26"))
+    assert r.after.min == 600 and r.verdict == "tight"
+
+
+def test_income_today_counts_in_series_but_is_not_next():
+    sit = sit_of(daily=100, incomes=[
+        {"id": "i", "name": "Сегодня", "amount": 500, "date": "2026-09-27", "confirmed": True},
+        {"id": "j", "name": "Потом", "amount": 500, "date": "2026-10-26", "confirmed": True},
+        {"id": "k", "name": "За горизонтом", "amount": 500, "date": "2026-10-27", "confirmed": True}])
+    assert series(sit)[0] == 1400
+    assert next_income(sit).name == "Потом"
