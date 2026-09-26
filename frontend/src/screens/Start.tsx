@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { getPersona, getPersonas } from '../api/client'
 import type { Persona } from '../types'
 import { useAppDispatch } from '../state/store'
+import { Brand } from '../components/Brand'
 
 export function Start() {
   const dispatch = useAppDispatch()
@@ -37,9 +38,7 @@ export function Start() {
   return (
     <section id="start">
       <div className="start-card">
-        <div className="brand">
-          <span className="brand-mark">₽</span>Дотяну
-        </div>
+        <Brand />
         <h1 className="start-title">
           Хватит ли денег <mark>до&nbsp;стипендии?</mark>
         </h1>

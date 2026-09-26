@@ -38,8 +38,8 @@ export function Dashboard() {
           if (cancelled) return
           const message =
             e.message === DASHBOARD_MOCK_UNSUPPORTED
-              ? 'Этот расчёт ещё не замокан — появится вместе с /api/dashboard роли A (сейчас есть демо-фикстуры для Ани и покупок 1000/3000 ₽).'
-              : 'Сервер недоступен — расчёт не выполнен'
+              ? 'В демонстрационном режиме готовы только профиль Ани и покупки на 1000 и 3000 ₽. Включи сервер — и считаться будет всё.'
+              : 'Сервер недоступен — обновить прогноз не удалось'
           dispatch({ type: 'DASHBOARD_ERROR', error: message })
         })
     }, 250)
@@ -61,7 +61,10 @@ export function Dashboard() {
         <div className="col">
           {error && (
             <div className="card">
-              <p className="errmsg">{error}</p>
+              <p className="errmsg">
+                {error}
+                {dashboard ? ' — на экране прошлый расчёт, он мог устареть.' : ''}
+              </p>
               <div className="hero-actions" style={{ marginTop: 8 }}>
                 <button className="btn sm" type="button" onClick={() => setRetryTick((t) => t + 1)}>
                   Повторить
@@ -78,6 +81,11 @@ export function Dashboard() {
           )}
           {dashboard && (
             <div className={`dash-content${refreshing ? ' refreshing' : ''}`} aria-busy={refreshing}>
+              {refreshing && (
+                <p className="recalc-note" role="status">
+                  Пересчитываем… пока показан прошлый прогноз.
+                </p>
+              )}
               <Hero dashboard={dashboard} situation={situation} />
               <InlineBuy />
               {dashboard.purchase && <BuyCard dashboard={dashboard} />}

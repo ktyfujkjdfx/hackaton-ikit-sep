@@ -234,7 +234,7 @@ def main() -> int:
     danya = api.call("/personas/danya")[1]["situation"]
 
     lines = [
-        "Финальная проверка API «Дотяну»",
+        "Финальная проверка API «ФинКом»",
         f"Сервер:  {args.base}",
         f"Время:   {dt.datetime.now().astimezone():%Y-%m-%d %H:%M %Z}",
         f"health:  {status} {json.dumps(health, ensure_ascii=False)} (первый ответ за {wake:.1f} с)",

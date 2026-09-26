@@ -128,11 +128,15 @@ export function AskPanel() {
           autoComplete="off"
           disabled={sending}
         />
-        <button className="btn primary" type="submit" disabled={sending}>
+        <button className="btn primary" type="submit" disabled={sending} aria-label="Отправить вопрос">
           →
         </button>
       </form>
-      <div className="proto-note">Отвечает наша обученная модель + движок расчёта, без выдумывания чисел.</div>
+      <p className="voice-hint" title="Диктовка встроена в систему — отдельное приложение не нужно">
+        <span aria-hidden="true">🎙</span> Можно надиктовать: <b>Win + H</b> в Windows, двойное <b>Fn</b> на Mac —
+        диктовка системы работает прямо в этом поле.
+      </p>
+      <div className="proto-note">Вопрос понимает наша модель, все суммы считает движок — числа не выдумываются.</div>
       <div style={{ padding: '0 14px 14px' }}>
         <button
           className="btn sm"

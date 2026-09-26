@@ -7,7 +7,7 @@ export function TypesCard({ dashboard }: { dashboard: Dashboard }) {
   return (
     <div className="card" id="types-card">
       <div className="eyebrow">
-        <span className="star">Фишка</span> Постоянное и разовое
+        Постоянное и разовое
       </div>
       <h3 style={{ marginTop: 6, fontSize: 17 }}>
         Что у тебя постоянное, а что нет — ближайшие {dashboard.horizon_days} дней

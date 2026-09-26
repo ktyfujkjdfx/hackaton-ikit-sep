@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { getChecks } from '../api/client'
 import type { ChecksResult } from '../types'
 import { useAppDispatch } from '../state/store'
+import { Brand } from '../components/Brand'
 
 const FALLBACK: { id: number; title: string; expected: string }[] = [
   { id: 1, title: 'Аня без покупок', expected: 'минимум 600 ₽, 9 октября, состояние «впритык»' },
@@ -38,15 +39,13 @@ export function Checks() {
   }, [])
 
   const rows = result ? result.items : FALLBACK.map((s) => ({ ...s, got: '—', ok: null as boolean | null }))
-  const score = result ? `${result.passed}/${result.total}` : 'pending'
+  const score = result ? `${result.passed}/${result.total}` : '…'
 
   return (
     <section id="checks">
       <header className="topbar">
         <div className="wrap">
-          <div className="brand">
-            <span className="brand-mark">₽</span>Дотяну
-          </div>
+          <Brand />
           <span className="demo-chip">Демо: 27 сентября 2026</span>
           <span className="spacer" />
           <button className="btn sm" type="button" onClick={() => dispatch({ type: 'GO', screen: 'start' })}>
@@ -64,7 +63,7 @@ export function Checks() {
                 ? 'Спрашиваем бэкенд...'
                 : error
                   ? error
-                  : 'Эти сценарии прогнал бэкенд роли A через /api/checks прямо сейчас.'}
+                  : 'Эти сценарии сервер прогнал прямо сейчас.'}
             </p>
           </div>
         </div>
@@ -87,7 +86,7 @@ export function Checks() {
                   <td>{s.expected}</td>
                   <td>{'got' in s ? s.got : '—'}</td>
                   <td className={s.ok === true ? 'ok' : s.ok === false ? 'fail' : undefined}>
-                    {s.ok === true ? '✓' : s.ok === false ? '✗' : 'pending'}
+                    {s.ok === true ? '✓' : s.ok === false ? '✗' : 'ждём'}
                   </td>
                 </tr>
               ))}

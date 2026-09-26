@@ -25,7 +25,7 @@ export function BuyCard({ dashboard }: { dashboard: Dashboard }) {
   return (
     <div className="card buy-card">
       <div className="eyebrow">
-        <span className="star">Главная фишка</span> Проверка покупки · считает код
+        Проверка покупки
       </div>
       <h2>
         {purchase.name} за {rub(purchase.amount)}, {when}
@@ -93,7 +93,7 @@ export function BuyCard({ dashboard }: { dashboard: Dashboard }) {
       {!safe && plan && (
         <div>
           <div className="eyebrow" style={{ marginBottom: 8 }}>
-            <span className="star">Фишка</span> План выхода из минуса
+            План выхода из минуса
           </div>
           <DeficitPlanCards plan={plan} />
         </div>

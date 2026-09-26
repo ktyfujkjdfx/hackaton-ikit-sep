@@ -11,7 +11,7 @@ from app.api.routes import router as routes_router
 
 load_dotenv()
 
-app = FastAPI(title="Дотяну API")
+app = FastAPI(title="ФинКом API")
 
 cors_origins = [o.strip() for o in os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")]
 app.add_middleware(

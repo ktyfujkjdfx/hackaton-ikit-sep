@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { Category, Goal, Income, Obligation, Situation, ValidationError } from '../types'
 import { dayIndex } from '../lib/dates'
 import { useAppDispatch } from '../state/store'
+import { Brand } from '../components/Brand'
 import personaAnya from '../api/fixtures/persona_anya.json'
 
 const TODAY = '2026-09-27'
@@ -146,9 +147,7 @@ export function Form() {
     <section id="form">
       <header className="topbar">
         <div className="wrap">
-          <div className="brand">
-            <span className="brand-mark">₽</span>Дотяну
-          </div>
+          <Brand />
           <span className="demo-chip">Демо: 27 сентября 2026</span>
           <span className="spacer" />
           <button className="btn ghost sm" type="button" onClick={() => dispatch({ type: 'GO', screen: 'start' })}>
