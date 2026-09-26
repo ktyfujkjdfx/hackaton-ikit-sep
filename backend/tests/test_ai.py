@@ -478,6 +478,30 @@ def test_control_phrases_on_real_engine():
     assert "13 дней" in forecast and f"600{NBSP}₽" in forecast
 
 
+def test_forecast_says_when_it_depends_on_unstable_income():
+    """Даня: база без минуса только из-за подработки — «денег хватает» здесь было бы неправдой.
+
+    Это пункт 5 демо: «если подработки не будет — минус с 9 октября» (контракт, проверка 10).
+    """
+    port.set_engine(None)
+    if not port.available():
+        pytest.skip("движок A ещё не в этой ветке")
+    import json
+    from pathlib import Path
+
+    personas = json.loads((Path(__file__).resolve().parents[1] / "app" / "data" /
+                           "personas.json").read_text(encoding="utf-8"))
+    danya = personas["danya"]["situation"]
+
+    response = handle(ChatRequest.model_validate(
+        {"situation": danya, "message": "хватит ли мне до стипендии", "history": []}))
+    assert response.intent == "forecast"
+    assert "непостоянный доход" in response.text
+    assert "хватает, но только если" in response.text
+    values = facts_text(response)
+    assert "9 октября" in values and f"2{NBSP}840{NBSP}₽" in values
+
+
 def test_all_15_control_phrases_have_expected_intent():
     expected = {
         "Могу купить наушники за 3000?": "purchase_check",
