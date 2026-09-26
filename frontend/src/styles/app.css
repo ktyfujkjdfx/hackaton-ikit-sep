@@ -846,6 +846,85 @@ input.err {
   box-shadow: var(--shadow);
   animation: pop-in 0.15s ease-out;
 }
+.modal.wide {
+  width: min(560px, calc(100% - 32px));
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+}
+.modal h3 {
+  font-size: 18px;
+}
+
+/* ---------- учись и подработай ---------- */
+/* Короткая подсказка прямо под полем: «основной или дополнительный» — не всегда очевидно. */
+.field-hint {
+  font-size: 11.5px;
+  line-height: 1.35;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-top: 2px;
+}
+.next-steps {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.learn {
+  border: 1px dashed var(--line-strong);
+  background: var(--surface-2);
+  border-radius: var(--r);
+  padding: 16px;
+  display: grid;
+  gap: 8px;
+}
+.learn > b {
+  font-size: 15px;
+}
+.learn p {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  max-width: 62ch;
+}
+.learn-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+.learn-steps {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+.learn-steps b {
+  color: var(--text-primary);
+}
+.learn-note {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+.example {
+  border: 1px dashed var(--line-strong);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: grid;
+  gap: 3px;
+  line-height: 1.4;
+}
+.example b {
+  font-size: 14px;
+  color: var(--text-primary);
+}
+.example .tag {
+  justify-self: start;
+}
 .seg {
   display: flex;
   background: var(--surface-2);

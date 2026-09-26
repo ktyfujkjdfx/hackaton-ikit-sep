@@ -91,11 +91,12 @@ export function AddModal({ prefill, onClose }: { prefill: AddModalPrefill; onClo
           </label>
         ) : (
           <label className="f">
-            Надёжность
+            Тип дохода
             <select value={confirmed ? 'yes' : 'no'} onChange={(e) => setConfirmed(e.target.value === 'yes')}>
-              <option value="yes">Точно придёт</option>
-              <option value="no">Может не прийти</option>
+              <option value="yes">Основной доход</option>
+              <option value="no">Дополнительный доход</option>
             </select>
+            <span className="field-hint">Основной — то, что точно придёт вовремя: стипендия, соцвыплаты. Дополнительный — то, что может не прийти: подработка, разовый перевод.</span>
           </label>
         )}
         {err && <span className="errmsg">{err}</span>}

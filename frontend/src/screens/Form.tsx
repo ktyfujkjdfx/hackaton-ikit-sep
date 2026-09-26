@@ -180,10 +180,7 @@ export function Form() {
 
           <div className="fblock">
             <h3>2. Когда придут деньги?</h3>
-            <p className="hint">
-              «Точно придёт» — постоянный доход по графику: стипендия, деньги от родителей. «Может не прийти» —
-              разовый или нерегулярный: подработка, подарок.
-            </p>
+            <p className="hint">Основной — то, что точно придёт вовремя: стипендия, соцвыплаты. Дополнительный — то, что может не прийти: подработка, разовый перевод.</p>
             <div style={{ display: 'grid', gap: 8 }}>
               {incomes.map((inc, k) => (
                 <div className="frow" key={inc.id}>
@@ -222,7 +219,7 @@ export function Form() {
                     />
                   </label>
                   <label className="f">
-                    Надёжность
+                    Тип дохода
                     <select
                       value={inc.confirmed ? 'yes' : 'no'}
                       onChange={(e) =>
@@ -231,8 +228,8 @@ export function Form() {
                         )
                       }
                     >
-                      <option value="yes">Точно придёт</option>
-                      <option value="no">Может не прийти</option>
+                      <option value="yes">Основной доход</option>
+                      <option value="no">Дополнительный доход</option>
                     </select>
                   </label>
                   <button

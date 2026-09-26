@@ -10,14 +10,18 @@ const NLU_MODE_LABEL: Record<ChatResponse['nlu']['mode'], string> = {
 
 // Кнопки из ответа показываем только те, которым в интерфейсе есть куда вести.
 // Остальные виды действий уже закрыты своими карточками (покупка, добавление траты).
-const RENDERED_ACTIONS = new Set(['open_explain'])
+const ACTION_DISPATCH: Record<string, { type: 'OPEN_EXPLAIN' | 'OPEN_LEARN' | 'OPEN_JOBS' }> = {
+  open_explain: { type: 'OPEN_EXPLAIN' },
+  open_learn: { type: 'OPEN_LEARN' },
+  show_jobs: { type: 'OPEN_JOBS' },
+}
 
 export function ChatMessage({ resp, greeting }: { resp: ChatResponse; greeting?: boolean }) {
   const dispatch = useAppDispatch()
   const isRefusal = !greeting && resp.intent === 'refusal'
   const isClarify = !greeting && resp.intent === 'clarify'
   const [lead, ...rest] = resp.facts
-  const actions = resp.actions.filter((a) => RENDERED_ACTIONS.has(a.kind))
+  const actions = resp.actions.filter((a) => a.kind in ACTION_DISPATCH)
 
   return (
     <div className={`msg bot${isRefusal ? ' refusal' : ''}${isClarify ? ' clarify' : ''}`}>
@@ -76,7 +80,7 @@ export function ChatMessage({ resp, greeting }: { resp: ChatResponse; greeting?:
               key={i}
               className="btn ghost sm"
               type="button"
-              onClick={() => dispatch({ type: 'OPEN_EXPLAIN' })}
+              onClick={() => dispatch(ACTION_DISPATCH[a.kind])}
             >
               {a.label}
             </button>
