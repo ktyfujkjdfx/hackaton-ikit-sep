@@ -21,6 +21,13 @@
   --r: 14px;
   --font: 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --display: 'Unbounded', 'Onest', system-ui, sans-serif;
+
+  /* docs/design-system.md — статусы и денежные типы (график, статус-пилюли) */
+  --status-good: #0ca30c;
+  --status-warning: #e0a400;
+  --status-critical: #d03b3b;
+  --money-fixed: #2a78d6;
+  --money-variable: #eb6834;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -43,6 +50,11 @@
     --shadow:
       0 1px 2px rgba(0, 0, 0, 0.4),
       0 8px 24px rgba(0, 0, 0, 0.3);
+    --status-good: #1fbf1f;
+    --status-warning: #f0b923;
+    --status-critical: #e66767;
+    --money-fixed: #3987e5;
+    --money-variable: #d95926;
   }
 }
 
@@ -65,4 +77,9 @@
   --shadow:
     0 1px 2px rgba(0, 0, 0, 0.4),
     0 8px 24px rgba(0, 0, 0, 0.3);
+  --status-good: #1fbf1f;
+  --status-warning: #f0b923;
+  --status-critical: #e66767;
+  --money-fixed: #3987e5;
+  --money-variable: #d95926;
 }

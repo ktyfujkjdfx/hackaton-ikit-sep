@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { getDashboard } from '../api/client'
 import { TopBar } from '../components/TopBar'
 import { Hero } from '../components/Hero'
+import { BalanceChart } from '../components/BalanceChart'
 import { useAppDispatch, useAppState } from '../state/store'
 
 export function Dashboard() {
@@ -34,7 +35,12 @@ export function Dashboard() {
               <p className="sub">Считаем...</p>
             </div>
           )}
-          {dashboard && <Hero dashboard={dashboard} situation={situation} />}
+          {dashboard && (
+            <>
+              <Hero dashboard={dashboard} situation={situation} />
+              <BalanceChart dashboard={dashboard} />
+            </>
+          )}
         </div>
       </div>
     </section>
