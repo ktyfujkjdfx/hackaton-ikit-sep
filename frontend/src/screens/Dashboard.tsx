@@ -6,6 +6,7 @@ import { BalanceChart } from '../components/BalanceChart'
 import { TypesCard } from '../components/TypesCard'
 import { InlineBuy } from '../components/InlineBuy'
 import { BuyCard } from '../components/BuyCard'
+import { ExplainDrawer } from '../components/ExplainDrawer'
 import { useAppDispatch, useAppState } from '../state/store'
 
 export function Dashboard() {
@@ -60,6 +61,7 @@ export function Dashboard() {
               {dashboard.purchase && <BuyCard dashboard={dashboard} />}
               <BalanceChart dashboard={dashboard} />
               <TypesCard dashboard={dashboard} />
+              <ExplainDrawer dashboard={dashboard} situation={situation} />
             </>
           )}
         </div>

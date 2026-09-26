@@ -20,6 +20,7 @@ export type State = {
   dashboard: Dashboard | null
   loading: boolean
   error: string | null
+  explainOpen: boolean
 }
 
 export const initialState: State = {
@@ -33,6 +34,7 @@ export const initialState: State = {
   dashboard: null,
   loading: false,
   error: null,
+  explainOpen: false,
 }
 
 export type Action =
@@ -45,6 +47,9 @@ export type Action =
   | { type: 'DASHBOARD_ERROR'; error: string }
   | { type: 'ADD_MESSAGE'; message: ChatMsg }
   | { type: 'ADD_DEFERRED'; deferred: DeferredPurchase }
+  | { type: 'SET_SITUATION'; situation: Situation }
+  | { type: 'OPEN_EXPLAIN' }
+  | { type: 'CLOSE_EXPLAIN' }
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -75,6 +80,12 @@ function reducer(state: State, action: Action): State {
       return { ...state, messages: [...state.messages, action.message] }
     case 'ADD_DEFERRED':
       return { ...state, deferred: [...state.deferred, action.deferred] }
+    case 'SET_SITUATION':
+      return { ...state, situation: action.situation }
+    case 'OPEN_EXPLAIN':
+      return { ...state, explainOpen: true }
+    case 'CLOSE_EXPLAIN':
+      return { ...state, explainOpen: false }
     default:
       return state
   }

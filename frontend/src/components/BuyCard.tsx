@@ -105,6 +105,9 @@ export function BuyCard({ dashboard }: { dashboard: Dashboard }) {
             Отложить до {fd(earliest_safe_date)}
           </button>
         )}
+        <button className="btn" type="button" onClick={() => dispatch({ type: 'OPEN_EXPLAIN' })}>
+          Как посчитали?
+        </button>
         <button className="btn ghost" type="button" onClick={() => dispatch({ type: 'SET_PURCHASE', purchase: null })}>
           Убрать покупку
         </button>
