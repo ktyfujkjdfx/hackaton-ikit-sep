@@ -14,6 +14,16 @@ export function Dashboard() {
   const { situation, purchase, dashboard, personaId, loading, error } = useAppState()
   const dispatch = useAppDispatch()
   const [retryTick, setRetryTick] = useState(0)
+  const [slow, setSlow] = useState(false)
+
+  useEffect(() => {
+    if (!loading || dashboard) {
+      setSlow(false)
+      return
+    }
+    const t = setTimeout(() => setSlow(true), 4000)
+    return () => clearTimeout(t)
+  }, [loading, dashboard])
 
   useEffect(() => {
     if (!situation || !personaId) return
@@ -61,7 +71,9 @@ export function Dashboard() {
           )}
           {loading && !dashboard && !error && (
             <div className="card">
-              <p className="sub">Считаем прогноз на 30 дней...</p>
+              <p className="sub">
+                {slow ? 'Просыпаемся… это может занять до минуты (бесплатный сервер спал).' : 'Считаем прогноз на 30 дней...'}
+              </p>
             </div>
           )}
           {dashboard && (

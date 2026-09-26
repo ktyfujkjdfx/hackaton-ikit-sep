@@ -1,6 +1,9 @@
+import { useEffect, useState } from 'react'
+import { getChecks } from '../api/client'
+import type { ChecksResult } from '../types'
 import { useAppDispatch } from '../state/store'
 
-const SCENARIOS: { id: number; title: string; expected: string }[] = [
+const FALLBACK: { id: number; title: string; expected: string }[] = [
   { id: 1, title: 'Аня без покупок', expected: 'минимум 600 ₽, 9 октября, состояние «впритык»' },
   { id: 2, title: 'Аня: покупка 3 000 сегодня', expected: 'минус с 5 октября, максимум минуса 2 400 ₽, безопасно с 15 октября' },
   { id: 3, title: 'Аня: покупка 1 000 сегодня', expected: 'минус с 8 октября, максимум минуса 400 ₽, безопасно с 10 октября' },
@@ -18,6 +21,24 @@ const SCENARIOS: { id: number; title: string; expected: string }[] = [
 
 export function Checks() {
   const dispatch = useAppDispatch()
+  const [result, setResult] = useState<ChecksResult | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    getChecks()
+      .then((r) => {
+        setResult(r)
+        setLoading(false)
+      })
+      .catch(() => {
+        setError('/api/checks пока недоступен — показываем ожидаемые значения из раздела 8 CONTRACT.md.')
+        setLoading(false)
+      })
+  }, [])
+
+  const rows = result ? result.items : FALLBACK.map((s) => ({ ...s, got: '—', ok: null as boolean | null }))
+  const score = result ? `${result.passed}/${result.total}` : 'pending'
 
   return (
     <section id="checks">
@@ -35,12 +56,15 @@ export function Checks() {
       </header>
       <div className="wrap" style={{ paddingBlock: '24px 60px', display: 'grid', gap: 16 }}>
         <div className="score">
-          <span className="big">pending</span>
+          <span className="big">{loading ? '…' : score}</span>
           <div>
             <h2 style={{ fontSize: 20 }}>Как мы проверяли расчёты</h2>
             <p style={{ color: 'var(--muted)' }}>
-              Эти сценарии прогонит бэкенд роли A через `/api/checks`. Пока показываем таблицу с ожидаемыми
-              значениями из раздела 8 CONTRACT.md — «Получили» появится после интеграции.
+              {loading
+                ? 'Спрашиваем бэкенд...'
+                : error
+                  ? error
+                  : 'Эти сценарии прогнал бэкенд роли A через /api/checks прямо сейчас.'}
             </p>
           </div>
         </div>
@@ -56,13 +80,15 @@ export function Checks() {
               </tr>
             </thead>
             <tbody>
-              {SCENARIOS.map((s) => (
+              {rows.map((s) => (
                 <tr key={s.id}>
                   <td>{s.id}</td>
                   <td>{s.title}</td>
                   <td>{s.expected}</td>
-                  <td>—</td>
-                  <td>pending</td>
+                  <td>{'got' in s ? s.got : '—'}</td>
+                  <td className={s.ok === true ? 'ok' : s.ok === false ? 'fail' : undefined}>
+                    {s.ok === true ? '✓' : s.ok === false ? '✗' : 'pending'}
+                  </td>
                 </tr>
               ))}
             </tbody>
