@@ -1,0 +1,213 @@
+{
+  "today": "2026-09-27",
+  "horizon_days": 30,
+  "headline": {
+    "state": "no_income",
+    "next_income": null,
+    "next_confirmed_income": null,
+    "min_balance": -9000,
+    "min_date": "2026-10-26",
+    "first_negative_date": "2026-09-27",
+    "max_deficit": 9000,
+    "days_of_spending_left": null
+  },
+  "scenarios": {
+    "base": {
+      "days": [
+        {
+          "date": "2026-09-27",
+          "balance": -300
+        },
+        {
+          "date": "2026-09-28",
+          "balance": -600
+        },
+        {
+          "date": "2026-09-29",
+          "balance": -900
+        },
+        {
+          "date": "2026-09-30",
+          "balance": -1200
+        },
+        {
+          "date": "2026-10-01",
+          "balance": -1500
+        },
+        {
+          "date": "2026-10-02",
+          "balance": -1800
+        },
+        {
+          "date": "2026-10-03",
+          "balance": -2100
+        },
+        {
+          "date": "2026-10-04",
+          "balance": -2400
+        },
+        {
+          "date": "2026-10-05",
+          "balance": -2700
+        },
+        {
+          "date": "2026-10-06",
+          "balance": -3000
+        },
+        {
+          "date": "2026-10-07",
+          "balance": -3300
+        },
+        {
+          "date": "2026-10-08",
+          "balance": -3600
+        },
+        {
+          "date": "2026-10-09",
+          "balance": -3900
+        },
+        {
+          "date": "2026-10-10",
+          "balance": -4200
+        },
+        {
+          "date": "2026-10-11",
+          "balance": -4500
+        },
+        {
+          "date": "2026-10-12",
+          "balance": -4800
+        },
+        {
+          "date": "2026-10-13",
+          "balance": -5100
+        },
+        {
+          "date": "2026-10-14",
+          "balance": -5400
+        },
+        {
+          "date": "2026-10-15",
+          "balance": -5700
+        },
+        {
+          "date": "2026-10-16",
+          "balance": -6000
+        },
+        {
+          "date": "2026-10-17",
+          "balance": -6300
+        },
+        {
+          "date": "2026-10-18",
+          "balance": -6600
+        },
+        {
+          "date": "2026-10-19",
+          "balance": -6900
+        },
+        {
+          "date": "2026-10-20",
+          "balance": -7200
+        },
+        {
+          "date": "2026-10-21",
+          "balance": -7500
+        },
+        {
+          "date": "2026-10-22",
+          "balance": -7800
+        },
+        {
+          "date": "2026-10-23",
+          "balance": -8100
+        },
+        {
+          "date": "2026-10-24",
+          "balance": -8400
+        },
+        {
+          "date": "2026-10-25",
+          "balance": -8700
+        },
+        {
+          "date": "2026-10-26",
+          "balance": -9000
+        }
+      ],
+      "stats": {
+        "min": -9000,
+        "min_date": "2026-10-26",
+        "first_negative_date": "2026-09-27",
+        "last_negative_date": "2026-10-26",
+        "max_deficit": 9000,
+        "first_negative_amount": 300
+      }
+    },
+    "pessimistic": null,
+    "with_purchase": null,
+    "with_purchase_pessimistic": null
+  },
+  "events": [],
+  "money_types": {
+    "stable_income": {
+      "total": 0,
+      "items": []
+    },
+    "unstable_income": {
+      "total": 0,
+      "items": []
+    },
+    "stable_expenses": {
+      "total": 0,
+      "items": []
+    },
+    "variable_expenses": {
+      "total": 9000,
+      "daily": 300,
+      "days": 30,
+      "one_off": []
+    },
+    "reliable_total": 0
+  },
+  "goal": null,
+  "purchase": null,
+  "deficit_plan": {
+    "deficit": 9000,
+    "by_date": "2026-10-26",
+    "first_needed_amount": 300,
+    "first_needed_date": "2026-09-27",
+    "based_on": "base",
+    "options": [
+      {
+        "kind": "reduce",
+        "per_day": 300,
+        "new_daily": 0,
+        "until": "2026-10-26",
+        "days": 30,
+        "possible": true,
+        "ease": "hard",
+        "flexible_per_day": 0
+      },
+      {
+        "kind": "earn",
+        "amount": 9000,
+        "by_date": "2026-10-26",
+        "first_amount": 300,
+        "first_date": "2026-09-27",
+        "ease": "hard"
+      }
+    ]
+  },
+  "history": [],
+  "show_learn_card": false,
+  "assumptions": [
+    "Обычные траты — 300 ₽ в день, оценка из анкеты"
+  ],
+  "unknowns": [
+    "Будущие необычные траты: подарки, поломки, внезапные поездки",
+    "Придут ли деньги точно в срок. Если перевод задержится, график станет хуже",
+    "Как изменятся твои привычки. Траты в день — это среднее, а не план",
+    "Что будет после 26 октября: прогноз строится на 30 дней"
+  ]
+}
