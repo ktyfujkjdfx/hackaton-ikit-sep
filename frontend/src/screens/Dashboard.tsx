@@ -25,7 +25,7 @@ export function Dashboard() {
           if (cancelled) return
           const message =
             e.message === DASHBOARD_MOCK_UNSUPPORTED
-              ? `В демо-режиме посчитаны только суммы 1000 и 3000 ₽ — остальные подключим вместе с /api/dashboard роли A.`
+              ? 'Этот расчёт ещё не замокан — появится вместе с /api/dashboard роли A (сейчас есть демо-фикстуры для Ани и покупок 1000/3000 ₽).'
               : 'Сервер недоступен — расчёт не выполнен'
           dispatch({ type: 'DASHBOARD_ERROR', error: message })
         })

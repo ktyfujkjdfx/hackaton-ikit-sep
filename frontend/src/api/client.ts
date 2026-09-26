@@ -77,7 +77,7 @@ export async function getDashboard(
       return fixture
     }
     const fixture = DASHBOARD_FIXTURES[personaId]
-    if (!fixture) throw new Error(`no dashboard fixture for ${personaId}`)
+    if (!fixture) throw new Error(DASHBOARD_MOCK_UNSUPPORTED)
     return fixture
   }
   return post<Dashboard>('/api/dashboard', { situation, purchase })

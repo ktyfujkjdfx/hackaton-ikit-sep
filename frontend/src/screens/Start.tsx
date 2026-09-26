@@ -66,11 +66,11 @@ export function Start() {
               <span className="arrow">→</span>
             </button>
           ))}
-          <button className="choice" type="button" disabled>
+          <button className="choice" type="button" onClick={() => dispatch({ type: 'GO', screen: 'form' })}>
             <span className="ico">+</span>
             <span>
               <b>Заполнить свою анкету</b>
-              <span>5 вопросов, около 2 минут — скоро</span>
+              <span>5 вопросов, около 2 минут</span>
             </span>
             <span className="arrow">→</span>
           </button>
