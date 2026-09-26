@@ -7,7 +7,7 @@ httpx
 
 # AI-слой роли B: sklearn-модель и нейросеть в ONNX (contract §3).
 # torch и transformers здесь НЕ нужны — они только в training/requirements-train.txt.
-scikit-learn
+scikit-learn==1.9.1
 joblib
 numpy
 onnxruntime

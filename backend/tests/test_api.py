@@ -129,3 +129,59 @@ def test_cors_allows_frontend_origin():
     r = client.options("/api/checks", headers={"Origin": "http://localhost:5173",
                                               "Access-Control-Request-Method": "GET"})
     assert r.headers.get("access-control-allow-origin") == "http://localhost:5173"
+
+
+def test_fractional_amount_asks_for_whole_rubles():
+    r = client.post("/api/dashboard", json={"situation": {**ANYA, "daily": 250.5}})
+    assert r.status_code == 422
+    assert r.json()["errors"][0]["field"] == "daily"
+    assert "целых рублях" in r.json()["errors"][0]["message"]
+
+
+def test_unreachable_goal_is_not_500():
+    sit = {**ANYA, "daily": 359, "goal": {**ANYA["goal"], "target": 10_000_000}}
+    r = client.post("/api/dashboard", json={"situation": sit, "purchase": BUY_3000})
+    assert r.status_code == 200
+    assert r.json()["goal"]["eta"] is None
+
+
+def test_empty_body_is_422_errors():
+    r = client.post("/api/dashboard", json={})
+    assert r.status_code == 422 and "errors" in r.json()
+
+
+SPEND = {"id": "s1", "name": "Такси", "amount": 800, "date": "2026-09-27", "category": "Транспорт"}
+
+
+@pytest.mark.parametrize("amount", [0, -5000])
+def test_negative_spend_is_422_not_extra_money(amount):
+    sit = {**ANYA, "spends": [{**SPEND, "amount": amount}]}
+    for path, body in [("/api/dashboard", {"situation": sit}),
+                       ("/api/purchase/check", {"situation": sit, "purchase": BUY_3000})]:
+        r = client.post(path, json=body)
+        assert r.status_code == 422, path
+        err = r.json()["errors"][0]
+        assert (err["field"], err["index"], err["subfield"]) == ("spends", 0, "amount")
+    body = client.post("/api/validate", json={"situation": sit}).json()
+    assert body["ok"] is False and body["errors"][0]["field"] == "spends"
+
+
+def test_positive_spend_still_works():
+    r = client.post("/api/dashboard", json={"situation": {**ANYA, "spends": [SPEND]}})
+    assert r.status_code == 200 and r.json()["headline"]["min_balance"] == -200
+
+
+@pytest.mark.parametrize("field,amount", [("incomes", 0), ("incomes", -3200),
+                                          ("obligations", 0), ("obligations", -1800)])
+def test_non_positive_income_or_obligation_is_422(field, amount):
+    items = [{**ANYA[field][0], "amount": amount}] + ANYA[field][1:]
+    r = client.post("/api/dashboard", json={"situation": {**ANYA, field: items}})
+    assert r.status_code == 422
+    err = r.json()["errors"][0]
+    assert (err["field"], err["index"], err["subfield"]) == (field, 0, "amount")
+
+
+def test_malformed_spend_maps_to_spends_field():
+    sit = {**ANYA, "spends": [{**SPEND, "amount": "много"}]}
+    err = client.post("/api/dashboard", json={"situation": sit}).json()["errors"][0]
+    assert (err["field"], err["index"], err["subfield"]) == ("spends", 0, "amount")

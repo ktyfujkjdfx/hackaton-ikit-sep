@@ -21,7 +21,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-SECTIONS = {"balance", "daily", "incomes", "obligations", "goal", "purchase"}
+SECTIONS = {"balance", "daily", "incomes", "obligations", "spends", "goal", "purchase"}
 
 
 @app.exception_handler(HTTPException)
@@ -40,6 +40,8 @@ def _request_error(err: dict) -> dict:
     subfield = next((p for p in loc if p in ("amount", "date")), None)
     if err.get("type") == "missing":
         message = "Заполни это поле."
+    elif err.get("type") == "int_from_float":
+        message = "Укажи сумму в целых рублях, без копеек."
     elif subfield == "date" or "date" in err.get("type", ""):
         message = "Укажи дату в формате ГГГГ-ММ-ДД."
     else:

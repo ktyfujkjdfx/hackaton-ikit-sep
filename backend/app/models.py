@@ -75,7 +75,7 @@ class Purchase(BaseModel):
 # ---------- Раздел 6. API ----------
 
 class ValidationError(BaseModel):
-    field: Literal["balance", "daily", "incomes", "obligations", "goal", "purchase"]
+    field: Literal["balance", "daily", "incomes", "obligations", "spends", "goal", "purchase"]
     index: int | None = None
     subfield: Literal["amount", "date"] | None = None
     message: str
