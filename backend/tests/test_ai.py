@@ -377,6 +377,19 @@ def test_07_add_income_unconfirmed():
         "income", 1500, "2026-10-04", False)
 
 
+@pytest.mark.parametrize("question,expected", [
+    ("что такое накопительный счёт", "накопительный"),
+    ("что такое вклад", "вклад"),
+    ("что такое оплата частями", "частями"),
+])
+def test_compound_titles_are_searchable(question, expected):
+    """«Вклад и накопительный счёт» должен находиться по каждой своей половине."""
+    knowledge.reload()
+    found = knowledge.find(question)
+    assert found is not None, question
+    assert expected in found.term.lower()
+
+
 def test_08_term_has_source():
     response = ask("что такое финансовая подушка")
     assert response.intent == "term"

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -69,6 +70,25 @@ def _source_of(raw: dict) -> dict:
     return DEFAULT_SOURCE
 
 
+def _title_aliases(title: str) -> list[str]:
+    """Разбивает составной заголовок на самостоятельные синонимы.
+
+    «Вклад и накопительный счёт» → «вклад», «накопительный счёт»: иначе вопрос
+    «что такое накопительный счёт» не находит термин, хотя он описан.
+    «Сплит» (оплата частями) → «сплит», «оплата частями».
+    """
+    aliases = [title]
+    inside = re.findall(r"[«(]([^»)]+)[»)]", title)
+    aliases += inside
+    outside = re.sub(r"[«(][^»)]*[»)]", " ", title)
+    for part in [outside, *inside]:
+        for piece in re.split(r"\s+и\s+|\s*[/,;]\s*", part):
+            piece = piece.strip(" «»()\"'")
+            if len(piece) >= 5:
+                aliases.append(piece)
+    return aliases
+
+
 def _normalize_entry(raw: dict) -> dict | None:
     term = raw.get("term") or raw.get("title") or raw.get("name")
     definition = raw.get("definition") or raw.get("text") or raw.get("description") or raw.get("d")
@@ -81,7 +101,7 @@ def _normalize_entry(raw: dict) -> dict | None:
     return {
         "term": str(term),
         "definition": str(definition),
-        "aliases": [str(a) for a in aliases] + [str(term)],
+        "aliases": [str(a) for a in aliases] + _title_aliases(str(term)),
         "source": _source_of(raw),
     }
 
