@@ -65,6 +65,15 @@ def handle(request: Any) -> ChatResponse:
     if len(message) > MAX_MESSAGE_LENGTH:
         message = message[:MAX_MESSAGE_LENGTH]
 
+    try:
+        errors = port.engine().validate(situation, active_purchase)
+    except Exception:  # noqa: BLE001 — проверку пропускаем, ниже сработает общий обработчик
+        log.exception("валидация ситуации не удалась")
+        errors = []
+    if errors:
+        # Ошибка ввода (например, трата с отрицательной суммой) — не считаем, просим исправить
+        return _failure("rules", errors[0].message)
+
     prediction = predict(message, history)
     slots = parse.parse(message, prediction.label or "", _today(situation))
 

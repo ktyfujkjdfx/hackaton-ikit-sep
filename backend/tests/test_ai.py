@@ -97,6 +97,9 @@ class FakeEngine:
 
     H = 30
 
+    def validate(self, sit, purchase=None) -> list:
+        return []
+
     def day_index(self, sit, value) -> int:
         target = value if isinstance(value, date) else date.fromisoformat(str(value))
         today = sit.today if isinstance(sit.today, date) else date.fromisoformat(str(sit.today))
@@ -628,3 +631,19 @@ def test_chat_fixtures_match_current_answers():
                     purchase=saved["request"].get("purchase"),
                     history=saved["request"].get("history"))
         assert fresh.model_dump(mode="json") == saved["response"], path.name
+
+
+def test_chat_rejects_invalid_situation_with_first_error():
+    """Трата −50 000 не должна превращаться в «минимум 50 600 ₽» — чат просит исправить ввод."""
+    from app.engine.personas import load_personas
+    port.set_engine(None)
+    if not port.available():
+        pytest.skip("движок A ещё не в этой ветке")
+    sit = load_personas()["anya"]["situation"]
+    bad = {**sit, "spends": [{"id": "s", "name": "x", "amount": -50000,
+                              "date": "2026-09-27", "category": "Прочее"}]}
+    resp = handle(ChatRequest.model_validate(
+        {"situation": bad, "message": "хватит ли мне до стипендии", "history": []}))
+    assert resp.intent == "clarify"
+    assert resp.text == "Сумма траты должна быть больше нуля."
+    assert resp.facts == []
