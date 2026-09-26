@@ -20,12 +20,24 @@
 без интернета и без ключей. Публичный адрес появится, когда поднимем VDS: трафик будем проксировать
 на ту же пару «API + статика».
 
+**Демо-стенд одной командой** (nginx отдаёт собранный фронтенд и проксирует `/api` на бэкенд,
+всё на одном адресе, без второго порта и без CORS):
+
+```powershell
+cd frontend; npm run build; cd ..
+powershell -ExecutionPolicy Bypass -File deploy\local\start.ps1
+# остановить: deploy\local\stop.ps1
+```
+
 | | |
 |---|---|
-| Интерфейс | http://localhost:5173 |
-| API | http://localhost:8000 |
-| Документация API (Swagger) | http://localhost:8000/docs |
-| Живая самопроверка расчётов | http://localhost:5173 → «Как мы проверяли» |
+| Интерфейс | http://localhost |
+| Документация API (Swagger) | http://localhost/docs |
+| Живая самопроверка расчётов | http://localhost → «Как мы проверяли» |
+| В режиме разработки | http://localhost:5173 (Vite), API — http://localhost:8000 |
+
+Конфигурация nginx: [deploy/nginx.conf](deploy/nginx.conf) для сервера и
+[deploy/local/nginx.win.conf](deploy/local/nginx.win.conf) для локального запуска.
 
 ---
 
