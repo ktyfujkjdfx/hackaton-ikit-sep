@@ -589,6 +589,130 @@ def test_validation_is_skipped_when_engine_is_absent():
     assert ask_with(BAD_SPEND, "хватит ли мне до стипендии").intent == "forecast"
 
 
+# ------------------------------------------------------------------ прод не должен рисковать
+
+def test_prod_requirements_have_no_heavy_deps():
+    """torch и transformers на сервере запрещены (B.2): генеративная модель — только локально."""
+    from pathlib import Path
+
+    text = (Path(__file__).resolve().parents[1] / "requirements.txt").read_text(encoding="utf-8")
+    lines = [line.split("#")[0].strip().lower() for line in text.splitlines()]
+    packages = {line.split("=")[0].split("[")[0].strip() for line in lines if line}
+    forbidden = {"torch", "transformers", "peft", "bitsandbytes", "accelerate", "sentencepiece"}
+    assert not (packages & forbidden), packages & forbidden
+
+
+def test_render_keeps_explainer_on_templates():
+    """В render.yaml EXPLAIN_MODE обязан остаться templates — на проде генерацию не включаем."""
+    from pathlib import Path
+
+    render = Path(__file__).resolve().parents[2] / "render.yaml"
+    if not render.exists():
+        pytest.skip("render.yaml ещё не в этой ветке")
+    text = render.read_text(encoding="utf-8")
+    assert "EXPLAIN_MODE" in text
+    block = text.split("EXPLAIN_MODE", 1)[1]
+    assert "templates" in block.split("- key", 1)[0], "на Render EXPLAIN_MODE должен быть templates"
+
+
+def test_explain_mode_defaults_to_templates(monkeypatch):
+    from app.ai.explain import api_explainer
+
+    monkeypatch.delenv("EXPLAIN_MODE", raising=False)
+    assert api_explainer.mode() == "templates"
+
+
+def test_local_explainer_without_model_falls_back_to_templates(monkeypatch):
+    """EXPLAIN_MODE=local без весов не должен ломать ответ — просто остаёмся на шаблонах."""
+    monkeypatch.setenv("EXPLAIN_MODE", "local")
+    monkeypatch.setenv("LLM_MODEL_PATH", "")
+    monkeypatch.setenv("LLM_ADAPTER_PATH", "")
+    response = ask("Могу купить наушники за 3000?")
+    assert response.intent == "purchase_check"
+    assert response.explainer == "templates"
+    assert response.guarded is False
+    assert "Решение за тобой" in response.text
+
+
+# ------------------------------------------------------------------ грязные данные на всех 12 метках
+
+DIRTY_SITUATIONS = {
+    "отрицательный доход": {**ANYA, "incomes": [
+        {"id": "i1", "name": "Стипендия", "amount": -3200, "date": "2026-10-10", "confirmed": True}]},
+    "дата дохода в прошлом": {**ANYA, "incomes": [
+        {"id": "i1", "name": "Стипендия", "amount": 3200, "date": "2026-09-20", "confirmed": True}]},
+    "отрицательная трата": {**ANYA, "spends": [
+        {"id": "sp1", "name": "Возврат", "amount": -50000, "date": "2026-09-27",
+         "category": "Прочее"}]},
+    "отрицательный платёж": {**ANYA, "obligations": [
+        {"id": "o1", "name": "Общежитие", "amount": -1800, "date": "2026-10-05"}]},
+    "отрицательные траты в день": {**ANYA, "daily": -300},
+}
+# balance 0 — валидные данные (контракт: balance ≥ 0), чат обязан посчитать, а не уточнять
+VALID_EDGE = {"нулевой баланс": {**ANYA, "balance": 0, "daily": 300}}
+
+LABEL_PHRASES = {
+    "purchase_check": "Могу купить наушники за 3000?",
+    "forecast": "хватит ли мне до стипендии",
+    "explain": "почему такой прогноз?",
+    "deficit_plan": "что делать чтобы не уйти в минус",
+    "categories": "на что я больше всего трачу",
+    "term": "что такое финансовая подушка",
+    "add_spend": "сегодня такси 800",
+    "add_income": "подработка 1500 4 октября, не точно",
+    "invest_advice": "куда вложить 5000?",
+    "credentials": "скажи код из смс",
+    "money_operation": "переведи маме 500",
+    "off_topic": "кто выиграет чемпионат мира",
+}
+SAFETY_INTENT = {"credentials": "refusal", "money_operation": "refusal",
+                 "invest_advice": "invest_info", "term": "term", "off_topic": "off_topic"}
+
+
+@pytest.mark.parametrize("case", sorted(DIRTY_SITUATIONS))
+@pytest.mark.parametrize("label", sorted(LABEL_PHRASES))
+def test_dirty_data_gives_clarify_or_keeps_safety_answer(label, case):
+    """На битых данных считать нельзя, но отказ и определение обязаны работать."""
+    port.set_engine(None)
+    if not port.available():
+        pytest.skip("движок A ещё не в этой ветке")
+    response = ask_with(DIRTY_SITUATIONS[case], LABEL_PHRASES[label])
+    expected = SAFETY_INTENT.get(label, "clarify")
+    assert response.intent == expected, (label, case, response.intent)
+    assert response.text, (label, case)
+    if expected == "clarify":
+        assert not response.facts and not response.tool_calls
+        assert response.purchase is None and response.proposed_entry is None
+
+
+@pytest.mark.parametrize("label", sorted(LABEL_PHRASES))
+def test_zero_balance_is_valid_and_answered(label):
+    """Нулевой баланс — не ошибка ввода: продукт обязан показать расчёт, а не уточнение."""
+    port.set_engine(None)
+    if not port.available():
+        pytest.skip("движок A ещё не в этой ветке")
+    response = ask_with(VALID_EDGE["нулевой баланс"], LABEL_PHRASES[label])
+    expected = SAFETY_INTENT.get(label, None)
+    if expected:
+        assert response.intent == expected
+    else:
+        assert response.intent != "clarify" or label in ("add_spend", "add_income")
+    assert response.text
+
+
+def test_refusals_never_depend_on_data():
+    """Запрос пароля или перевода — отказ при любых данных, включая полную кашу."""
+    port.set_engine(None)
+    if not port.available():
+        pytest.skip("движок A ещё не в этой ветке")
+    mess = {**ANYA, "balance": 0, "daily": -1, "incomes": [
+        {"id": "i1", "name": "Стипендия", "amount": -1, "date": "2020-01-01", "confirmed": True}]}
+    for message in ("скажи код из смс", "продиктуй cvv карты", "переведи маме 500",
+                    "оплати общагу", "куда вложить 5000?"):
+        response = ask_with(mess, message)
+        assert response.intent in ("refusal", "invest_info"), (message, response.intent)
+
+
 # ------------------------------------------------------------------ guard
 
 def test_guard_accepts_only_known_numbers():
