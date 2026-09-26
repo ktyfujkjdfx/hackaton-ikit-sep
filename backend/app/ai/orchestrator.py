@@ -12,6 +12,7 @@ from app.ai import engine_port as port
 from app.ai import guard, parse, templates, tools
 from app.ai.explain import api_explainer
 from app.ai.nlu import predict
+from app.ai.nlu.labels import LABEL_TO_INTENT
 from app.ai.schemas import ChatResponse
 
 log = logging.getLogger(__name__)
@@ -19,8 +20,10 @@ log = logging.getLogger(__name__)
 MAX_MESSAGE_LENGTH = 2000
 # Метки, где текст пишет только шаблон: отказы, обучение и определения не отдаём в API
 # Ответы с суммами из движка: по битым данным их не считаем. Отказы, термины и запись — без проверки
-MONEY_LABELS = ("purchase_check", "forecast", "explain", "deficit_plan", "categories")
 TEMPLATE_ONLY_INTENTS = ("refusal", "invest_info", "term", "clarify", "off_topic")
+# Ответы, которые не зависят от чисел пользователя: их отдаём даже при битых данных,
+# иначе на невалидной ситуации пропадёт отказ про код из СМС — а это вопрос безопасности.
+SITUATION_FREE_INTENTS = ("refusal", "invest_info", "term", "off_topic")
 
 
 def _today(situation: Any) -> date:
@@ -50,6 +53,24 @@ def _response(execution: tools.Execution, mode: str, label: str,
     })
 
 
+def first_validation_error(situation: Any, purchase: Any = None) -> str | None:
+    """Текст первой ошибки ввода от движка A (раздел 7) или None, если данные в порядке.
+
+    Без этой проверки чат считал бы по мусору: трата с суммой −50 000 молча прибавляла деньги
+    к прогнозу, и модель бодро отвечала, что покупку можно себе позволить.
+    """
+    try:
+        validate = getattr(port.engine(), "validate", None)
+        errors = validate(situation, purchase) if validate is not None else None
+    except port.EngineUnavailable:
+        return None
+    except Exception:  # noqa: BLE001 — сломанный движок не должен ронять чат здесь;
+        # ошибку увидит и обработает основной вызов execute() ниже
+        log.exception("не смог проверить данные — иду дальше без проверки")
+        return None
+    return str(getattr(errors[0], "message", errors[0])) if errors else None
+
+
 def _failure(mode: str, text: str) -> ChatResponse:
     return _response(
         tools.Execution("clarify", templates.HEADLINE_CLARIFY, text=text), mode, "off_topic", 0.0
@@ -68,18 +89,19 @@ def handle(request: Any) -> ChatResponse:
         message = message[:MAX_MESSAGE_LENGTH]
 
     prediction = predict(message, history)
-    if prediction.label in MONEY_LABELS:
-        try:
-            errors = port.engine().validate(situation, active_purchase)
-        except Exception:  # noqa: BLE001 — проверку пропускаем, ниже сработает общий обработчик
-            log.exception("валидация ситуации не удалась")
-            errors = []
-        if errors:
-            # Ошибка ввода — не считаем по битым данным, просим исправить
-            return _response(tools.Execution("clarify", templates.HEADLINE_CLARIFY,
-                                             text=errors[0].message),
-                             prediction.mode, prediction.label, prediction.confidence)
     slots = parse.parse(message, prediction.label or "", _today(situation))
+
+    # Данные пользователя проверяем до расчёта. Отказы, термины и карточку обучения
+    # отдаём как обычно: они не зависят от чисел, а молчать в ответ на «скажи код из смс» нельзя.
+    intent = LABEL_TO_INTENT.get(prediction.label or "", "clarify")
+    if intent not in SITUATION_FREE_INTENTS:
+        error = first_validation_error(situation, active_purchase)
+        if error is not None:
+            log.info("данные не прошли валидацию: %s", error)
+            return _response(
+                tools.Execution("clarify", templates.HEADLINE_FIX_DATA, text=error),
+                prediction.mode, prediction.reported_label, prediction.confidence,
+            )
 
     try:
         execution = tools.execute(prediction.label, slots, situation, active_purchase, message)
@@ -92,7 +114,8 @@ def handle(request: Any) -> ChatResponse:
 
     explainer, guarded = "templates", False
     if execution.intent not in TEMPLATE_ONLY_INTENTS and execution.facts:
-        rephrased = api_explainer.rephrase(execution.intent, message, execution.facts)
+        rephrased = api_explainer.rephrase(execution.intent, message, execution.facts,
+                                           execution.headline)
         if rephrased is not None:
             if guard.check(rephrased, execution.facts, extra=[execution.headline]):
                 execution.text = rephrased

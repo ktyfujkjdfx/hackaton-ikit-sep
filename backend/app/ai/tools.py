@@ -183,12 +183,25 @@ def _forecast(sit: Any) -> Execution:
               f"{port.rub(_get(head, 'min_balance'))}, {port.day(_get(head, 'min_date'))}"),
     ]
     first_negative = _get(head, "first_negative_date")
+    state = _get(head, "state")
     if first_negative:
         execution.facts.append(_fact("Минус начнётся", port.day(first_negative), TONE_BAD))
         execution.tone = TONE_BAD
         execution.text = templates.FORECAST_RISK + templates.FORECAST_TAIL
+    elif state == "depends":
+        # База без минуса только потому, что учтён непостоянный доход. Молчать об этом нельзя:
+        # «денег хватает» здесь — неправда, если подработка не придёт (контракт, раздел 7).
+        pessimistic = eng.stats(sit, eng.series(sit, pessimistic=True))
+        execution.facts.append(_fact(
+            "Если непостоянный доход не придёт",
+            f"минус с {port.day(_get(pessimistic, 'first_negative_date'))}, "
+            f"до {port.rub(_get(pessimistic, 'max_deficit'))}",
+            TONE_BAD,
+        ))
+        execution.tone = TONE_NEUTRAL
+        execution.text = templates.FORECAST_DEPENDS + templates.FORECAST_TAIL
     else:
-        execution.tone = TONE_GOOD if _get(head, "state") == "ok" else TONE_NEUTRAL
+        execution.tone = TONE_GOOD if state == "ok" else TONE_NEUTRAL
         execution.text = templates.FORECAST_OK + templates.FORECAST_TAIL
     return execution
 

@@ -9,10 +9,10 @@
   },
   {
     "set": "sklearn_holdout_team",
-    "size": 20,
-    "accuracy": 1.0,
-    "macro_f1": 1.0,
-    "errors": 0,
+    "size": 60,
+    "accuracy": 0.8833,
+    "macro_f1": 0.8805,
+    "errors": 7,
     "model": "sklearn"
   },
   {
@@ -25,10 +25,10 @@
   },
   {
     "set": "onnx_holdout_team",
-    "size": 20,
-    "accuracy": 1.0,
-    "macro_f1": 1.0,
-    "errors": 0,
+    "size": 60,
+    "accuracy": 0.8667,
+    "macro_f1": 0.8756,
+    "errors": 8,
     "model": "onnx"
   }
 ]

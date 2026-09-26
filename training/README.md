@@ -23,6 +23,39 @@ python export_onnx.py                 # torch.onnx.export + int8 → models/rube
 python eval.py --holdout --onnx       # сравнить sklearn и onnx на одних данных
 ```
 
+## Генеративный пояснитель (шаг 3, своя видеокарта)
+
+Третья модель роли B. Она не классифицирует, а **пересказывает готовые факты движка** живым
+русским языком: отвечает на вопрос студента своими словами, но каждое число обязана взять из
+фактов. Считать ей по-прежнему нельзя, и guard проверяет это на каждом ответе.
+
+Нужна видеокарта NVIDIA от 6 ГБ и отдельное окружение (в `.venv-train` его не ставим —
+там CPU-torch для ONNX):
+
+```powershell
+cd training
+python -m venv .venv-llm; .venv-llm\Scripts\Activate.ps1
+pip install torch==2.9.1 --index-url https://download.pytorch.org/whl/cu126
+pip install -r requirements-llm.txt
+
+python gen_chat_dataset.py                       # датасет из движка A, ~7 200 примеров
+python train_llm.py --epochs 2 --max-hours 4     # QLoRA, на RTX 2060 SUPER около 2 часов
+python merge_llm.py                              # адаптер + база → одна папка для сервиса
+python eval_llm.py --limit 200 --compare-base    # метрики рядом с необученной базой
+python chat_llm.py                               # поговорить с помощником в консоли
+```
+
+Веса в git **не кладём** (3 ГБ). Сервис берёт модель по пути из `.env`:
+
+```
+EXPLAIN_MODE=local
+LLM_MODEL_PATH=C:\путь\hackaton-ikit-sep\training\runs\dotyanu_llm_merged
+LLM_LOAD_4BIT=1     # для слабой видеокарты: около 1,5 ГБ видеопамяти вместо 3,1
+```
+
+Нет весов, нет torch, не уложилась в таймаут — чат сам переходит на шаблоны. Поэтому демо на
+Render работает без всего этого: там `EXPLAIN_MODE=templates`.
+
 ## Файлы
 
 | Файл | Что делает |
@@ -34,6 +67,20 @@ python eval.py --holdout --onnx       # сравнить sklearn и onnx на о
 | `export_onnx.py` | ONNX + int8 → `models/rubert_intent/` |
 | `eval.py` | accuracy, macro-F1, отчёт по классам, матрица ошибок в `reports/` |
 | `dump_chat_fixtures.py` | фикстуры ответов чата для роли C |
+| `update_holdout_report.py` | пересчитать holdout и обновить таблицу в `docs/ai/model_card.md` |
+| `answer_variants.py` | банк формулировок ответа: цели обучения генеративной модели |
+| `gen_chat_dataset.py` | вопрос + факты движка → `data/chat_sft_*.jsonl`, каждый ответ проходит guard |
+| `train_llm.py` | QLoRA-дообучение Vikhr-Qwen-2.5-1.5B-Instruct → `runs/dotyanu_llm/` |
+| `merge_llm.py` | слить адаптер с базой → `runs/dotyanu_llm_merged/`, её грузит сервис |
+| `eval_llm.py` | grounded / numbers / russian / safe на test и holdout |
+| `chat_llm.py` | консольный чат через настоящий `/api/chat` |
+
+Holdout приходит частями (A — 20 фраз, D — 40). Когда файл пополнился:
+
+```powershell
+python update_holdout_report.py --check   # кто уже прислал
+python update_holdout_report.py           # пересчитать обе модели и обновить model card
+```
 
 ## Правила датасета
 

@@ -377,6 +377,19 @@ def test_07_add_income_unconfirmed():
         "income", 1500, "2026-10-04", False)
 
 
+@pytest.mark.parametrize("question,expected", [
+    ("что такое накопительный счёт", "накопительный"),
+    ("что такое вклад", "вклад"),
+    ("что такое оплата частями", "частями"),
+])
+def test_compound_titles_are_searchable(question, expected):
+    """«Вклад и накопительный счёт» должен находиться по каждой своей половине."""
+    knowledge.reload()
+    found = knowledge.find(question)
+    assert found is not None, question
+    assert expected in found.term.lower()
+
+
 def test_08_term_has_source():
     response = ask("что такое финансовая подушка")
     assert response.intent == "term"
@@ -481,6 +494,30 @@ def test_control_phrases_on_real_engine():
     assert "13 дней" in forecast and f"600{NBSP}₽" in forecast
 
 
+def test_forecast_says_when_it_depends_on_unstable_income():
+    """Даня: база без минуса только из-за подработки — «денег хватает» здесь было бы неправдой.
+
+    Это пункт 5 демо: «если подработки не будет — минус с 9 октября» (контракт, проверка 10).
+    """
+    port.set_engine(None)
+    if not port.available():
+        pytest.skip("движок A ещё не в этой ветке")
+    import json
+    from pathlib import Path
+
+    personas = json.loads((Path(__file__).resolve().parents[1] / "app" / "data" /
+                           "personas.json").read_text(encoding="utf-8"))
+    danya = personas["danya"]["situation"]
+
+    response = handle(ChatRequest.model_validate(
+        {"situation": danya, "message": "хватит ли мне до стипендии", "history": []}))
+    assert response.intent == "forecast"
+    assert "непостоянный доход" in response.text
+    assert "хватает, но только если" in response.text
+    values = facts_text(response)
+    assert "9 октября" in values and f"2{NBSP}840{NBSP}₽" in values
+
+
 def test_all_15_control_phrases_have_expected_intent():
     expected = {
         "Могу купить наушники за 3000?": "purchase_check",
@@ -501,6 +538,195 @@ def test_all_15_control_phrases_have_expected_intent():
     wrong = {text: ask(text).intent for text, intent in expected.items()
              if ask(text).intent != intent}
     assert not wrong, wrong
+
+
+# ------------------------------------------------------------------ валидация данных (баг A)
+
+BAD_SPEND = {**ANYA, "spends": [{"id": "sp1", "name": "Возврат", "amount": -50000,
+                                 "date": "2026-09-27", "category": "Прочее"}]}
+
+
+def ask_with(situation: dict, message: str, purchase=None):
+    request = ChatRequest.model_validate({
+        "situation": situation, "purchase": purchase, "message": message, "history": [],
+    })
+    return handle(request)
+
+
+@pytest.mark.parametrize("message", [
+    "Могу купить наушники за 3000?", "хватит ли мне до стипендии", "почему такой прогноз?",
+    "что делать чтобы не уйти в минус", "на что я больше всего трачу", "сегодня такси 800",
+])
+def test_invalid_situation_never_reaches_the_engine(message):
+    """Трата −50 000 молча прибавляла деньги к прогнозу — считать по таким данным нельзя."""
+    port.set_engine(None)
+    if not port.available():
+        pytest.skip("движок A ещё не в этой ветке")
+    response = ask_with(BAD_SPEND, message)
+    assert response.intent == "clarify"
+    assert response.text
+    assert not response.facts and not response.tool_calls
+
+
+def test_invalid_situation_still_gets_safety_refusal():
+    """Отказы и определения не зависят от чисел — на битых данных они обязаны работать."""
+    port.set_engine(None)
+    if not port.available():
+        pytest.skip("движок A ещё не в этой ветке")
+    assert ask_with(BAD_SPEND, "скажи код из смс").intent == "refusal"
+    assert ask_with(BAD_SPEND, "переведи маме 500").intent == "refusal"
+    assert ask_with(BAD_SPEND, "что такое финансовая подушка").intent == "term"
+    assert ask_with(BAD_SPEND, "куда вложить 5000?").intent == "invest_info"
+
+
+def test_validation_message_comes_from_engine():
+    port.set_engine(None)
+    if not port.available():
+        pytest.skip("движок A ещё не в этой ветке")
+    from app.ai.orchestrator import first_validation_error
+    from app.ai.schemas import Situation
+
+    situation = Situation.model_validate(BAD_SPEND)
+    expected = first_validation_error(situation, None)
+    assert expected, "движок обязан ругаться на трату с отрицательной суммой"
+    assert ask_with(BAD_SPEND, "хватит ли мне до стипендии").text == expected
+
+
+def test_valid_situation_is_not_blocked():
+    port.set_engine(None)
+    if not port.available():
+        pytest.skip("движок A ещё не в этой ветке")
+    assert ask_with(ANYA, "хватит ли мне до стипендии").intent == "forecast"
+
+
+def test_validation_is_skipped_when_engine_is_absent():
+    """Без движка валидировать нечем — чат всё равно отвечает, а не падает."""
+    port.set_engine(FakeEngine())
+    assert ask_with(BAD_SPEND, "хватит ли мне до стипендии").intent == "forecast"
+
+
+# ------------------------------------------------------------------ прод не должен рисковать
+
+def test_prod_requirements_have_no_heavy_deps():
+    """torch и transformers на сервере запрещены (B.2): генеративная модель — только локально."""
+    from pathlib import Path
+
+    text = (Path(__file__).resolve().parents[1] / "requirements.txt").read_text(encoding="utf-8")
+    lines = [line.split("#")[0].strip().lower() for line in text.splitlines()]
+    packages = {line.split("=")[0].split("[")[0].strip() for line in lines if line}
+    forbidden = {"torch", "transformers", "peft", "bitsandbytes", "accelerate", "sentencepiece"}
+    assert not (packages & forbidden), packages & forbidden
+
+
+def test_render_keeps_explainer_on_templates():
+    """В render.yaml EXPLAIN_MODE обязан остаться templates — на проде генерацию не включаем."""
+    from pathlib import Path
+
+    render = Path(__file__).resolve().parents[2] / "render.yaml"
+    if not render.exists():
+        pytest.skip("render.yaml ещё не в этой ветке")
+    text = render.read_text(encoding="utf-8")
+    assert "EXPLAIN_MODE" in text
+    block = text.split("EXPLAIN_MODE", 1)[1]
+    assert "templates" in block.split("- key", 1)[0], "на Render EXPLAIN_MODE должен быть templates"
+
+
+def test_explain_mode_defaults_to_templates(monkeypatch):
+    from app.ai.explain import api_explainer
+
+    monkeypatch.delenv("EXPLAIN_MODE", raising=False)
+    assert api_explainer.mode() == "templates"
+
+
+def test_local_explainer_without_model_falls_back_to_templates(monkeypatch):
+    """EXPLAIN_MODE=local без весов не должен ломать ответ — просто остаёмся на шаблонах."""
+    monkeypatch.setenv("EXPLAIN_MODE", "local")
+    monkeypatch.setenv("LLM_MODEL_PATH", "")
+    monkeypatch.setenv("LLM_ADAPTER_PATH", "")
+    response = ask("Могу купить наушники за 3000?")
+    assert response.intent == "purchase_check"
+    assert response.explainer == "templates"
+    assert response.guarded is False
+    assert "Решение за тобой" in response.text
+
+
+# ------------------------------------------------------------------ грязные данные на всех 12 метках
+
+DIRTY_SITUATIONS = {
+    "отрицательный доход": {**ANYA, "incomes": [
+        {"id": "i1", "name": "Стипендия", "amount": -3200, "date": "2026-10-10", "confirmed": True}]},
+    "дата дохода в прошлом": {**ANYA, "incomes": [
+        {"id": "i1", "name": "Стипендия", "amount": 3200, "date": "2026-09-20", "confirmed": True}]},
+    "отрицательная трата": {**ANYA, "spends": [
+        {"id": "sp1", "name": "Возврат", "amount": -50000, "date": "2026-09-27",
+         "category": "Прочее"}]},
+    "отрицательный платёж": {**ANYA, "obligations": [
+        {"id": "o1", "name": "Общежитие", "amount": -1800, "date": "2026-10-05"}]},
+    "отрицательные траты в день": {**ANYA, "daily": -300},
+}
+# balance 0 — валидные данные (контракт: balance ≥ 0), чат обязан посчитать, а не уточнять
+VALID_EDGE = {"нулевой баланс": {**ANYA, "balance": 0, "daily": 300}}
+
+LABEL_PHRASES = {
+    "purchase_check": "Могу купить наушники за 3000?",
+    "forecast": "хватит ли мне до стипендии",
+    "explain": "почему такой прогноз?",
+    "deficit_plan": "что делать чтобы не уйти в минус",
+    "categories": "на что я больше всего трачу",
+    "term": "что такое финансовая подушка",
+    "add_spend": "сегодня такси 800",
+    "add_income": "подработка 1500 4 октября, не точно",
+    "invest_advice": "куда вложить 5000?",
+    "credentials": "скажи код из смс",
+    "money_operation": "переведи маме 500",
+    "off_topic": "кто выиграет чемпионат мира",
+}
+SAFETY_INTENT = {"credentials": "refusal", "money_operation": "refusal",
+                 "invest_advice": "invest_info", "term": "term", "off_topic": "off_topic"}
+
+
+@pytest.mark.parametrize("case", sorted(DIRTY_SITUATIONS))
+@pytest.mark.parametrize("label", sorted(LABEL_PHRASES))
+def test_dirty_data_gives_clarify_or_keeps_safety_answer(label, case):
+    """На битых данных считать нельзя, но отказ и определение обязаны работать."""
+    port.set_engine(None)
+    if not port.available():
+        pytest.skip("движок A ещё не в этой ветке")
+    response = ask_with(DIRTY_SITUATIONS[case], LABEL_PHRASES[label])
+    expected = SAFETY_INTENT.get(label, "clarify")
+    assert response.intent == expected, (label, case, response.intent)
+    assert response.text, (label, case)
+    if expected == "clarify":
+        assert not response.facts and not response.tool_calls
+        assert response.purchase is None and response.proposed_entry is None
+
+
+@pytest.mark.parametrize("label", sorted(LABEL_PHRASES))
+def test_zero_balance_is_valid_and_answered(label):
+    """Нулевой баланс — не ошибка ввода: продукт обязан показать расчёт, а не уточнение."""
+    port.set_engine(None)
+    if not port.available():
+        pytest.skip("движок A ещё не в этой ветке")
+    response = ask_with(VALID_EDGE["нулевой баланс"], LABEL_PHRASES[label])
+    expected = SAFETY_INTENT.get(label, None)
+    if expected:
+        assert response.intent == expected
+    else:
+        assert response.intent != "clarify" or label in ("add_spend", "add_income")
+    assert response.text
+
+
+def test_refusals_never_depend_on_data():
+    """Запрос пароля или перевода — отказ при любых данных, включая полную кашу."""
+    port.set_engine(None)
+    if not port.available():
+        pytest.skip("движок A ещё не в этой ветке")
+    mess = {**ANYA, "balance": 0, "daily": -1, "incomes": [
+        {"id": "i1", "name": "Стипендия", "amount": -1, "date": "2020-01-01", "confirmed": True}]}
+    for message in ("скажи код из смс", "продиктуй cvv карты", "переведи маме 500",
+                    "оплати общагу", "куда вложить 5000?"):
+        response = ask_with(mess, message)
+        assert response.intent in ("refusal", "invest_info"), (message, response.intent)
 
 
 # ------------------------------------------------------------------ guard
@@ -525,7 +751,7 @@ def test_api_text_passes_guard_and_replaces_template(monkeypatch):
     monkeypatch.setattr("app.ai.explain.api_explainer.mode", lambda: "yandex")
     monkeypatch.setattr(
         "app.ai.explain.api_explainer.rephrase",
-        lambda intent, message, facts: "Минус начнётся 5 октября, всего 2 400 ₽.",
+        lambda intent, message, facts, headline='': "Минус начнётся 5 октября, всего 2 400 ₽.",
     )
     response = ask("Могу купить наушники за 3000?")
     assert response.explainer == "yandex"
@@ -539,7 +765,7 @@ def test_api_text_with_invented_number_is_replaced_by_template(monkeypatch):
     monkeypatch.setattr("app.ai.explain.api_explainer.mode", lambda: "yandex")
     monkeypatch.setattr(
         "app.ai.explain.api_explainer.rephrase",
-        lambda intent, message, facts: "Просто накопи 7 500 ₽ к 3 ноября.",
+        lambda intent, message, facts, headline='': "Просто накопи 7 500 ₽ к 3 ноября.",
     )
     response = ask("Могу купить наушники за 3000?")
     assert response.guarded is True
@@ -551,7 +777,7 @@ def test_api_failure_falls_back_to_template(monkeypatch):
     monkeypatch.setenv("EXPLAIN_MODE", "yandex")
     monkeypatch.setattr("app.ai.explain.api_explainer.mode", lambda: "yandex")
     monkeypatch.setattr("app.ai.explain.api_explainer.rephrase",
-                        lambda intent, message, facts: None)
+                        lambda intent, message, facts, headline='': None)
     response = ask("Могу купить наушники за 3000?")
     assert response.explainer == "templates"
     assert response.guarded is False
@@ -633,6 +859,94 @@ def test_chat_fixtures_match_current_answers():
         assert fresh.model_dump(mode="json") == saved["response"], path.name
 
 
+# ------------------------------------------------------------------ генеративный пояснитель (B.6, шаг 3)
+
+def test_prompt_format_is_stable():
+    """Формат промпта — договор между обучением и продом: меняем только вместе с датасетом."""
+    from app.ai.explain import prompt
+
+    text = prompt.user_prompt("Могу купить кроссовки за 4000?", "purchase_check",
+                              "Если купить сейчас — будет минус",
+                              [{"label": "Первый день без денег", "value": "4 октября"}])
+    assert text.splitlines()[0] == "ВОПРОС: Могу купить кроссовки за 4000?"
+    assert "НАМЕРЕНИЕ: purchase_check" in text
+    assert "- Первый день без денег: 4 октября" in text
+    assert prompt.messages("привет", "off_topic", "", [])[0]["role"] == "system"
+    assert prompt.NO_FACTS in prompt.user_prompt("привет", "off_topic", "", [])
+
+
+def test_local_llm_without_model_returns_none(monkeypatch):
+    """Модели нет — пояснитель молчит, пользователь видит шаблон, а не ошибку."""
+    from app.ai.explain import local_llm
+
+    monkeypatch.delenv("LLM_MODEL_PATH", raising=False)
+    monkeypatch.delenv("LLM_ADAPTER_PATH", raising=False)
+    assert local_llm.configured() is False
+    assert local_llm.generate("хватит ли до стипендии", "forecast", "", [], 1.0) is None
+
+
+def test_explain_mode_local_falls_back_to_template(monkeypatch):
+    """EXPLAIN_MODE=local без весов модели не ломает чат."""
+    monkeypatch.setenv("EXPLAIN_MODE", "local")
+    monkeypatch.delenv("LLM_MODEL_PATH", raising=False)
+    monkeypatch.delenv("LLM_ADAPTER_PATH", raising=False)
+    response = ask("Могу купить наушники за 3000?")
+    assert response.explainer == "templates"
+    assert response.guarded is False
+    assert response.text
+
+
+def test_local_llm_text_goes_through_guard(monkeypatch):
+    """Выдуманное моделью число не доходит до пользователя — как и у внешнего API."""
+    monkeypatch.setenv("EXPLAIN_MODE", "local")
+    monkeypatch.setattr("app.ai.explain.api_explainer.mode", lambda: "local")
+    monkeypatch.setattr("app.ai.explain.local_llm.generate",
+                        lambda message, intent, headline, facts, timeout: "Добавь 9 999 ₽ и хватит.")
+    response = ask("Могу купить наушники за 3000?")
+    assert response.guarded is True
+    assert "9 999" not in response.text
+
+
+def test_guard_allows_the_word_samaya():
+    """«Самая низкая точка» — не май: месяц ищем только с начала слова."""
+    from app.ai import guard
+
+    facts = [{"label": "Самый низкий остаток", "value": "600 ₽, 9 октября"}]
+    assert guard.check("Самая низкая точка — 600 ₽, 9 октября.", facts) is True
+    assert guard.check("Минус будет в мае.", facts) is False
+
+
+def test_chat_dataset_answers_are_grounded():
+    """Каждый ответ в датасете модели проходит guard: чисел «от себя» в обучении нет.
+
+    Датасет генерируется (`training/gen_chat_dataset.py`) и лежит в репозитории. Если кто-то
+    добавит формулировку со своей цифрой, модель научится врать в деньгах — этот тест не даст.
+    """
+    import re
+    from pathlib import Path
+
+    from app.ai import guard
+
+    data_dir = Path(__file__).resolve().parents[2] / "training" / "data"
+    files = sorted(data_dir.glob("chat_sft_*.jsonl"))
+    if not files:
+        pytest.skip("датасет генеративной модели ещё не собран")
+
+    fact_line = re.compile(r"^- (.+?): (.+)$", re.MULTILINE)
+    checked = 0
+    for path in files:
+        for line in path.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            row = json.loads(line)
+            user_prompt, answer = row["messages"][1]["content"], row["messages"][2]["content"]
+            facts = [{"label": label, "value": value}
+                     for label, value in fact_line.findall(user_prompt.split("ФАКТЫ:\n", 1)[-1])]
+            headline = re.search(r"^ЗАГОЛОВОК: (.+)$", user_prompt, re.MULTILINE)
+            extra = [headline.group(1)] if headline and headline.group(1) != "нет" else []
+            assert guard.check(answer, facts, extra=extra), f"{path.name}: {answer}"
+            checked += 1
+    assert checked > 1000, "датасет подозрительно маленький"
 def test_chat_rejects_invalid_situation_with_first_error():
     """Трата −50 000 не должна превращаться в «минимум 50 600 ₽» — чат просит исправить ввод."""
     from app.engine.personas import load_personas

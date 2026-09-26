@@ -261,7 +261,7 @@ class ChecksResult(BaseModel):
 class HealthResponse(BaseModel):
     ok: bool
     nlu: Literal["onnx", "sklearn", "rules"]
-    explain: Literal["templates", "yandex", "anthropic"]
+    explain: Literal["templates", "local", "yandex", "anthropic"]
 
 
 class PersonaSummary(BaseModel):
@@ -360,5 +360,5 @@ class ChatResponse(BaseModel):
     proposed_entry: ProposedEntry | None = None
     actions: list[ChatAction] = []
     nlu: NluInfo
-    explainer: Literal["templates", "yandex", "anthropic"]
+    explainer: Literal["templates", "local", "yandex", "anthropic"]
     guarded: bool = False
