@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: dotyanu-api
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: NLU_MODE
+        value: sklearn
+      - key: EXPLAIN_MODE
+        value: templates
+      - key: DEMO_TODAY
+        value: 2026-09-27
+      - key: CORS_ORIGINS
+        value: https://dotyanu.onrender.com,http://localhost:5173
+      - key: YANDEX_API_KEY
+        sync: false
+      - key: YANDEX_FOLDER_ID
+        sync: false
+  - type: web
+    name: dotyanu
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://dotyanu-api.onrender.com
