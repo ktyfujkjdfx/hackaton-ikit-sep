@@ -34,6 +34,14 @@ python eval.py --holdout --onnx       # сравнить sklearn и onnx на о
 | `export_onnx.py` | ONNX + int8 → `models/rubert_intent/` |
 | `eval.py` | accuracy, macro-F1, отчёт по классам, матрица ошибок в `reports/` |
 | `dump_chat_fixtures.py` | фикстуры ответов чата для роли C |
+| `update_holdout_report.py` | пересчитать holdout и обновить таблицу в `docs/ai/model_card.md` |
+
+Holdout приходит частями (A — 20 фраз, D — 40). Когда файл пополнился:
+
+```powershell
+python update_holdout_report.py --check   # кто уже прислал
+python update_holdout_report.py           # пересчитать обе модели и обновить model card
+```
 
 ## Правила датасета
 
