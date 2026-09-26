@@ -1,0 +1,20 @@
+{"text": "скок у меня останется до стипухи", "label": "forecast", "author": "A"}
+{"text": "хватит мне бабок до конца месяца или нет", "label": "forecast", "author": "A"}
+{"text": "могу щас взять кроссы за 4500", "label": "purchase_check", "author": "A"}
+{"text": "а если я закажу наушники за три косаря не уйду в минус", "label": "purchase_check", "author": "A"}
+{"text": "почему у меня 600 а не больше откуда такая цифра", "label": "explain", "author": "A"}
+{"text": "как ты вообще это посчитал", "label": "explain", "author": "A"}
+{"text": "чо делать если денег не хватает до перевода от родаков", "label": "deficit_plan", "author": "A"}
+{"text": "как вылезти из минуса подскажи варианты", "label": "deficit_plan", "author": "A"}
+{"text": "на что я больше всего трачу", "label": "categories", "author": "A"}
+{"text": "скок уходит на доставку в день", "label": "categories", "author": "A"}
+{"text": "чо такое кассовый разрыв", "label": "term", "author": "A"}
+{"text": "объясни што значит финансовая подушка", "label": "term", "author": "A"}
+{"text": "потратил 350 на шаурму сегодня", "label": "add_spend", "author": "A"}
+{"text": "запиши такси 600 вчера", "label": "add_spend", "author": "A"}
+{"text": "мне скинули 2000 за подработку", "label": "add_income", "author": "A"}
+{"text": "в пятницу придет зп с курьерки 5к", "label": "add_income", "author": "A"}
+{"text": "куда вложить 10к чтоб приумножить", "label": "invest_advice", "author": "A"}
+{"text": "мне прислали код из смс куда его ввести", "label": "credentials", "author": "A"}
+{"text": "переведи 500 рублей другу", "label": "money_operation", "author": "A"}
+{"text": "посоветуй сериал на вечер", "label": "off_topic", "author": "A"}

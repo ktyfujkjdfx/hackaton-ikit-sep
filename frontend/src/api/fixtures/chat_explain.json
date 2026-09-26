@@ -1,0 +1,133 @@
+{
+  "request": {
+    "situation": {
+      "today": "2026-09-27",
+      "balance": 6900,
+      "daily": 300,
+      "incomes": [
+        {
+          "id": "i1",
+          "name": "Стипендия",
+          "amount": 3200,
+          "date": "2026-10-10",
+          "confirmed": true
+        },
+        {
+          "id": "i2",
+          "name": "Перевод от родителей",
+          "amount": 10000,
+          "date": "2026-10-15",
+          "confirmed": true
+        }
+      ],
+      "obligations": [
+        {
+          "id": "o1",
+          "name": "Подписка на музыку",
+          "amount": 200,
+          "date": "2026-10-01"
+        },
+        {
+          "id": "o2",
+          "name": "Связь",
+          "amount": 400,
+          "date": "2026-10-03"
+        },
+        {
+          "id": "o3",
+          "name": "Общежитие",
+          "amount": 1800,
+          "date": "2026-10-05"
+        }
+      ],
+      "spends": [],
+      "goal": {
+        "name": "Ноутбук",
+        "target": 40000,
+        "current": 25000,
+        "date": "2027-06-01"
+      },
+      "categories": [
+        {
+          "name": "Еда",
+          "per_day": 180
+        },
+        {
+          "name": "Транспорт",
+          "per_day": 60
+        },
+        {
+          "name": "Кафе и доставка",
+          "per_day": 40
+        },
+        {
+          "name": "Прочее",
+          "per_day": 20
+        }
+      ],
+      "history": []
+    },
+    "purchase": null,
+    "message": "почему такой прогноз?",
+    "history": []
+  },
+  "response": {
+    "intent": "explain",
+    "tool_calls": [
+      {
+        "name": "series",
+        "args": {
+          "horizon_days": 30,
+          "explain": true
+        }
+      }
+    ],
+    "headline": "Как получился прогноз",
+    "tone": "neutral",
+    "facts": [
+      {
+        "label": "Сейчас на карте (факт)",
+        "value": "6 900 ₽",
+        "tone": null
+      },
+      {
+        "label": "Обычные траты (оценка)",
+        "value": "300 ₽ × 13",
+        "tone": null
+      },
+      {
+        "label": "Обязательные платежи (постоянные)",
+        "value": "2 400 ₽",
+        "tone": null
+      },
+      {
+        "label": "Поступления (ожидается)",
+        "value": "13 200 ₽",
+        "tone": null
+      },
+      {
+        "label": "Итог — самый низкий остаток",
+        "value": "600 ₽, 9 октября",
+        "tone": null
+      }
+    ],
+    "text": "Больше всего на прогноз влияют обычные траты в день. Любую цифру можно поменять в разделе «Как посчитали?».",
+    "source": null,
+    "purchase": null,
+    "proposed_entry": null,
+    "actions": [
+      {
+        "kind": "open_explain",
+        "label": "Открыть «Как посчитали?»",
+        "payload": {}
+      }
+    ],
+    "nlu": {
+      "mode": "sklearn",
+      "label": "explain",
+      "confidence": 0.9839
+    },
+    "explainer": "templates",
+    "guarded": false
+  }
+}

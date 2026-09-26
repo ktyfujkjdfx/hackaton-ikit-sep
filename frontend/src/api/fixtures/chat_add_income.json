@@ -1,0 +1,143 @@
+{
+  "request": {
+    "situation": {
+      "today": "2026-09-27",
+      "balance": 6900,
+      "daily": 300,
+      "incomes": [
+        {
+          "id": "i1",
+          "name": "Стипендия",
+          "amount": 3200,
+          "date": "2026-10-10",
+          "confirmed": true
+        },
+        {
+          "id": "i2",
+          "name": "Перевод от родителей",
+          "amount": 10000,
+          "date": "2026-10-15",
+          "confirmed": true
+        }
+      ],
+      "obligations": [
+        {
+          "id": "o1",
+          "name": "Подписка на музыку",
+          "amount": 200,
+          "date": "2026-10-01"
+        },
+        {
+          "id": "o2",
+          "name": "Связь",
+          "amount": 400,
+          "date": "2026-10-03"
+        },
+        {
+          "id": "o3",
+          "name": "Общежитие",
+          "amount": 1800,
+          "date": "2026-10-05"
+        }
+      ],
+      "spends": [],
+      "goal": {
+        "name": "Ноутбук",
+        "target": 40000,
+        "current": 25000,
+        "date": "2027-06-01"
+      },
+      "categories": [
+        {
+          "name": "Еда",
+          "per_day": 180
+        },
+        {
+          "name": "Транспорт",
+          "per_day": 60
+        },
+        {
+          "name": "Кафе и доставка",
+          "per_day": 40
+        },
+        {
+          "name": "Прочее",
+          "per_day": 20
+        }
+      ],
+      "history": []
+    },
+    "purchase": null,
+    "message": "подработка 1500 4 октября, не точно",
+    "history": []
+  },
+  "response": {
+    "intent": "add_entry",
+    "tool_calls": [
+      {
+        "name": "parse_entry",
+        "args": {
+          "type": "income",
+          "amount": 1500,
+          "date": "2026-10-04"
+        }
+      }
+    ],
+    "headline": "Я понял так. Проверь и сохрани",
+    "tone": "neutral",
+    "facts": [
+      {
+        "label": "Тип",
+        "value": "Доход",
+        "tone": null
+      },
+      {
+        "label": "Сумма",
+        "value": "1 500 ₽",
+        "tone": null
+      },
+      {
+        "label": "Дата",
+        "value": "4 октября",
+        "tone": null
+      },
+      {
+        "label": "Надёжность",
+        "value": "может не прийти",
+        "tone": "bad"
+      }
+    ],
+    "text": "Сохранить или исправить — решаешь ты, сам я ничего не записываю.",
+    "source": null,
+    "purchase": null,
+    "proposed_entry": {
+      "type": "income",
+      "name": "Подработка",
+      "amount": 1500,
+      "date": "2026-10-04",
+      "confirmed": false,
+      "category": null
+    },
+    "actions": [
+      {
+        "kind": "save_entry",
+        "label": "Сохранить",
+        "payload": {
+          "type": "income",
+          "name": "Подработка",
+          "amount": 1500,
+          "date": "2026-10-04",
+          "confirmed": false,
+          "category": null
+        }
+      }
+    ],
+    "nlu": {
+      "mode": "sklearn",
+      "label": "add_income",
+      "confidence": 0.9624
+    },
+    "explainer": "templates",
+    "guarded": false
+  }
+}

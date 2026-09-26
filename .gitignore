@@ -15,3 +15,4 @@ Thumbs.db
 training/runs/
 training/.cache/
 training/checkpoints/
+training/.venv-train/
