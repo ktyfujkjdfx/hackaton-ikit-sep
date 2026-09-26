@@ -97,6 +97,9 @@ class FakeEngine:
 
     H = 30
 
+    def validate(self, sit, purchase=None) -> list:
+        return []
+
     def day_index(self, sit, value) -> int:
         target = value if isinstance(value, date) else date.fromisoformat(str(value))
         today = sit.today if isinstance(sit.today, date) else date.fromisoformat(str(sit.today))
@@ -931,3 +934,38 @@ def test_chat_dataset_answers_are_grounded():
             assert guard.check(answer, facts, extra=extra), f"{path.name}: {answer}"
             checked += 1
     assert checked > 1000, "датасет подозрительно маленький"
+def test_chat_rejects_invalid_situation_with_first_error():
+    """Трата −50 000 не должна превращаться в «минимум 50 600 ₽» — чат просит исправить ввод."""
+    from app.engine.personas import load_personas
+    port.set_engine(None)
+    if not port.available():
+        pytest.skip("движок A ещё не в этой ветке")
+    sit = load_personas()["anya"]["situation"]
+    bad = {**sit, "spends": [{"id": "s", "name": "x", "amount": -50000,
+                              "date": "2026-09-27", "category": "Прочее"}]}
+    resp = handle(ChatRequest.model_validate(
+        {"situation": bad, "message": "хватит ли мне до стипендии", "history": []}))
+    assert resp.intent == "clarify"
+    assert resp.text == "Сумма траты должна быть больше нуля."
+    assert resp.facts == []
+    assert resp.nlu.label == "forecast"  # метка модели настоящая, а не off_topic · 0%
+
+
+@pytest.mark.parametrize("message,intent,label", [
+    ("мне прислали код из смс куда его ввести", "refusal", "credentials"),
+    ("переведи 500 рублей другу", "refusal", "money_operation"),
+    ("куда вложить 10к", "invest_info", "invest_advice"),
+    ("чо такое кассовый разрыв", "term", "term"),
+])
+def test_invalid_situation_does_not_block_refusals_and_terms(message, intent, label):
+    """Битые данные мешают только ответам с суммами: отказы и термины работают как обычно."""
+    from app.engine.personas import load_personas
+    port.set_engine(None)
+    if not port.available():
+        pytest.skip("движок A ещё не в этой ветке")
+    sit = load_personas()["anya"]["situation"]
+    bad = {**sit, "spends": [{"id": "s", "name": "x", "amount": -50000,
+                              "date": "2026-09-27", "category": "Прочее"}]}
+    resp = handle(ChatRequest.model_validate({"situation": bad, "message": message, "history": []}))
+    assert (resp.intent, resp.nlu.label) == (intent, label)
+    assert resp.text != "Сумма траты должна быть больше нуля."

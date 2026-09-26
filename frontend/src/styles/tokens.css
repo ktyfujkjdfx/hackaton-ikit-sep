@@ -22,7 +22,16 @@
   --font: 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --display: 'Unbounded', 'Onest', system-ui, sans-serif;
 
-  /* docs/design-system.md — статусы и денежные типы (график, статус-пилюли) */
+  /* docs/design-system.md - полный набор ролей: раньше не все были объявлены и резолвились в browser-default */
+  --surface-1: #f5f4ef;
+  --surface-card: #ffffff;
+  --text-primary: #1c1c1e;
+  --text-secondary: #52514e;
+  --text-muted: #898781;
+  --accent: #ffdd2d;
+  --accent-ink: #1c1c1e;
+  --gridline: #e1e0d9;
+  --border: rgba(28, 28, 30, 0.1);
   --status-good: #0ca30c;
   --status-warning: #e0a400;
   --status-critical: #d03b3b;
@@ -55,6 +64,15 @@
     --status-critical: #e66767;
     --money-fixed: #3987e5;
     --money-variable: #d95926;
+    --surface-1: #1a1a19;
+    --surface-card: #232322;
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted: #898781;
+    --accent: #ffdd2d;
+    --accent-ink: #1c1c1e;
+    --gridline: #2c2c2a;
+    --border: rgba(255, 255, 255, 0.1);
   }
 }
 
@@ -82,4 +100,13 @@
   --status-critical: #e66767;
   --money-fixed: #3987e5;
   --money-variable: #d95926;
+  --surface-1: #1a1a19;
+  --surface-card: #232322;
+  --text-primary: #ffffff;
+  --text-secondary: #c3c2b7;
+  --text-muted: #898781;
+  --accent: #ffdd2d;
+  --accent-ink: #1c1c1e;
+  --gridline: #2c2c2a;
+  --border: rgba(255, 255, 255, 0.1);
 }

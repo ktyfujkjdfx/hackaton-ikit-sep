@@ -61,7 +61,7 @@ export type Purchase = {
 }
 
 export type ValidationError = {
-  field: 'balance' | 'daily' | 'incomes' | 'obligations' | 'goal' | 'purchase'
+  field: 'balance' | 'daily' | 'incomes' | 'obligations' | 'spends' | 'goal' | 'purchase'
   index: number | null
   subfield: 'amount' | 'date' | null
   message: string

@@ -3,7 +3,9 @@ import type { ChatResponse, Dashboard, Purchase, Situation } from '../types'
 
 export type Screen = 'start' | 'form' | 'app' | 'checks'
 
-export type ChatMsg = { role: 'user'; text: string } | { role: 'bot'; resp: ChatResponse }
+export type ChatMsg =
+  | { role: 'user'; text: string }
+  | { role: 'bot'; resp: ChatResponse; greeting?: boolean }
 
 export type DeferredPurchase = { name: string; amount: number; safe_date: string }
 
@@ -66,13 +68,14 @@ function reducer(state: State, action: Action): State {
         messages: [
           {
             role: 'bot',
+            greeting: true,
             resp: {
               intent: 'clarify',
               tool_calls: [],
               headline: '',
               tone: 'neutral',
               facts: [],
-              text: 'Привет! Пока без свободного текста — жми кнопки ниже или «+ Добавить трату или доход».',
+              text: 'Привет! Я считаю прогноз по твоим данным и отвечаю на вопросы о деньгах. Спроси, можно ли что-то купить, почему прогноз такой, или добавь трату одной фразой.',
               source: null,
               purchase: null,
               proposed_entry: null,

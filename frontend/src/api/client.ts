@@ -1,4 +1,4 @@
-import type { ChecksResult, Dashboard, Persona, PersonaDetail, Purchase, Situation } from '../types'
+import type { ChatRequest, ChatResponse, ChecksResult, Dashboard, Persona, PersonaDetail, Purchase, Situation } from '../types'
 import personasFixture from './fixtures/personas.json'
 import personaAnyaFixture from './fixtures/persona_anya.json'
 import dashboardAnyaFixture from './fixtures/dashboard_anya.json'
@@ -87,4 +87,8 @@ export async function getChecks(): Promise<ChecksResult> {
   const res = await fetch(`${BASE}/api/checks`)
   if (!res.ok) throw new Error(`checks failed: ${res.status}`)
   return res.json()
+}
+
+export async function postChat(payload: ChatRequest): Promise<ChatResponse> {
+  return post<ChatResponse>('/api/chat', payload)
 }

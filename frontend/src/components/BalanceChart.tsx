@@ -314,7 +314,7 @@ export function BalanceChart({ dashboard }: { dashboard: Dashboard }) {
                 d={path(l.values)}
                 fill="none"
                 stroke={l.color}
-                strokeWidth={l.id === primaryId ? 2.5 : 2}
+                strokeWidth={l.id === 'base_dim' ? 2 : 2.5}
                 strokeDasharray={l.stroke === 'dashed' ? '6 5' : undefined}
                 strokeLinejoin="round"
                 strokeLinecap="round"
@@ -324,7 +324,7 @@ export function BalanceChart({ dashboard }: { dashboard: Dashboard }) {
                   d={path(l.values)}
                   fill="none"
                   stroke="var(--status-critical)"
-                  strokeWidth={l.id === primaryId ? 3 : 2}
+                  strokeWidth={l.id === 'base_dim' ? 2 : 3}
                   strokeDasharray={l.stroke === 'dashed' ? '6 5' : undefined}
                   strokeLinejoin="round"
                   clipPath="url(#negclip)"
@@ -338,7 +338,7 @@ export function BalanceChart({ dashboard }: { dashboard: Dashboard }) {
                 cx={X(minDay)}
                 cy={Y(minVal)}
                 r={5}
-                fill={minVal < 0 ? 'var(--status-critical)' : 'var(--accent)'}
+                fill={minVal < 0 ? 'var(--status-critical)' : 'var(--status-good)'}
                 stroke="var(--surface-card)"
                 strokeWidth={2}
               />

@@ -295,7 +295,7 @@ button {
 /* ---------- app ---------- */
 .app-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 380px;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 20px;
   padding-block: 20px 60px;
   align-items: start;
@@ -689,8 +689,9 @@ input.err {
   align-content: start;
 }
 .lesson {
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: var(--surface-2);
+  color: var(--text-primary);
+  border-left: 3px solid var(--accent);
   border-radius: 12px;
   padding: 12px 14px;
   font-weight: 600;
@@ -814,6 +815,8 @@ input.err {
 .panel {
   position: sticky;
   top: 76px;
+  width: 380px;
+  max-width: calc(100vw - 32px);
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--r);
@@ -822,6 +825,28 @@ input.err {
   height: calc(100vh - 96px);
   min-height: 560px;
   box-shadow: var(--shadow);
+  transition: width 0.18s ease;
+}
+.panel.collapsed {
+  width: 56px;
+  min-height: 0;
+  height: auto;
+  overflow: hidden;
+}
+.panel-collapse-toggle {
+  border: none;
+  background: none;
+  color: var(--text-secondary);
+  font-size: 18px;
+  width: 100%;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.panel-collapse-toggle:hover {
+  background: var(--surface-2);
+}
+.panel.collapsed .panel-collapse-toggle {
+  border-bottom: none;
 }
 .panel-head {
   padding: 14px 16px;
@@ -908,6 +933,49 @@ input.err {
   font-size: 11.5px;
   letter-spacing: 0.03em;
   text-transform: uppercase;
+}
+.nlu-badge {
+  align-self: flex-start;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--surface-2);
+  border-radius: 999px;
+  padding: 2px 9px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+}
+.nlu-badge .nlu-mode {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.msg-kind {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.msg-kind.refusal {
+  color: var(--status-critical);
+}
+.msg-kind.clarify {
+  color: var(--text-secondary);
+}
+.msg.bot.refusal {
+  border-color: var(--status-critical);
+  border-width: 1.5px;
+}
+.msg.bot.clarify {
+  border-style: dashed;
+}
+.guarded-note {
+  font-size: 11.5px;
+  color: var(--status-warning);
 }
 .sugg {
   display: flex;
@@ -1037,8 +1105,8 @@ td.fail {
   line-height: 1.15;
 }
 .safe-big.ok {
-  background: var(--good-soft);
-  color: var(--status-good);
+  background: var(--status-good);
+  color: var(--accent-ink);
 }
 .buy-why {
   font-size: 16px;
