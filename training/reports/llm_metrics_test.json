@@ -1,0 +1,26 @@
+[
+  {
+    "size": 100,
+    "grounded": 1.0,
+    "numbers": 1.0,
+    "russian": 1.0,
+    "short": 1.0,
+    "safe": 1.0,
+    "avg_chars": 115.0,
+    "model": "dotyanu_llm merged fp16",
+    "split": "test",
+    "seconds_per_answer": 2.84,
+    "vram_peak_gb": 2.92
+  },
+  {
+    "size": 100,
+    "grounded": 0.63,
+    "numbers": 0.8,
+    "russian": 1.0,
+    "short": 0.97,
+    "safe": 1.0,
+    "avg_chars": 242.3,
+    "model": "Vikhrmodels/Vikhr-Qwen-2.5-1.5B-Instruct (без обучения)",
+    "split": "test"
+  }
+]

@@ -1,0 +1,15 @@
+[
+  {
+    "size": 88,
+    "grounded": 1.0,
+    "numbers": 1.0,
+    "russian": 1.0,
+    "short": 1.0,
+    "safe": 1.0,
+    "avg_chars": 124.6,
+    "model": "dotyanu_llm merged fp16",
+    "split": "holdout",
+    "seconds_per_answer": 3.08,
+    "vram_peak_gb": 2.92
+  }
+]
