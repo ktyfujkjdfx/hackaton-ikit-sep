@@ -103,7 +103,7 @@
     "nlu": {
       "mode": "sklearn",
       "label": "forecast",
-      "confidence": 0.9783
+      "confidence": 0.9543
     },
     "explainer": "templates",
     "guarded": false

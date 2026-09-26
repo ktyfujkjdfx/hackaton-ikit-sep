@@ -133,9 +133,9 @@
       }
     ],
     "nlu": {
-      "mode": "rules",
+      "mode": "sklearn",
       "label": "add_spend",
-      "confidence": 1.0
+      "confidence": 0.7349
     },
     "explainer": "templates",
     "guarded": false

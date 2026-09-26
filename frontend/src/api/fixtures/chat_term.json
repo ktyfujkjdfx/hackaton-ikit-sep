@@ -95,7 +95,7 @@
     "nlu": {
       "mode": "sklearn",
       "label": "term",
-      "confidence": 0.9302
+      "confidence": 0.9488
     },
     "explainer": "templates",
     "guarded": false

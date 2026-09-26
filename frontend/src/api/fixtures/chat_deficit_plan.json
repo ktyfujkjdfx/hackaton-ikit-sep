@@ -125,7 +125,7 @@
     "nlu": {
       "mode": "sklearn",
       "label": "deficit_plan",
-      "confidence": 0.9983
+      "confidence": 0.9967
     },
     "explainer": "templates",
     "guarded": false

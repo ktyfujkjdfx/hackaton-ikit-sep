@@ -58,6 +58,22 @@ def draw_confusion(y_true: list[str], y_pred: list[str], title: str, path: Path)
     plt.close(fig)
 
 
+class OnnxModel:
+    """Обёртка над app.ai.nlu.onnx_nlu — чтобы считать метрики тем же кодом, что в проде."""
+
+    name = "onnx"
+
+    def __init__(self) -> None:
+        from app.ai.nlu import onnx_nlu
+
+        if not onnx_nlu.available():
+            raise SystemExit("нет models/rubert_intent — сначала запусти export_onnx.py")
+        self._onnx = onnx_nlu
+
+    def predict(self, texts: list[str]) -> list[str]:
+        return [(self._onnx.predict(text) or ("off_topic", 0.0))[0] for text in texts]
+
+
 def evaluate(pipeline, path: Path, name: str) -> dict:
     x, y_true = load(path)
     y_pred = list(pipeline.predict(x))
@@ -83,19 +99,32 @@ def main() -> None:
     sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser()
     parser.add_argument("--holdout", action="store_true", help="оценить ещё и на holdout от A и D")
+    parser.add_argument("--onnx", action="store_true", help="те же наборы для нейросети в ONNX")
     args = parser.parse_args()
 
-    if not MODEL_PATH.exists():
+    models: list[tuple[str, object]] = []
+    if MODEL_PATH.exists():
+        models.append(("sklearn", joblib.load(MODEL_PATH)))
+    elif not args.onnx:
         raise SystemExit(f"нет модели {MODEL_PATH} — сначала запусти train_sklearn.py")
-    pipeline = joblib.load(MODEL_PATH)
+    if args.onnx:
+        models.append(("onnx", OnnxModel()))
 
-    results = [evaluate(pipeline, DATA_DIR / "intents_test.jsonl", "test")]
+    sets = [("test", DATA_DIR / "intents_test.jsonl")]
     holdout = DATA_DIR / HOLDOUT_NAME
     if args.holdout:
         if holdout.exists():
-            results.append(evaluate(pipeline, holdout, "holdout_team"))
+            sets.append(("holdout_team", holdout))
         else:
             print(f"\n{HOLDOUT_NAME} ещё не прислали A и D — пропускаю")
+
+    results = []
+    for model_name, model in models:
+        for set_name, path in sets:
+            label = set_name if len(models) == 1 else f"{model_name}_{set_name}"
+            result = evaluate(model, path, label)
+            result["model"] = model_name
+            results.append(result)
 
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     (REPORTS_DIR / "metrics.json").write_text(

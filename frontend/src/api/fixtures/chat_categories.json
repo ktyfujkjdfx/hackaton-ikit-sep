@@ -113,7 +113,7 @@
     "nlu": {
       "mode": "sklearn",
       "label": "categories",
-      "confidence": 0.9873
+      "confidence": 0.9667
     },
     "explainer": "templates",
     "guarded": false

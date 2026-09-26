@@ -92,7 +92,7 @@
     "nlu": {
       "mode": "sklearn",
       "label": "credentials",
-      "confidence": 0.9311
+      "confidence": 0.959
     },
     "explainer": "templates",
     "guarded": false

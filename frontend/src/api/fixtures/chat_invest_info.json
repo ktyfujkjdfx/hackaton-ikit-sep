@@ -98,7 +98,7 @@
     "nlu": {
       "mode": "sklearn",
       "label": "invest_advice",
-      "confidence": 0.9721
+      "confidence": 0.9795
     },
     "explainer": "templates",
     "guarded": false

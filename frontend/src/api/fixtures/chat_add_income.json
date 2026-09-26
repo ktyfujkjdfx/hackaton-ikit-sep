@@ -135,7 +135,7 @@
     "nlu": {
       "mode": "sklearn",
       "label": "add_income",
-      "confidence": 0.9117
+      "confidence": 0.9624
     },
     "explainer": "templates",
     "guarded": false

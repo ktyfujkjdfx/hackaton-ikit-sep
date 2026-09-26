@@ -1,0 +1,18 @@
+[
+  {
+    "set": "sklearn_test",
+    "size": 360,
+    "accuracy": 0.9139,
+    "macro_f1": 0.9145,
+    "errors": 31,
+    "model": "sklearn"
+  },
+  {
+    "set": "onnx_test",
+    "size": 360,
+    "accuracy": 0.9333,
+    "macro_f1": 0.9336,
+    "errors": 24,
+    "model": "onnx"
+  }
+]

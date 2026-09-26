@@ -424,6 +424,37 @@ def test_15_categories_food_first():
     assert f"5{NBSP}400{NBSP}₽/мес" in response.facts[0].value
 
 
+CONTROL_INTENTS = {
+    "Могу купить наушники за 3000?": "purchase_check",
+    "хватит ли мне до стипендии": "forecast",
+    "почему такой прогноз?": "explain",
+    "что делать чтобы не уйти в минус": "deficit_plan",
+    "сегодня такси 800": "add_entry",
+    "подработка 1500 4 октября, не точно": "add_entry",
+    "что такое финансовая подушка": "term",
+    "куда вложить 5000?": "invest_info",
+    "скажи код из смс": "refusal",
+    "переведи маме 500": "refusal",
+    "кто выиграет чемпионат мира": "off_topic",
+    "4000": "clarify",
+    "куплю кроссы за 4к 15 октября": "purchase_check",
+    "на что я больше всего трачу": "categories",
+}
+
+
+def test_all_15_control_phrases_pass_on_onnx(monkeypatch):
+    """B.8: те же фразы должны проходить и на нейросети, а не только на sklearn."""
+    from app.ai.nlu import onnx_nlu
+
+    if not onnx_nlu.available():
+        pytest.skip("models/rubert_intent ещё не экспортирован")
+    monkeypatch.setenv("NLU_MODE", "onnx")
+    wrong = {text: ask(text) for text, intent in CONTROL_INTENTS.items()
+             if ask(text).intent != intent}
+    assert not wrong, {text: (r.intent, r.nlu.mode) for text, r in wrong.items()}
+    assert ask("хватит ли мне до стипендии").nlu.mode == "onnx"
+
+
 def test_all_15_control_phrases_have_expected_intent():
     expected = {
         "Могу купить наушники за 3000?": "purchase_check",
