@@ -1,6 +1,9 @@
 import { useState, type FormEvent } from 'react'
+import type { ChatResponse } from '../types'
+import { buildChatResponse } from '../lib/chatMock'
 import { useAppDispatch, useAppState } from '../state/store'
 import { AddModal, type AddModalPrefill } from './AddModal'
+import { ChatMessage } from './ChatMessage'
 
 export function AskPanel() {
   const { messages, situation } = useAppState()
@@ -14,41 +17,73 @@ export function AskPanel() {
   function pushUser(text: string) {
     dispatch({ type: 'ADD_MESSAGE', message: { role: 'user', text } })
   }
-  function pushBot(text: string) {
-    dispatch({ type: 'ADD_MESSAGE', message: { role: 'bot', text } })
+  function pushBot(overrides: Partial<ChatResponse>) {
+    dispatch({ type: 'ADD_MESSAGE', message: { role: 'bot', resp: buildChatResponse(overrides) } })
   }
 
   function askPurchase3000() {
     pushUser('Могу купить наушники за 3000?')
     dispatch({ type: 'SET_PURCHASE', purchase: { amount: 3000, date: today, name: 'Наушники' } })
-    pushBot('Смотри карточку покупки выше — там дата, с которой можно купить без минуса, и план на случай минуса.')
+    pushBot({
+      intent: 'purchase_check',
+      tool_calls: [{ name: 'check_purchase', args: { amount: 3000, date: today } }],
+      text: 'Смотри карточку покупки выше — там дата, с которой можно купить без минуса, и план на случай минуса.',
+      purchase: { amount: 3000, date: today, name: 'Наушники' },
+      nlu: { mode: 'rules', label: 'purchase_check', confidence: 1 },
+    })
   }
   function askSpendTaxi() {
     pushUser('Сегодня такси 800')
+    const proposed = { type: 'spend' as const, name: 'Такси', amount: 800, date: today, confirmed: true, category: 'Транспорт' }
+    pushBot({
+      intent: 'add_entry',
+      text: 'Похоже на разовую трату. Проверь поля и сохрани.',
+      proposed_entry: proposed,
+      actions: [{ kind: 'save_entry', label: 'Сохранить', payload: {} }],
+      nlu: { mode: 'rules', label: 'add_spend', confidence: 1 },
+    })
     setModal({ type: 'spend', name: 'Такси', amount: 800, date: today, category: 'Транспорт' })
   }
   function askIncome() {
     pushUser('Подработка 1500 4 октября, не точно')
+    pushBot({
+      intent: 'add_entry',
+      text: 'Похоже на непостоянное поступление. Проверь поля и сохрани.',
+      proposed_entry: { type: 'income', name: 'Подработка', amount: 1500, date: today, confirmed: false, category: '' },
+      actions: [{ kind: 'save_entry', label: 'Сохранить', payload: {} }],
+      nlu: { mode: 'rules', label: 'add_income', confidence: 1 },
+    })
     setModal({ type: 'income', name: 'Подработка', amount: 1500 })
   }
   function askTerm() {
     pushUser('Что такое финансовая подушка?')
-    pushBot(
-      'Финансовая подушка — запас денег на случай, если доход пропал или случилась непредвиденная трата. Источник: fincult.info — сайт Банка России.',
-    )
+    pushBot({
+      intent: 'term',
+      headline: 'Финансовая подушка',
+      text: 'Запас денег на случай, если доход пропал или случилась непредвиденная трата. Её держат отдельно от денег на каждый день.',
+      source: { title: 'fincult.info — сайт Банка России', url: 'https://fincult.info' },
+      nlu: { mode: 'rules', label: 'term', confidence: 1 },
+    })
   }
   function askInvest() {
     pushUser('Куда вложить 5000?')
-    pushBot(
-      'Я не советую, во что вкладывать, и не использую твои суммы для таких советов. Сначала подушка безопасности, потом накопления на цели, и только потом инвестиции.',
-    )
+    pushBot({
+      intent: 'invest_info',
+      text: 'Я не советую, во что вкладывать, и не использую твои суммы для таких советов. Сначала подушка безопасности, потом накопления на цели, и только потом инвестиции.',
+      actions: [{ kind: 'open_learn', label: 'Как устроены накопления и инвестиции?', payload: {} }],
+      nlu: { mode: 'rules', label: 'invest_advice', confidence: 1 },
+    })
   }
 
   function submitFreeText(e: FormEvent) {
     e.preventDefault()
     if (!input.trim()) return
     pushUser(input)
-    pushBot('Пока понимаю только кнопки ниже и явные поля — свободный текст разберёт модель роли B, когда будет готова.')
+    pushBot({
+      intent: 'clarify',
+      text: 'Пока понимаю только кнопки ниже и явные поля — свободный текст разберёт модель роли B, когда будет готова.',
+      nlu: { mode: 'rules', label: 'clarify', confidence: 0 },
+    })
     setInput('')
   }
 
@@ -59,11 +94,15 @@ export function AskPanel() {
         <span>Пока без разбора свободного текста — жми кнопки или добавляй запись явно.</span>
       </div>
       <div className="msgs" aria-live="polite">
-        {messages.map((m, i) => (
-          <div key={i} className={`msg ${m.role}`}>
-            {m.text}
-          </div>
-        ))}
+        {messages.map((m, i) =>
+          m.role === 'user' ? (
+            <div key={i} className="msg user">
+              {m.text}
+            </div>
+          ) : (
+            <ChatMessage key={i} resp={m.resp} />
+          ),
+        )}
       </div>
       <div className="sugg">
         <button type="button" onClick={askPurchase3000}>

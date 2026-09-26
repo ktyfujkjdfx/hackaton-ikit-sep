@@ -853,6 +853,52 @@ input.err {
   gap: 10px;
   font-size: 14px;
 }
+.msg.bot .tool {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: 11.5px;
+  color: var(--muted);
+  background: var(--surface-2);
+  padding: 4px 8px;
+  border-radius: 6px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.msg.bot .facts {
+  display: grid;
+  gap: 4px;
+}
+.msg.bot .facts div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px dotted var(--line);
+  padding-bottom: 3px;
+}
+.msg.bot .facts b {
+  white-space: nowrap;
+}
+.msg.bot .headline {
+  font-weight: 700;
+  font-size: 15px;
+}
+.msg.bot .headline.bad {
+  color: var(--status-critical);
+}
+.msg.bot .headline.good {
+  color: var(--status-good);
+}
+.msg.bot .ai {
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+.msg.bot .ai::before {
+  content: 'Пояснение AI · ';
+  font-weight: 700;
+  color: var(--muted);
+  font-size: 11.5px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
 .sugg {
   display: flex;
   gap: 6px;

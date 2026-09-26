@@ -1,11 +1,9 @@
 import { createContext, useContext, useReducer, type Dispatch, type ReactNode } from 'react'
-import type { Dashboard, Purchase, Situation } from '../types'
+import type { ChatResponse, Dashboard, Purchase, Situation } from '../types'
 
 export type Screen = 'start' | 'form' | 'app' | 'checks'
 
-// Заглушка до готовности /api/chat у роли B: без свободного текста и NLU,
-// только явные кнопки/поля. Когда подключим B — заменим на ChatResponse.
-export type ChatMsg = { role: 'user' | 'bot'; text: string }
+export type ChatMsg = { role: 'user'; text: string } | { role: 'bot'; resp: ChatResponse }
 
 export type DeferredPurchase = { name: string; amount: number; safe_date: string }
 
@@ -68,7 +66,21 @@ function reducer(state: State, action: Action): State {
         messages: [
           {
             role: 'bot',
-            text: 'Привет! Пока без свободного текста — жми кнопки ниже или «+ Добавить трату или доход».',
+            resp: {
+              intent: 'clarify',
+              tool_calls: [],
+              headline: '',
+              tone: 'neutral',
+              facts: [],
+              text: 'Привет! Пока без свободного текста — жми кнопки ниже или «+ Добавить трату или доход».',
+              source: null,
+              purchase: null,
+              proposed_entry: null,
+              actions: [],
+              nlu: { mode: 'rules', label: 'clarify', confidence: 1 },
+              explainer: 'templates',
+              guarded: false,
+            },
           },
         ],
         dashboard: null,
