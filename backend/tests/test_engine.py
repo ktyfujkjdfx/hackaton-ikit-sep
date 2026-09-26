@@ -467,3 +467,22 @@ def test_income_today_counts_in_series_but_is_not_next():
         {"id": "k", "name": "За горизонтом", "amount": 500, "date": "2026-10-27", "confirmed": True}])
     assert series(sit)[0] == 1400
     assert next_income(sit).name == "Потом"
+
+
+@pytest.mark.parametrize("amount", [0, -5000])
+def test_validate_spend_amount_must_be_positive(amount):
+    sit = anya()
+    sit.spends.append(Spend(id="s0", name="Такси", amount=800, date=TODAY, category="Транспорт"))
+    sit.spends.append(Spend(id="s1", name="Возврат", amount=amount, date=TODAY, category="Прочее"))
+    errors = validate(sit)
+    assert [(e.field, e.index, e.subfield) for e in errors] == [("spends", 1, "amount")]
+    assert "больше нуля" in errors[0].message
+
+
+@pytest.mark.parametrize("field,amount", [("incomes", 0), ("incomes", -3200),
+                                          ("obligations", 0), ("obligations", -1800)])
+def test_validate_income_and_obligation_amount_must_be_positive(field, amount):
+    sit = anya()
+    getattr(sit, field)[0].amount = amount
+    errors = validate(sit)
+    assert [(e.field, e.index, e.subfield) for e in errors] == [(field, 0, "amount")]

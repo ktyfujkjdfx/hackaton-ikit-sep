@@ -187,7 +187,7 @@ hackaton-ikit-sep/
 
 ```jsonc
 // ValidationError
-{ "field": "balance" | "daily" | "incomes" | "obligations" | "goal" | "purchase",
+{ "field": "balance" | "daily" | "incomes" | "obligations" | "spends" | "goal" | "purchase",
   "index": 0 | null, "subfield": "amount" | "date" | null, "message": "Дата поступления уже прошла. Укажи следующую." }
 
 // SeriesStats
@@ -327,7 +327,7 @@ CORS: backend разрешает домены из `CORS_ORIGINS`. Фронт х
 - **money_types:** см. раздел 6. `variable_expenses.total = daily × 30 + Σspends`.
 - **history flags:** `regular = category == "Обязательное" или (amount > 0 и имя совпадает с confirmed‑доходом)`; `large = amount < 0 и не regular и −amount ≥ 5 × daily`.
 - **show_learn_card = base без минуса И (нет покупки ИЛИ покупка без минуса) И (нет pessimistic ИЛИ pessimistic без минуса).**
-- **Валидация:** `balance` число ≥ 0; каждое поступление `amount > 0`, дата есть и `≥ today`; каждый платёж `amount > 0`, дата `≥ today`; `daily ≥ 0`; цель: `target > 0`, `0 ≤ current < target`, дата `> today`; покупка: `amount > 0`, дата в горизонте. Тексты ошибок — простые, говорят, как исправить.
+- **Валидация:** `balance` число ≥ 0; каждое поступление `amount > 0`, дата есть и `≥ today`; каждый платёж `amount > 0`, дата `≥ today`; каждая разовая трата `amount > 0` (ошибка `field = "spends"`, `index`, `subfield = "amount"`); `daily ≥ 0`; цель: `target > 0`, `0 ≤ current < target`, дата `> today`; покупка: `amount > 0`, дата в горизонте. Тексты ошибок — простые, говорят, как исправить.
 
 ### 7.1 Сигнатуры функций движка (владелец A; B вызывает именно их)
 
