@@ -9,6 +9,8 @@ const TODAY = '2026-09-27'
 
 const OBLIGATION_PRESETS = ['Общежитие', 'Связь', 'Проездной', 'Подписка']
 const DAILY_PRESETS = [200, 300, 400, 500]
+// Те же четыре категории, что и у демо-персон: так разбивка сопоставима между профилями.
+const CATEGORY_PRESETS = ['Еда', 'Транспорт', 'Кафе и доставка', 'Прочее']
 
 function emptyIncome(): Income {
   return { id: crypto.randomUUID(), name: '', amount: 0, date: TODAY, confirmed: true }
@@ -82,11 +84,17 @@ export function Form() {
   const [incomes, setIncomes] = useState<Income[]>([emptyIncome()])
   const [obligations, setObligations] = useState<Obligation[]>([emptyObligation()])
   const [daily, setDaily] = useState<string>('')
+  // Разбивка обычных трат по категориям. Необязательна: без неё прогноз считается так же,
+  // просто экран «Куда уходят деньги» останется пустым.
+  const [cats, setCats] = useState<Record<string, string>>({})
   const [goalName, setGoalName] = useState('')
   const [goalTarget, setGoalTarget] = useState('')
   const [goalCurrent, setGoalCurrent] = useState('')
   const [goalDate, setGoalDate] = useState('')
   const [errors, setErrors] = useState<ValidationError[]>([])
+
+  const catsTotal = CATEGORY_PRESETS.reduce((sum, name) => sum + Number(cats[name] || 0), 0)
+  const dailyNumber = Number(daily || 0)
 
   function errorFor(field: string, index: number | null, subfield: string | null) {
     return errors.find((e) => e.field === field && e.index === index && e.subfield === subfield)?.message
@@ -98,6 +106,7 @@ export function Form() {
     setIncomes(sit.incomes.map((i) => ({ ...i })))
     setObligations(sit.obligations.map((o) => ({ ...o })))
     setDaily(String(sit.daily))
+    setCats(Object.fromEntries((sit.categories ?? []).map((c) => [c.name, String(c.per_day)])))
     if (sit.goal) {
       setGoalName(sit.goal.name)
       setGoalTarget(String(sit.goal.target))
@@ -126,7 +135,10 @@ export function Form() {
     setErrors(found)
     if (found.length > 0) return
 
-    const categories: Category[] | null = null
+    const filled = CATEGORY_PRESETS
+      .map((name) => ({ name, per_day: Number(cats[name] || 0) }))
+      .filter((c) => c.per_day > 0)
+    const categories: Category[] | null = filled.length > 0 ? filled : null
     const situation: Situation = {
       today: TODAY,
       balance: Number(balance),
@@ -323,9 +335,9 @@ export function Form() {
           </div>
 
           <div className="fblock">
-            <h3>4. Сколько в среднем тратишь в день на еду и мелочи?</h3>
+            <h3>4. Сколько в среднем уходит в день на еду и мелочи?</h3>
             <p className="hint">
-              Разовые траты (такси, кафе) сюда входят в среднем. Если не знаешь — прикинь, мы пометим это как оценку.
+              Разовые траты (такси, кафе) входят сюда в среднем. Если не знаете точно — прикиньте, мы пометим это как оценку.
             </p>
             <div className="presets">
               {DAILY_PRESETS.map((v) => (
@@ -349,7 +361,39 @@ export function Form() {
 
           <div className="fblock">
             <h3>
-              5. Копишь на что-то? <span className="chip">можно пропустить</span>
+              5. На что уходят эти деньги? <span className="chip">можно пропустить</span>
+            </h3>
+            <p className="hint">
+              Если разложите сумму из пункта 4 по категориям, сервис покажет, на что уходит больше
+              всего, и точнее посчитает, от чего проще отказаться. Без этого прогноз считается так же.
+            </p>
+            <div className="frow">
+              {CATEGORY_PRESETS.map((name) => (
+                <label className="f" key={name}>
+                  {name}, ₽/день
+                  <input
+                    type="number"
+                    min={0}
+                    inputMode="numeric"
+                    value={cats[name] ?? ''}
+                    onChange={(e) => setCats((prev) => ({ ...prev, [name]: e.target.value }))}
+                  />
+                </label>
+              ))}
+            </div>
+            {catsTotal > 0 && (
+              <p className="hint">
+                Разложено {catsTotal} ₽ в день из {daily || 0} ₽.
+                {dailyNumber > 0 && catsTotal !== dailyNumber
+                  ? ' Суммы не сходятся — прогноз возьмёт цифру из пункта 4, а доли посчитает по этой разбивке.'
+                  : ''}
+              </p>
+            )}
+          </div>
+
+          <div className="fblock">
+            <h3>
+              6. Копите на что-то? <span className="chip">можно пропустить</span>
             </h3>
             <div className="frow goal">
               <label className="f">

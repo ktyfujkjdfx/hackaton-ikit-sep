@@ -16,7 +16,9 @@ def _has_negative(values: list[int] | None) -> bool:
 
 
 def assumptions(sit: Situation, purchase: Purchase | None) -> list[str]:
-    source = "по истории за 2 месяца" if sit.categories else "из анкеты"
+    # Историю операций даёт только демо-профиль. Категории можно заполнить и в анкете,
+    # поэтому источник оценки определяем по истории, иначе подпись соврёт.
+    source = "по истории за 2 месяца" if sit.history else "из анкеты"
     out = [f"Обычные траты — {format_rub(sit.daily)} в день, оценка {source}"]
     if any(i.confirmed for i in sit.incomes):
         out.append("Постоянный доход придёт в указанную дату и в указанной сумме")

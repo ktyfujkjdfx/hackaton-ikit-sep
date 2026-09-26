@@ -307,12 +307,17 @@ def _categories(sit: Any) -> Execution:
         for c in ordered
     ]
     top = _get(ordered[0], "name", "").lower()
+    # Историю операций даёт только демо-профиль. Если её нет, разбивку человек ввёл сам —
+    # и говорить «средние за 2 месяца» было бы неправдой.
+    from_history = bool(_get(sit, "history"))
+    tail = templates.CATEGORIES_TAIL if from_history else templates.CATEGORIES_TAIL_FORM
     return Execution(
         "categories",
         headline=templates.HEADLINE_CATEGORIES,
         facts=facts,
-        text=f"Больше всего уходит на «{top}». {templates.CATEGORIES_TAIL}",
-        tool_calls=[{"name": "categories", "args": {"period": "2 месяца"}}],
+        text=f"Больше всего уходит на «{top}». {tail}",
+        tool_calls=[{"name": "categories",
+                     "args": {"source": "история за 2 месяца" if from_history else "анкета"}}],
     )
 
 

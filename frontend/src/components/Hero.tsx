@@ -87,7 +87,7 @@ export function Hero({ dashboard, situation }: Props) {
       <p className="verdict">{verdict}</p>
       <p className="caveat">
         Это прогноз, а не гарантия. Обычные траты — {rub(situation.daily)} в день,{' '}
-        {situation.categories ? 'рассчитаны по вашей истории за последние 2 месяца' : 'взяты из вашей анкеты'}.
+        {situation.history?.length ? 'рассчитаны по вашей истории за последние 2 месяца' : 'взяты из вашей анкеты'}.
       </p>
     </div>
   )
