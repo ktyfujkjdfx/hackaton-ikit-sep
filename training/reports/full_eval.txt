@@ -1,0 +1,78 @@
+
+=== sklearn_test (360 фраз) ===
+accuracy: 0.9139   macro-F1: 0.9145
+                 precision    recall  f1-score   support
+
+ purchase_check      0.789     1.000     0.882        30
+       forecast      0.903     0.933     0.918        30
+        explain      0.966     0.933     0.949        30
+   deficit_plan      0.893     0.833     0.862        30
+     categories      1.000     0.933     0.966        30
+           term      0.933     0.933     0.933        30
+      add_spend      0.812     0.867     0.839        30
+     add_income      0.963     0.867     0.912        30
+  invest_advice      0.935     0.967     0.951        30
+    credentials      1.000     1.000     1.000        30
+money_operation      1.000     0.867     0.929        30
+      off_topic      0.833     0.833     0.833        30
+
+       accuracy                          0.914       360
+      macro avg      0.919     0.914     0.915       360
+   weighted avg      0.919     0.914     0.915       360
+
+ошибок: 31; первые 15:
+              term → off_topic        слушай, расксажи про рассрочка для новичка плиз?
+          forecast → off_topic        мне хватит на две недели
+              term → off_topic        расскажи про дебетовая каррта для новичка ну
+      deficit_plan → forecast         скажи какой у меня план действий при минусе
+        add_income → add_spend        блин отдали долг 300 пж
+         add_spend → purchase_check   кстати взял колонку за тысяча, запиши
+         off_topic → invest_advice    бот что подарить деввушке на др
+          forecast → explain          смотри, покажи прогноз на месяц?
+     invest_advice → purchase_check   ээ стоит ли покупать биткоин
+      deficit_plan → term             план спасения бюджета
+         off_topic → add_spend        прикинь поставь будильник на семь плиз
+        categories → off_topic        слушай, структура расходво плиз
+      deficit_plan → forecast         так какой у меня план действий при минусе?
+         off_topic → deficit_plan     эй как выучить английский?
+   money_operation → purchase_check   ну купи куртку на зиму за 300 плиз
+
+=== onnx_test (360 фраз) ===
+accuracy: 0.9333   macro-F1: 0.9336
+                 precision    recall  f1-score   support
+
+ purchase_check      0.882     1.000     0.938        30
+       forecast      1.000     0.933     0.966        30
+        explain      0.933     0.933     0.933        30
+   deficit_plan      0.963     0.867     0.912        30
+     categories      1.000     0.867     0.929        30
+           term      0.967     0.967     0.967        30
+      add_spend      0.935     0.967     0.951        30
+     add_income      1.000     0.967     0.983        30
+  invest_advice      0.853     0.967     0.906        30
+    credentials      1.000     1.000     1.000        30
+money_operation      0.867     0.867     0.867        30
+      off_topic      0.839     0.867     0.852        30
+
+       accuracy                          0.933       360
+      macro avg      0.937     0.933     0.934       360
+   weighted avg      0.937     0.933     0.934       360
+
+ошибок: 24; первые 15:
+      deficit_plan → invest_advice    вопрос: сколько надо заработать чтобы не быть в минусе
+              term → money_operation  слушай, расксажи про рассрочка для новичка плиз?
+          forecast → off_topic        а минсу будеет
+        categories → explain          эй где я слил больше всего ну
+         off_topic → invest_advice    бот что подарить деввушке на др
+          forecast → off_topic        эй миинус будте
+         off_topic → money_operation  прикинь поставь будильник на семь плиз
+        categories → term             слушай, структура расходво плиз
+   money_operation → purchase_check   ну купи куртку на зиму за 300 плиз
+   money_operation → purchase_check   кстати купи игру за 2т.р.
+      deficit_plan → invest_advice    мне надо узнать: сколько надо заработать чтобы не быть в минусе?
+      deficit_plan → invest_advice    где взять деньги чтоб дотянуть
+     invest_advice → deficit_plan     а как зрааботать на бирже
+         add_spend → off_topic        скажи цвты 8000₽
+   money_operation → purchase_check   смотри, купи пауэрбанк за 7000 плз
+
+отчёты: C:\Users\root\Desktop\proj\hackaton-ikit-sep\training\reports

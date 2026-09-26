@@ -1,0 +1,495 @@
+{
+  "today": "2026-09-27",
+  "horizon_days": 30,
+  "headline": {
+    "state": "depends",
+    "next_income": {
+      "name": "Подработка курьером",
+      "date": "2026-10-03",
+      "days": 6,
+      "confirmed": false
+    },
+    "next_confirmed_income": {
+      "name": "Стипендия",
+      "date": "2026-10-20",
+      "days": 23,
+      "confirmed": true
+    },
+    "min_balance": 1160,
+    "min_date": "2026-10-19",
+    "first_negative_date": null,
+    "max_deficit": 0,
+    "days_of_spending_left": 4
+  },
+  "scenarios": {
+    "base": {
+      "days": [
+        {
+          "date": "2026-09-27",
+          "balance": 4720
+        },
+        {
+          "date": "2026-09-28",
+          "balance": 4440
+        },
+        {
+          "date": "2026-09-29",
+          "balance": 4160
+        },
+        {
+          "date": "2026-09-30",
+          "balance": 2980
+        },
+        {
+          "date": "2026-10-01",
+          "balance": 2700
+        },
+        {
+          "date": "2026-10-02",
+          "balance": 2070
+        },
+        {
+          "date": "2026-10-03",
+          "balance": 5790
+        },
+        {
+          "date": "2026-10-04",
+          "balance": 5510
+        },
+        {
+          "date": "2026-10-05",
+          "balance": 5230
+        },
+        {
+          "date": "2026-10-06",
+          "balance": 4950
+        },
+        {
+          "date": "2026-10-07",
+          "balance": 4670
+        },
+        {
+          "date": "2026-10-08",
+          "balance": 4240
+        },
+        {
+          "date": "2026-10-09",
+          "balance": 3960
+        },
+        {
+          "date": "2026-10-10",
+          "balance": 3680
+        },
+        {
+          "date": "2026-10-11",
+          "balance": 3400
+        },
+        {
+          "date": "2026-10-12",
+          "balance": 3120
+        },
+        {
+          "date": "2026-10-13",
+          "balance": 2840
+        },
+        {
+          "date": "2026-10-14",
+          "balance": 2560
+        },
+        {
+          "date": "2026-10-15",
+          "balance": 2280
+        },
+        {
+          "date": "2026-10-16",
+          "balance": 2000
+        },
+        {
+          "date": "2026-10-17",
+          "balance": 1720
+        },
+        {
+          "date": "2026-10-18",
+          "balance": 1440
+        },
+        {
+          "date": "2026-10-19",
+          "balance": 1160
+        },
+        {
+          "date": "2026-10-20",
+          "balance": 3680
+        },
+        {
+          "date": "2026-10-21",
+          "balance": 3400
+        },
+        {
+          "date": "2026-10-22",
+          "balance": 3120
+        },
+        {
+          "date": "2026-10-23",
+          "balance": 2840
+        },
+        {
+          "date": "2026-10-24",
+          "balance": 2560
+        },
+        {
+          "date": "2026-10-25",
+          "balance": 2280
+        },
+        {
+          "date": "2026-10-26",
+          "balance": 2000
+        }
+      ],
+      "stats": {
+        "min": 1160,
+        "min_date": "2026-10-19",
+        "first_negative_date": null,
+        "last_negative_date": null,
+        "max_deficit": 0,
+        "first_negative_amount": 0
+      }
+    },
+    "pessimistic": {
+      "days": [
+        {
+          "date": "2026-09-27",
+          "balance": 4720
+        },
+        {
+          "date": "2026-09-28",
+          "balance": 4440
+        },
+        {
+          "date": "2026-09-29",
+          "balance": 4160
+        },
+        {
+          "date": "2026-09-30",
+          "balance": 2980
+        },
+        {
+          "date": "2026-10-01",
+          "balance": 2700
+        },
+        {
+          "date": "2026-10-02",
+          "balance": 2070
+        },
+        {
+          "date": "2026-10-03",
+          "balance": 1790
+        },
+        {
+          "date": "2026-10-04",
+          "balance": 1510
+        },
+        {
+          "date": "2026-10-05",
+          "balance": 1230
+        },
+        {
+          "date": "2026-10-06",
+          "balance": 950
+        },
+        {
+          "date": "2026-10-07",
+          "balance": 670
+        },
+        {
+          "date": "2026-10-08",
+          "balance": 240
+        },
+        {
+          "date": "2026-10-09",
+          "balance": -40
+        },
+        {
+          "date": "2026-10-10",
+          "balance": -320
+        },
+        {
+          "date": "2026-10-11",
+          "balance": -600
+        },
+        {
+          "date": "2026-10-12",
+          "balance": -880
+        },
+        {
+          "date": "2026-10-13",
+          "balance": -1160
+        },
+        {
+          "date": "2026-10-14",
+          "balance": -1440
+        },
+        {
+          "date": "2026-10-15",
+          "balance": -1720
+        },
+        {
+          "date": "2026-10-16",
+          "balance": -2000
+        },
+        {
+          "date": "2026-10-17",
+          "balance": -2280
+        },
+        {
+          "date": "2026-10-18",
+          "balance": -2560
+        },
+        {
+          "date": "2026-10-19",
+          "balance": -2840
+        },
+        {
+          "date": "2026-10-20",
+          "balance": -320
+        },
+        {
+          "date": "2026-10-21",
+          "balance": -600
+        },
+        {
+          "date": "2026-10-22",
+          "balance": -880
+        },
+        {
+          "date": "2026-10-23",
+          "balance": -1160
+        },
+        {
+          "date": "2026-10-24",
+          "balance": -1440
+        },
+        {
+          "date": "2026-10-25",
+          "balance": -1720
+        },
+        {
+          "date": "2026-10-26",
+          "balance": -2000
+        }
+      ],
+      "stats": {
+        "min": -2840,
+        "min_date": "2026-10-19",
+        "first_negative_date": "2026-10-09",
+        "last_negative_date": "2026-10-26",
+        "max_deficit": 2840,
+        "first_negative_amount": 40
+      }
+    },
+    "with_purchase": null,
+    "with_purchase_pessimistic": null
+  },
+  "events": [
+    {
+      "date": "2026-09-30",
+      "kind": "obligation",
+      "name": "Проездной",
+      "amount": 900,
+      "confirmed": null
+    },
+    {
+      "date": "2026-10-02",
+      "kind": "obligation",
+      "name": "Связь",
+      "amount": 350,
+      "confirmed": null
+    },
+    {
+      "date": "2026-10-03",
+      "kind": "income",
+      "name": "Подработка курьером",
+      "amount": 4000,
+      "confirmed": false
+    },
+    {
+      "date": "2026-10-08",
+      "kind": "obligation",
+      "name": "Подписка на кино",
+      "amount": 150,
+      "confirmed": null
+    },
+    {
+      "date": "2026-10-20",
+      "kind": "income",
+      "name": "Стипендия",
+      "amount": 2800,
+      "confirmed": true
+    }
+  ],
+  "money_types": {
+    "stable_income": {
+      "total": 2800,
+      "items": [
+        {
+          "id": "i2",
+          "name": "Стипендия",
+          "amount": 2800,
+          "date": "2026-10-20",
+          "confirmed": true
+        }
+      ]
+    },
+    "unstable_income": {
+      "total": 4000,
+      "items": [
+        {
+          "id": "i1",
+          "name": "Подработка курьером",
+          "amount": 4000,
+          "date": "2026-10-03",
+          "confirmed": false
+        }
+      ]
+    },
+    "stable_expenses": {
+      "total": 1400,
+      "items": [
+        {
+          "id": "o1",
+          "name": "Проездной",
+          "amount": 900,
+          "date": "2026-09-30"
+        },
+        {
+          "id": "o2",
+          "name": "Связь",
+          "amount": 350,
+          "date": "2026-10-02"
+        },
+        {
+          "id": "o3",
+          "name": "Подписка на кино",
+          "amount": 150,
+          "date": "2026-10-08"
+        }
+      ]
+    },
+    "variable_expenses": {
+      "total": 8400,
+      "daily": 280,
+      "days": 30,
+      "one_off": []
+    },
+    "reliable_total": 6400
+  },
+  "goal": {
+    "monthly_surplus": -3000,
+    "per_day": -100.0,
+    "remaining": 9000,
+    "eta": null,
+    "late_days": null,
+    "need_monthly": 3215,
+    "eta_with_purchase": null,
+    "shift_days": null
+  },
+  "purchase": null,
+  "deficit_plan": {
+    "deficit": 2840,
+    "by_date": "2026-10-19",
+    "first_needed_amount": 40,
+    "first_needed_date": "2026-10-09",
+    "based_on": "pessimistic",
+    "options": [
+      {
+        "kind": "reduce",
+        "per_day": 124,
+        "new_daily": 156,
+        "until": "2026-10-26",
+        "days": 30,
+        "possible": true,
+        "ease": "hard",
+        "flexible_per_day": 80
+      },
+      {
+        "kind": "earn",
+        "amount": 2840,
+        "by_date": "2026-10-19",
+        "first_amount": 40,
+        "first_date": "2026-10-09",
+        "ease": "hard"
+      }
+    ]
+  },
+  "history": [
+    {
+      "date": "2026-09-25",
+      "name": "Подработка курьером",
+      "amount": 2600,
+      "category": "Доход",
+      "regular": false,
+      "large": false
+    },
+    {
+      "date": "2026-09-23",
+      "name": "Кафе с друзьями",
+      "amount": -1900,
+      "category": "Кафе и доставка",
+      "regular": false,
+      "large": true
+    },
+    {
+      "date": "2026-09-20",
+      "name": "Стипендия",
+      "amount": 2800,
+      "category": "Доход",
+      "regular": true,
+      "large": false
+    },
+    {
+      "date": "2026-09-18",
+      "name": "Продукты",
+      "amount": -760,
+      "category": "Еда",
+      "regular": false,
+      "large": false
+    },
+    {
+      "date": "2026-09-11",
+      "name": "Подработка курьером",
+      "amount": 1500,
+      "category": "Доход",
+      "regular": false,
+      "large": false
+    },
+    {
+      "date": "2026-09-08",
+      "name": "Подписка на кино",
+      "amount": -150,
+      "category": "Обязательное",
+      "regular": true,
+      "large": false
+    },
+    {
+      "date": "2026-09-02",
+      "name": "Связь",
+      "amount": -350,
+      "category": "Обязательное",
+      "regular": true,
+      "large": false
+    }
+  ],
+  "show_learn_card": false,
+  "assumptions": [
+    "Обычные траты — 280 ₽ в день, оценка по истории за 2 месяца",
+    "Постоянный доход придёт в указанную дату и в указанной сумме",
+    "«Подработка курьером» может не прийти — показываем прогноз и с ним, и без него",
+    "Обязательные платежи спишутся в указанные даты",
+    "Прошлые операции уже учтены в остатке на карте и в прогноз не входят"
+  ],
+  "unknowns": [
+    "Будущие необычные траты: подарки, поломки, внезапные поездки",
+    "Придут ли деньги точно в срок. Если перевод задержится, график станет хуже",
+    "Как изменятся твои привычки. Траты в день — это среднее, а не план",
+    "Что будет после 26 октября: прогноз строится на 30 дней"
+  ]
+}

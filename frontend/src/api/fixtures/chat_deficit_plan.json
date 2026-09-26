@@ -1,0 +1,133 @@
+{
+  "request": {
+    "situation": {
+      "today": "2026-09-27",
+      "balance": 6900,
+      "daily": 300,
+      "incomes": [
+        {
+          "id": "i1",
+          "name": "Стипендия",
+          "amount": 3200,
+          "date": "2026-10-10",
+          "confirmed": true
+        },
+        {
+          "id": "i2",
+          "name": "Перевод от родителей",
+          "amount": 10000,
+          "date": "2026-10-15",
+          "confirmed": true
+        }
+      ],
+      "obligations": [
+        {
+          "id": "o1",
+          "name": "Подписка на музыку",
+          "amount": 200,
+          "date": "2026-10-01"
+        },
+        {
+          "id": "o2",
+          "name": "Связь",
+          "amount": 400,
+          "date": "2026-10-03"
+        },
+        {
+          "id": "o3",
+          "name": "Общежитие",
+          "amount": 1800,
+          "date": "2026-10-05"
+        }
+      ],
+      "spends": [],
+      "goal": {
+        "name": "Ноутбук",
+        "target": 40000,
+        "current": 25000,
+        "date": "2027-06-01"
+      },
+      "categories": [
+        {
+          "name": "Еда",
+          "per_day": 180
+        },
+        {
+          "name": "Транспорт",
+          "per_day": 60
+        },
+        {
+          "name": "Кафе и доставка",
+          "per_day": 40
+        },
+        {
+          "name": "Прочее",
+          "per_day": 20
+        }
+      ],
+      "history": []
+    },
+    "purchase": {
+      "amount": 3000,
+      "date": "2026-09-27",
+      "name": "Наушники"
+    },
+    "message": "что делать чтобы не уйти в минус",
+    "history": []
+  },
+  "response": {
+    "intent": "deficit_plan",
+    "tool_calls": [
+      {
+        "name": "deficit_plan",
+        "args": {
+          "based_on": "purchase"
+        }
+      }
+    ],
+    "headline": "Чтобы не уйти в минус, нужно закрыть 2 400 ₽",
+    "tone": "bad",
+    "facts": [
+      {
+        "label": "Перенести покупку на 15 октября",
+        "value": "легко",
+        "tone": "good"
+      },
+      {
+        "label": "Тратить на 185 ₽ в день меньше",
+        "value": "сложно · до 14 октября, 18 дней",
+        "tone": null
+      },
+      {
+        "label": "Найти 2 400 ₽ до 9 октября",
+        "value": "сложно",
+        "tone": null
+      },
+      {
+        "label": "Нужно к первому дню без денег",
+        "value": "1 200 ₽ до 5 октября",
+        "tone": null
+      }
+    ],
+    "text": "Вот варианты. Выбираешь ты — я только считаю.",
+    "source": null,
+    "purchase": null,
+    "proposed_entry": null,
+    "actions": [
+      {
+        "kind": "show_jobs",
+        "label": "Где искать подработку",
+        "payload": {
+          "amount": 2400
+        }
+      }
+    ],
+    "nlu": {
+      "mode": "sklearn",
+      "label": "deficit_plan",
+      "confidence": 0.9967
+    },
+    "explainer": "templates",
+    "guarded": false
+  }
+}

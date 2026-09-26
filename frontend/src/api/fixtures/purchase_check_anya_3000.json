@@ -1,0 +1,60 @@
+{
+  "purchase": { "amount": 3000, "date": "2026-09-27", "name": "Наушники" },
+  "verdict": "deficit",
+  "before": {
+    "min": 600,
+    "min_date": "2026-10-09",
+    "first_negative_date": null,
+    "last_negative_date": null,
+    "max_deficit": 0,
+    "first_negative_amount": 0
+  },
+  "after": {
+    "min": -2400,
+    "min_date": "2026-10-09",
+    "first_negative_date": "2026-10-05",
+    "last_negative_date": "2026-10-14",
+    "max_deficit": 2400,
+    "first_negative_amount": 1200
+  },
+  "earliest_safe_date": "2026-10-15",
+  "safe_depends_on_unconfirmed": false,
+  "goal": {
+    "monthly_surplus": 1800,
+    "per_day": 60,
+    "remaining": 15000,
+    "eta": "2027-06-04",
+    "late_days": 3,
+    "need_monthly": 1822,
+    "eta_with_purchase": "2027-07-24",
+    "shift_days": 50
+  },
+  "plan": {
+    "deficit": 2400,
+    "by_date": "2026-10-09",
+    "first_needed_amount": 1200,
+    "first_needed_date": "2026-10-05",
+    "based_on": "purchase",
+    "options": [
+      { "kind": "postpone", "date": "2026-10-15", "ease": "easy" },
+      {
+        "kind": "reduce",
+        "per_day": 185,
+        "new_daily": 115,
+        "until": "2026-10-14",
+        "days": 18,
+        "possible": true,
+        "ease": "hard",
+        "flexible_per_day": 60
+      },
+      {
+        "kind": "earn",
+        "amount": 2400,
+        "by_date": "2026-10-09",
+        "first_amount": 1200,
+        "first_date": "2026-10-05",
+        "ease": "hard"
+      }
+    ]
+  }
+}

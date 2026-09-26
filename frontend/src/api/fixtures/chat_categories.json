@@ -1,0 +1,121 @@
+{
+  "request": {
+    "situation": {
+      "today": "2026-09-27",
+      "balance": 6900,
+      "daily": 300,
+      "incomes": [
+        {
+          "id": "i1",
+          "name": "Стипендия",
+          "amount": 3200,
+          "date": "2026-10-10",
+          "confirmed": true
+        },
+        {
+          "id": "i2",
+          "name": "Перевод от родителей",
+          "amount": 10000,
+          "date": "2026-10-15",
+          "confirmed": true
+        }
+      ],
+      "obligations": [
+        {
+          "id": "o1",
+          "name": "Подписка на музыку",
+          "amount": 200,
+          "date": "2026-10-01"
+        },
+        {
+          "id": "o2",
+          "name": "Связь",
+          "amount": 400,
+          "date": "2026-10-03"
+        },
+        {
+          "id": "o3",
+          "name": "Общежитие",
+          "amount": 1800,
+          "date": "2026-10-05"
+        }
+      ],
+      "spends": [],
+      "goal": {
+        "name": "Ноутбук",
+        "target": 40000,
+        "current": 25000,
+        "date": "2027-06-01"
+      },
+      "categories": [
+        {
+          "name": "Еда",
+          "per_day": 180
+        },
+        {
+          "name": "Транспорт",
+          "per_day": 60
+        },
+        {
+          "name": "Кафе и доставка",
+          "per_day": 40
+        },
+        {
+          "name": "Прочее",
+          "per_day": 20
+        }
+      ],
+      "history": []
+    },
+    "purchase": null,
+    "message": "на что я больше всего трачу",
+    "history": []
+  },
+  "response": {
+    "intent": "categories",
+    "tool_calls": [
+      {
+        "name": "categories",
+        "args": {
+          "period": "2 месяца"
+        }
+      }
+    ],
+    "headline": "Куда уходят деньги",
+    "tone": "neutral",
+    "facts": [
+      {
+        "label": "Еда",
+        "value": "5 400 ₽/мес · 60%",
+        "tone": null
+      },
+      {
+        "label": "Транспорт",
+        "value": "1 800 ₽/мес · 20%",
+        "tone": null
+      },
+      {
+        "label": "Кафе и доставка",
+        "value": "1 200 ₽/мес · 13%",
+        "tone": null
+      },
+      {
+        "label": "Прочее",
+        "value": "600 ₽/мес · 7%",
+        "tone": null
+      }
+    ],
+    "text": "Больше всего уходит на «еда». Это средние за 2 месяца, а не точные будущие траты.",
+    "source": null,
+    "purchase": null,
+    "proposed_entry": null,
+    "actions": [],
+    "nlu": {
+      "mode": "sklearn",
+      "label": "categories",
+      "confidence": 0.9667
+    },
+    "explainer": "templates",
+    "guarded": false
+  }
+}
