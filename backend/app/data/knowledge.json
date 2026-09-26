@@ -30,5 +30,9 @@
   { "key": "инфляц", "title": "Инфляция",
     "text": "Устойчивый рост общего уровня цен на товары и услуги. Когда цены растут быстрее доходов, на те же деньги можно купить все меньше. Ее учитывают, когда копят на что-то дорогое.",
     "source_title": "fincult.info — сайт Банка России",
-    "source_url": "https://fincult.info/article/chto-takoe-inflyatsiya-i-otkuda-ona-beretsya/" }
+    "source_url": "https://fincult.info/article/chto-takoe-inflyatsiya-i-otkuda-ona-beretsya/" },
+  { "key": "ликвидн", "title": "Ликвидность",
+    "text": "Возможность быстро и без потерь вернуть вложенные деньги. Ликвидное — то, что нетрудно быстро продать по справедливой цене. Если быстро продать можно только со скидкой, ликвидность низкая.",
+    "source_title": "fincult.info — сайт Банка России",
+    "source_url": "https://fincult.info/article/kak-sledovat-svoemu-finansovomu-planu-i-ne-sbivatsya-s-puti/" }
 ]
