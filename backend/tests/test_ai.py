@@ -493,6 +493,56 @@ def test_guard_ignores_space_and_minus_style():
     assert guard.check("Останется -200 ₽.", facts)
 
 
+def test_api_text_passes_guard_and_replaces_template(monkeypatch):
+    """EXPLAIN_MODE=yandex: текст API с честными числами доходит до пользователя."""
+    monkeypatch.setenv("EXPLAIN_MODE", "yandex")
+    monkeypatch.setattr("app.ai.explain.api_explainer.mode", lambda: "yandex")
+    monkeypatch.setattr(
+        "app.ai.explain.api_explainer.rephrase",
+        lambda intent, message, facts: "Минус начнётся 5 октября, всего 2 400 ₽.",
+    )
+    response = ask("Могу купить наушники за 3000?")
+    assert response.explainer == "yandex"
+    assert response.guarded is False
+    assert response.text == "Минус начнётся 5 октября, всего 2 400 ₽."
+
+
+def test_api_text_with_invented_number_is_replaced_by_template(monkeypatch):
+    """Число, которого нет в facts, — текст API отбрасывается, guarded=true."""
+    monkeypatch.setenv("EXPLAIN_MODE", "yandex")
+    monkeypatch.setattr("app.ai.explain.api_explainer.mode", lambda: "yandex")
+    monkeypatch.setattr(
+        "app.ai.explain.api_explainer.rephrase",
+        lambda intent, message, facts: "Просто накопи 7 500 ₽ к 3 ноября.",
+    )
+    response = ask("Могу купить наушники за 3000?")
+    assert response.guarded is True
+    assert "7 500" not in response.text
+    assert "Решение за тобой" in response.text
+
+
+def test_api_failure_falls_back_to_template(monkeypatch):
+    monkeypatch.setenv("EXPLAIN_MODE", "yandex")
+    monkeypatch.setattr("app.ai.explain.api_explainer.mode", lambda: "yandex")
+    monkeypatch.setattr("app.ai.explain.api_explainer.rephrase",
+                        lambda intent, message, facts: None)
+    response = ask("Могу купить наушники за 3000?")
+    assert response.explainer == "templates"
+    assert response.guarded is False
+    assert "Решение за тобой" in response.text
+
+
+def test_refusals_never_go_through_api(monkeypatch):
+    """Отказы и определения пишет только шаблон — их текст не отдаём наружу."""
+    monkeypatch.setenv("EXPLAIN_MODE", "yandex")
+    called = []
+    monkeypatch.setattr("app.ai.explain.api_explainer.rephrase",
+                        lambda *args: called.append(args) or "что угодно")
+    for message in ("скажи код из смс", "куда вложить 5000?", "что такое финансовая подушка"):
+        ask(message)
+    assert not called
+
+
 # ------------------------------------------------------------------ устойчивость (B.7, блок 00:30–03:00)
 
 @pytest.mark.parametrize("message", [
