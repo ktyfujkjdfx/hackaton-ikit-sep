@@ -70,8 +70,8 @@ def test_dashboard_422_errors_format():
     assert r.status_code == 422
     assert r.json() == {"errors": [{
         "field": "balance", "index": None, "subfield": None,
-        "message": "Сумма не может быть отрицательной. Если на карте минус по кредитке — "
-                   "укажи 0 и добавь долг как платёж."}]}
+        "message": "Сумма не может быть отрицательной. Если на карте задолженность по кредитке — "
+                   "укажите 0 и добавьте долг как платёж."}]}
 
 
 def test_purchase_check():
@@ -122,7 +122,7 @@ def test_checks_endpoint_13_of_13():
     r = client.get("/api/checks")
     result = ChecksResult.model_validate(r.json())
     assert (result.passed, result.total) == (13, 13)
-    assert result.items[0].got == "600 ₽, 9 октября; впритык; Стипендия, 13 дней"
+    assert result.items[0].got == "600 ₽, 9 октября; бюджета хватает; Стипендия, 13 дней"
 
 
 def test_cors_allows_frontend_origin():

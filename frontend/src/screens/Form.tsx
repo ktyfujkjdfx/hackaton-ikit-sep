@@ -26,13 +26,13 @@ function validate(sit: {
 }): ValidationError[] {
   const errors: ValidationError[] = []
   if (sit.balance === null || Number.isNaN(sit.balance)) {
-    errors.push({ field: 'balance', index: null, subfield: null, message: 'Укажи сумму на карте (можно 0).' })
+    errors.push({ field: 'balance', index: null, subfield: null, message: 'Укажите сумму на карте (можно 0).' })
   } else if (sit.balance < 0) {
     errors.push({
       field: 'balance',
       index: null,
       subfield: null,
-      message: 'Сумма не может быть отрицательной. Если на карте минус по кредитке — укажи 0.',
+      message: 'Сумма не может быть отрицательной. Если на карте задолженность по кредитке — укажите 0.',
     })
   }
   sit.incomes.forEach((i, k) => {
@@ -40,9 +40,9 @@ function validate(sit: {
       errors.push({ field: 'incomes', index: k, subfield: 'amount', message: 'Сумма поступления должна быть больше нуля.' })
     }
     if (!i.date) {
-      errors.push({ field: 'incomes', index: k, subfield: 'date', message: 'Укажи дату поступления.' })
+      errors.push({ field: 'incomes', index: k, subfield: 'date', message: 'Укажите дату поступления.' })
     } else if (dayIndex(TODAY, i.date) < 0) {
-      errors.push({ field: 'incomes', index: k, subfield: 'date', message: 'Дата поступления уже прошла. Укажи следующую.' })
+      errors.push({ field: 'incomes', index: k, subfield: 'date', message: 'Дата поступления уже прошла. Укажите следующую.' })
     }
   })
   sit.obligations.forEach((o, k) => {
@@ -50,20 +50,20 @@ function validate(sit: {
       errors.push({ field: 'obligations', index: k, subfield: 'amount', message: 'Сумма платежа должна быть больше нуля.' })
     }
     if (!o.date) {
-      errors.push({ field: 'obligations', index: k, subfield: 'date', message: 'Укажи дату платежа.' })
+      errors.push({ field: 'obligations', index: k, subfield: 'date', message: 'Укажите дату платежа.' })
     } else if (dayIndex(TODAY, o.date) < 0) {
       errors.push({ field: 'obligations', index: k, subfield: 'date', message: 'Дата платежа уже прошла.' })
     }
   })
   if (sit.daily === null || Number.isNaN(sit.daily)) {
-    errors.push({ field: 'daily', index: null, subfield: null, message: 'Укажи примерные траты в день или выбери диапазон.' })
+    errors.push({ field: 'daily', index: null, subfield: null, message: 'Укажите примерные траты в день или выберите диапазон.' })
   } else if (sit.daily < 0) {
     errors.push({ field: 'daily', index: null, subfield: null, message: 'Траты не могут быть отрицательными.' })
   }
   if (sit.goal) {
     const g = sit.goal
     if (!(g.target > 0)) {
-      errors.push({ field: 'goal', index: null, subfield: null, message: 'Укажи, сколько нужно на цель.' })
+      errors.push({ field: 'goal', index: null, subfield: null, message: 'Укажите, сколько нужно на цель.' })
     } else if (!(g.current >= 0)) {
       errors.push({ field: 'goal', index: null, subfield: null, message: 'Сколько уже накоплено — число от 0.' })
     } else if (g.current >= g.target) {
@@ -139,7 +139,7 @@ export function Form() {
       history: [],
     }
     dispatch({ type: 'LOAD_PERSONA_START', personaId: 'custom' })
-    dispatch({ type: 'LOAD_PERSONA_DONE', personaId: 'custom', who: 'Твоя анкета', situation })
+    dispatch({ type: 'LOAD_PERSONA_DONE', personaId: 'custom', who: 'Ваша анкета', situation })
     dispatch({ type: 'GO', screen: 'app' })
   }
 

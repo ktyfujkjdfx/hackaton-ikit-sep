@@ -8,7 +8,7 @@ type Props = {
 }
 
 function titleFor(name: string): string {
-  return /стипенд/i.test(name) ? 'До стипендии' : `До поступления «${name}»`
+  return /стипенд/i.test(name) ? 'До основного поступления средств' : `До поступления «${name}»`
 }
 
 export function Hero({ dashboard, situation }: Props) {
@@ -16,7 +16,7 @@ export function Hero({ dashboard, situation }: Props) {
   const pessimistic = dashboard.scenarios.pessimistic
 
   let pillClass = 'unknown'
-  let pillText = 'Нет даты дохода'
+  let pillText = 'Нет даты поступления'
   let verdict: ReactNode
 
   if (!headline.next_income) {
@@ -35,7 +35,7 @@ export function Hero({ dashboard, situation }: Props) {
     pillText = '⚠ Может не хватить'
     verdict = (
       <>
-        Может не хватить <b className="bad">{rub(headline.max_deficit)}</b>. Минус начнётся{' '}
+        Может не хватить <b className="bad">{rub(headline.max_deficit)}</b>. Превышение бюджета начнётся{' '}
         <b>{headline.first_negative_date ? fd(headline.first_negative_date) : '—'}</b>.
       </>
     )
@@ -44,17 +44,17 @@ export function Hero({ dashboard, situation }: Props) {
     pillText = 'Зависит от подработки'
     verdict = (
       <>
-        Хватит, <b>если придёт подработка</b>. Если нет — не хватит{' '}
+        Денег хватает, <b>если придёт подработка</b>. Если нет — не хватит{' '}
         <b className="bad">{rub(pessimistic.stats.max_deficit)}</b> с {fd(pessimistic.stats.first_negative_date)}.
       </>
     )
   } else if (headline.state === 'tight') {
     pillClass = 'tight'
-    pillText = 'Впритык'
+    pillText = 'Бюджета хватает до следующего поступления средств'
     verdict = (
       <>
-        Хватит впритык: к <b>{fd(headline.min_date)}</b> останется <b>{rub(headline.min_balance)}</b>. Это{' '}
-        {situation.daily > 0 ? daysWord(headline.days_of_spending_left) : ''} обычных трат.
+        Денег достаточно до <b>{fd(headline.min_date)}</b>, останется <b>{rub(headline.min_balance)}</b>
+        {situation.daily > 0 ? <> — это примерно {daysWord(headline.days_of_spending_left)} обычных трат</> : null}.
       </>
     )
   } else {
@@ -62,7 +62,7 @@ export function Hero({ dashboard, situation }: Props) {
     pillText = '✓ Хватит'
     verdict = (
       <>
-        Хватит. Самый низкий остаток — <b>{rub(headline.min_balance)}</b>, {fd(headline.min_date)}.
+        Денег хватает. Самый низкий остаток — <b>{rub(headline.min_balance)}</b>, {fd(headline.min_date)}.
       </>
     )
   }
@@ -86,8 +86,8 @@ export function Hero({ dashboard, situation }: Props) {
       </div>
       <p className="verdict">{verdict}</p>
       <p className="caveat">
-        Это прогноз, а не гарантия. Обычные траты — {rub(situation.daily)} в день, оценка{' '}
-        {situation.categories ? 'по истории за 2 месяца' : 'из анкеты'}.
+        Это прогноз, а не гарантия. Обычные траты — {rub(situation.daily)} в день,{' '}
+        {situation.categories ? 'рассчитаны по вашей истории за последние 2 месяца' : 'взяты из вашей анкеты'}.
       </p>
     </div>
   )

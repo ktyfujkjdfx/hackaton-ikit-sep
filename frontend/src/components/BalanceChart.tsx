@@ -227,7 +227,7 @@ export function BalanceChart({ dashboard }: { dashboard: Dashboard }) {
           {lo < 0 && (
             <span>
               <i className="neg" />
-              минус
+              превышение бюджета
             </span>
           )}
         </div>

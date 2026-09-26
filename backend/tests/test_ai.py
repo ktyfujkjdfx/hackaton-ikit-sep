@@ -328,7 +328,7 @@ def test_01_purchase_check_headphones():
 
 def test_02_follow_up_amount_uses_history():
     history = [{"role": "user", "text": "Могу купить наушники за 3000?"},
-               {"role": "assistant", "text": "Если купить сейчас — будет минус"}]
+               {"role": "assistant", "text": "Если купить сейчас, вы выйдете за границы бюджета"}]
     response = ask("а за 1000?", history=history)
     assert response.intent == "purchase_check"
     assert response.tool_calls[0].args["amount"] == 1000
@@ -352,7 +352,7 @@ def test_04_explain_shows_daily_times_days():
 def test_05_deficit_plan_without_and_with_purchase():
     clean = ask("что делать чтобы не уйти в минус")
     assert clean.intent == "deficit_plan"
-    assert "Минуса не видно" in clean.headline
+    assert "Превышения бюджета не видно" in clean.headline
 
     with_purchase = ask("что делать чтобы не уйти в минус",
                         purchase={"amount": 3000, "date": "2026-09-27", "name": "Наушники"})
@@ -647,7 +647,7 @@ def test_local_explainer_without_model_falls_back_to_templates(monkeypatch):
     assert response.intent == "purchase_check"
     assert response.explainer == "templates"
     assert response.guarded is False
-    assert "Решение за тобой" in response.text
+    assert "Решение за вами" in response.text
 
 
 # ------------------------------------------------------------------ грязные данные на всех 12 метках
@@ -732,7 +732,7 @@ def test_refusals_never_depend_on_data():
 # ------------------------------------------------------------------ guard
 
 def test_guard_accepts_only_known_numbers():
-    facts = [{"label": "Самый большой минус", "value": f"2{NBSP}400{NBSP}₽"},
+    facts = [{"label": "Максимальное превышение бюджета", "value": f"2{NBSP}400{NBSP}₽"},
              {"label": "Первый день без денег", "value": "5 октября"}]
     assert guard.check("Минус 2 400 ₽ начнётся 5 октября.", facts)
     assert not guard.check("Минус 2 500 ₽ начнётся 5 октября.", facts)
@@ -770,7 +770,7 @@ def test_api_text_with_invented_number_is_replaced_by_template(monkeypatch):
     response = ask("Могу купить наушники за 3000?")
     assert response.guarded is True
     assert "7 500" not in response.text
-    assert "Решение за тобой" in response.text
+    assert "Решение за вами" in response.text
 
 
 def test_api_failure_falls_back_to_template(monkeypatch):
@@ -781,7 +781,7 @@ def test_api_failure_falls_back_to_template(monkeypatch):
     response = ask("Могу купить наушники за 3000?")
     assert response.explainer == "templates"
     assert response.guarded is False
-    assert "Решение за тобой" in response.text
+    assert "Решение за вами" in response.text
 
 
 def test_refusals_never_go_through_api(monkeypatch):
@@ -866,7 +866,7 @@ def test_prompt_format_is_stable():
     from app.ai.explain import prompt
 
     text = prompt.user_prompt("Могу купить кроссовки за 4000?", "purchase_check",
-                              "Если купить сейчас — будет минус",
+                              "Если купить сейчас, вы выйдете за границы бюджета",
                               [{"label": "Первый день без денег", "value": "4 октября"}])
     assert text.splitlines()[0] == "ВОПРОС: Могу купить кроссовки за 4000?"
     assert "НАМЕРЕНИЕ: purchase_check" in text

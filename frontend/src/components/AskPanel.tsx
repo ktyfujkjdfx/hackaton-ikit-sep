@@ -52,7 +52,7 @@ export function AskPanel() {
         message: {
           role: 'bot',
           resp: buildChatResponse({
-            text: 'Не получилось получить ответ — сервер недоступен. Попробуй ещё раз.',
+            text: 'Не получилось получить ответ — сервер недоступен. Попробуйте ещё раз.',
             nlu: { mode: 'rules', label: 'clarify', confidence: 0 },
           }),
         },
@@ -98,7 +98,7 @@ export function AskPanel() {
           ✕
         </button>
         <b>Спросить</b>
-        <span>Пиши как удобно. AI понимает вопрос, а все суммы считает код.</span>
+        <span>Пишите как удобно. AI понимает вопрос, а все суммы считает код.</span>
       </div>
       <div className="msgs" aria-live="polite" ref={msgsRef}>
         {messages.map((m, i) =>

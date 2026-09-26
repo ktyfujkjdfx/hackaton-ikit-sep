@@ -29,7 +29,7 @@ export function ExplainDrawer({ dashboard, situation }: { dashboard: Dashboard; 
         </div>
         <div className="drawer-body">
           <div className="lesson">
-            Меняй любую цифру ниже — прогноз и график пересчитаются сразу. Считает всё движок на сервере, ничего
+            Меняйте любую цифру ниже — прогноз и график пересчитаются сразу. Считает всё движок на сервере, ничего
             не додумывается.
           </div>
 

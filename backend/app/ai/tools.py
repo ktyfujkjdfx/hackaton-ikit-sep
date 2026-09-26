@@ -99,16 +99,16 @@ def _purchase_check(slots: Slots, sit: Any, active: Any) -> Execution:
                 when="сейчас" if horizon_index == 0 else port.day(when))
         )
         execution.facts = [
-            _fact("Первый день без денег", port.day(_get(after, "first_negative_date"))),
-            _fact("Самый большой минус", port.rub(_get(after, "max_deficit")), TONE_BAD),
+            _fact("Дата, исчерпание средств", port.day(_get(after, "first_negative_date"))),
+            _fact("Максимальное превышение бюджета", port.rub(_get(after, "max_deficit")), TONE_BAD),
         ]
         if base_bad:
             execution.facts.append(_fact(
-                "Без покупки минус был",
+                "Без покупки превышение было",
                 f"{port.rub(_get(before, 'max_deficit'))} с {port.day(_get(before, 'first_negative_date'))}",
             ))
         execution.facts.append(_fact(
-            "Без минуса можно купить",
+            "Без превышения бюджета можно купить",
             f"с {port.day(safe_date)}" if safe_date else "не в ближайшие 30 дней",
             TONE_GOOD if safe_date else None,
         ))
@@ -136,7 +136,7 @@ def _purchase_check(slots: Slots, sit: Any, active: Any) -> Execution:
 
 
 def _plan_facts(plan: Any) -> list[dict]:
-    """Варианты выхода из минуса как факты: «что сделать» → «легко/сложно» (B.5)."""
+    """Варианты остаться в границах бюджета как факты: «что сделать» → «легко/сложно» (B.5)."""
     if plan is None:
         return []
     facts: list[dict] = []
@@ -147,11 +147,11 @@ def _plan_facts(plan: Any) -> list[dict]:
             label = f"Перенести покупку на {port.day(_get(option, 'date'))}"
         elif kind == "reduce":
             if not _get(option, "possible", True):
-                facts.append(_fact("Тратить меньше", "не хватит даже без обычных трат", TONE_BAD))
+                facts.append(_fact("Сократить расходы", "не хватит даже без обычных трат", TONE_BAD))
                 continue
-            label = f"Тратить на {port.rub(_get(option, 'per_day'))} в день меньше"
-            ease = (f"{ease} · до {port.day(_get(option, 'until'))}, "
-                    f"{port.days(_get(option, 'days'))}")
+            label = f"Сократить расходы на {port.rub(_get(option, 'per_day'))} в день"
+            ease = (f"{ease} · с сегодняшнего дня по {port.day(_get(option, 'until'))} "
+                    f"({port.days(_get(option, 'days'))})")
         elif kind == "earn":
             label = (f"Найти {port.rub(_get(option, 'amount'))} "
                      f"до {port.day(_get(option, 'by_date'))}")
@@ -185,16 +185,16 @@ def _forecast(sit: Any) -> Execution:
     first_negative = _get(head, "first_negative_date")
     state = _get(head, "state")
     if first_negative:
-        execution.facts.append(_fact("Минус начнётся", port.day(first_negative), TONE_BAD))
+        execution.facts.append(_fact("Превышение бюджета начнётся", port.day(first_negative), TONE_BAD))
         execution.tone = TONE_BAD
         execution.text = templates.FORECAST_RISK + templates.FORECAST_TAIL
     elif state == "depends":
-        # База без минуса только потому, что учтён непостоянный доход. Молчать об этом нельзя:
+        # База в границах бюджета только потому, что учтён непостоянный доход. Молчать нельзя:
         # «денег хватает» здесь — неправда, если подработка не придёт (контракт, раздел 7).
         pessimistic = eng.stats(sit, eng.series(sit, pessimistic=True))
         execution.facts.append(_fact(
             "Если непостоянный доход не придёт",
-            f"минус с {port.day(_get(pessimistic, 'first_negative_date'))}, "
+            f"превышение с {port.day(_get(pessimistic, 'first_negative_date'))}, "
             f"до {port.rub(_get(pessimistic, 'max_deficit'))}",
             TONE_BAD,
         ))
@@ -277,7 +277,7 @@ def _deficit_plan(sit: Any, active: Any) -> Execution:
         headline=templates.HEADLINE_DEFICIT.format(deficit=deficit),
         tone=TONE_BAD,
         facts=_plan_facts(plan) + [
-            _fact("Нужно к первому дню без денег",
+            _fact("Нужно к дате исчерпания средств",
                   f"{port.rub(_get(plan, 'first_needed_amount'))} "
                   f"до {port.day(_get(plan, 'first_needed_date'))}"),
         ],

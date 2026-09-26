@@ -19,7 +19,7 @@ export function InlineBuy() {
     e.preventDefault()
     const amt = Number(amount)
     if (!(amt > 0)) {
-      setErr('Укажи цену больше нуля.')
+      setErr('Укажите цену больше нуля.')
       return
     }
     if (!situation) return
@@ -39,7 +39,7 @@ export function InlineBuy() {
     <div className="card">
       <form className="inline-buy" onSubmit={submit}>
         <div className="ib-title eyebrow">
-          Проверь покупку до того, как потратишь
+          Проверьте покупку до того, как потратите
         </div>
         <label className="f">
           Что хочу купить
