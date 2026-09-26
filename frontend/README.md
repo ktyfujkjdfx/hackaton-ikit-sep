@@ -1,4 +1,4 @@
-# Дотяну — фронтенд
+# ФинКом — фронтенд
 
 React 18 + TypeScript + Vite, чистый CSS (без UI-библиотек). Ничего не считает — все суммы и даты приходят из `/api/dashboard`, `/api/purchase/check`, `/api/chat` (описаны в `../docs/CONTRACT.md`).
 

@@ -11,7 +11,7 @@ from app.api.routes import router as routes_router
 
 load_dotenv()
 
-app = FastAPI(title="Дотяну API")
+app = FastAPI(title="ФинКом API")
 
 cors_origins = [o.strip() for o in os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")]
 app.add_middleware(
@@ -41,11 +41,11 @@ def _request_error(err: dict) -> dict:
     if err.get("type") == "missing":
         message = "Заполни это поле."
     elif err.get("type") == "int_from_float":
-        message = "Укажи сумму в целых рублях, без копеек."
+        message = "Укажите сумму в целых рублях, без копеек."
     elif subfield == "date" or "date" in err.get("type", ""):
-        message = "Укажи дату в формате ГГГГ-ММ-ДД."
+        message = "Укажите дату в формате ГГГГ-ММ-ДД."
     else:
-        message = "Укажи число без букв и пробелов."
+        message = "Укажите число без букв и пробелов."
     return {"field": field, "index": index, "subfield": subfield, "message": message}
 
 

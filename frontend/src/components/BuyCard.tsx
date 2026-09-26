@@ -25,7 +25,7 @@ export function BuyCard({ dashboard }: { dashboard: Dashboard }) {
   return (
     <div className="card buy-card">
       <div className="eyebrow">
-        <span className="star">Главная фишка</span> Проверка покупки · считает код
+        Проверка покупки
       </div>
       <h2>
         {purchase.name} за {rub(purchase.amount)}, {when}
@@ -34,26 +34,29 @@ export function BuyCard({ dashboard }: { dashboard: Dashboard }) {
       {safe ? (
         <div className="buy-top">
           <div className="safe-big ok">
-            <small>Минуса не будет</small>
+            <small>Превышения бюджета не будет</small>
             <b>Можно {purchase.date === dashboard.today ? 'сейчас' : when}</b>
           </div>
           <p className="buy-why">
-            Самый низкий остаток после покупки — <b>{rub(after.min)}</b>, {fd(after.min_date)}. Решение за тобой.
+            Самый низкий остаток после покупки — <b>{rub(after.min)}</b>, {fd(after.min_date)}. Решение за вами.
           </p>
         </div>
       ) : (
         <div className="buy-top">
           <div className="safe-big">
-            <small>Без минуса можно купить</small>
+            <small>Без превышения бюджета можно купить</small>
             <b>{earliest_safe_date ? `с ${fd(earliest_safe_date)}` : 'не в ближайшие 30 дней'}</b>
           </div>
           <p className="buy-why">
-            Если купить {when}, денег не хватит с{' '}
+            Если купить {when}, деньги закончатся{' '}
             <b style={{ color: 'var(--status-critical)' }}>
               {after.first_negative_date ? fd(after.first_negative_date) : '—'}
             </b>
-            .{safe_depends_on_unconfirmed ? ' Безопасная дата зависит от непостоянного дохода.' : ''} Решать тебе —
-            ниже варианты, как купить раньше.
+            , а превышение бюджета достигнет <b>{rub(after.max_deficit)}</b>.{' '}
+            {earliest_safe_date
+              ? `Если подождать до ${fd(earliest_safe_date)}, покупка не нарушит прогноз.`
+              : 'Безопасной даты в ближайшие 30 дней нет — ниже варианты, как это изменить.'}
+            {safe_depends_on_unconfirmed ? ' Безопасная дата зависит от непостоянного дохода.' : ''}
           </p>
         </div>
       )}
@@ -73,11 +76,11 @@ export function BuyCard({ dashboard }: { dashboard: Dashboard }) {
         ) : (
           <>
             <div>
-              <span>Первый день без денег</span>
+              <span>Дата, исчерпание средств</span>
               <b>{after.first_negative_date ? fd(after.first_negative_date) : '—'}</b>
             </div>
             <div>
-              <span>Самый большой минус</span>
+              <span>Максимальное превышение бюджета</span>
               <b className="num" style={{ color: 'var(--status-critical)' }}>
                 {rub(after.max_deficit)}
               </b>
@@ -93,7 +96,7 @@ export function BuyCard({ dashboard }: { dashboard: Dashboard }) {
       {!safe && plan && (
         <div>
           <div className="eyebrow" style={{ marginBottom: 8 }}>
-            <span className="star">Фишка</span> План выхода из минуса
+            Как остаться в границах бюджета
           </div>
           <DeficitPlanCards plan={plan} />
         </div>

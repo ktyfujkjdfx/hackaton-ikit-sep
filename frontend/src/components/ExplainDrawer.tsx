@@ -29,9 +29,8 @@ export function ExplainDrawer({ dashboard, situation }: { dashboard: Dashboard; 
         </div>
         <div className="drawer-body">
           <div className="lesson">
-            Меняй любую цифру ниже — прогноз и график пересчитаются сразу (когда подключится{' '}
-            <code>/api/dashboard</code> роли A, пересчёт будет настоящим; сейчас на моках меняются только суммы
-            платежей и поступлений в этой карточке).
+            Меняйте любую цифру ниже — прогноз и график пересчитаются сразу. Считает всё движок на сервере, ничего
+            не додумывается.
           </div>
 
           <div className="formula">

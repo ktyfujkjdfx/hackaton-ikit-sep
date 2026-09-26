@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import type { Dashboard, Event } from '../types'
 import { fd, fdShort, rub } from '../lib/format'
 import { addDays, dayIndex } from '../lib/dates'
@@ -118,6 +118,9 @@ export function BalanceChart({ dashboard }: { dashboard: Dashboard }) {
   const { lines, primaryId } = useMemo(() => buildLines(dashboard), [dashboard])
   const [hidden, setHidden] = useState<Set<string>>(new Set())
   const [hoverDay, setHoverDay] = useState<number | null>(null)
+  // После касания браузер дорисовывает мышиные события и сразу «уводит курсор» —
+  // без этого флага подсказка на телефоне гасла бы в тот же миг, что и появилась.
+  const touched = useRef(false)
 
   const visible = lines.filter((l) => !hidden.has(l.id))
 
@@ -163,6 +166,9 @@ export function BalanceChart({ dashboard }: { dashboard: Dashboard }) {
   const eventsOnDay = (d: number): Event[] =>
     dashboard.events.filter((e) => dayIndex(dashboard.today, e.date) === d)
 
+  // Заливка появляется только когда обе линии коридора видимы — тогда же и подпись к ней.
+  const corridorLine = visible.find((l) => l.corridorWith && visible.some((o) => o.id === l.corridorWith))
+
   return (
     <div className="card chart-card">
       <div className="chart-head">
@@ -198,16 +204,30 @@ export function BalanceChart({ dashboard }: { dashboard: Dashboard }) {
           ))}
           <span>
             <i className="inc" />
-            поступление
+            поступление точно
           </span>
+          {dashboard.events.some((e) => e.kind === 'income' && !e.confirmed) && (
+            <span>
+              <svg className="inc-unc" viewBox="0 0 13 10" aria-hidden="true">
+                <path d="M6.5 1 12 9H1Z" fill="none" stroke="var(--status-good)" strokeWidth="1.5" />
+              </svg>
+              может не прийти
+            </span>
+          )}
           <span>
             <i className="obl" />
             платёж
           </span>
+          {corridorLine && (
+            <span>
+              <i className="corr" />
+              разница сценариев
+            </span>
+          )}
           {lo < 0 && (
             <span>
               <i className="neg" />
-              минус
+              превышение бюджета
             </span>
           )}
         </div>
@@ -215,11 +235,25 @@ export function BalanceChart({ dashboard }: { dashboard: Dashboard }) {
       {visible.length === 0 ? (
         <p className="sub">Все линии скрыты — включи хотя бы одну в легенде выше.</p>
       ) : (
-      <div
-        className="chart-wrap"
-        onMouseMove={(e) => moveTo(e.clientX, e.currentTarget.getBoundingClientRect())}
-        onMouseLeave={() => setHoverDay(null)}
-      >
+      <div className="chart-wrap">
+        {/* На узком экране график не сжимаем до нечитаемых подписей, а прокручиваем вбок.
+            Обработчики мыши и касания — именно здесь: размеры этого блока совпадают с svg даже при прокрутке. */}
+        <div
+          className="chart-inner"
+          onMouseMove={(e) => moveTo(e.clientX, e.currentTarget.getBoundingClientRect())}
+          onMouseLeave={() => {
+            if (touched.current) touched.current = false
+            else setHoverDay(null)
+          }}
+          onTouchStart={(e) => {
+            touched.current = true
+            moveTo(e.touches[0].clientX, e.currentTarget.getBoundingClientRect())
+          }}
+          onTouchMove={(e) => {
+            touched.current = true
+            moveTo(e.touches[0].clientX, e.currentTarget.getBoundingClientRect())
+          }}
+        >
         <svg className="chart" viewBox={`0 0 ${W} ${CH}`} role="img" aria-label="График остатка по дням">
           <defs>
             <clipPath id="negclip">
@@ -296,10 +330,9 @@ export function BalanceChart({ dashboard }: { dashboard: Dashboard }) {
             )
           })}
           {(() => {
-            const withCorridor = visible.find((l) => l.corridorWith && visible.some((o) => o.id === l.corridorWith))
-            if (!withCorridor) return null
-            const other = visible.find((o) => o.id === withCorridor.corridorWith)!
-            const pts = withCorridor.values
+            if (!corridorLine) return null
+            const other = visible.find((o) => o.id === corridorLine.corridorWith)!
+            const pts = corridorLine.values
               .map((v, d) => `${X(d)},${Y(v)}`)
               .concat(
                 [...other.values]
@@ -377,8 +410,9 @@ export function BalanceChart({ dashboard }: { dashboard: Dashboard }) {
           <div className="tip" style={{ left: `${(X(hoverDay) / W) * 100}%`, top: 8 }}>
             <b>{hoverDay === 0 ? 'сегодня' : fd(addDays(dashboard.today, hoverDay))}</b>
             {visible.map((l) => (
-              <div key={l.id}>
-                {l.label}: <b className="num">{rub(l.values[hoverDay])}</b>
+              <div key={l.id} className="tip-row">
+                <span>{l.label}</span>
+                <b className="num">{rub(l.values[hoverDay])}</b>
               </div>
             ))}
             {eventsOnDay(hoverDay).map((e, i) => (
@@ -389,6 +423,7 @@ export function BalanceChart({ dashboard }: { dashboard: Dashboard }) {
             ))}
           </div>
         )}
+        </div>
       </div>
       )}
     </div>

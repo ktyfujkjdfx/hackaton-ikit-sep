@@ -7,10 +7,10 @@ export function TypesCard({ dashboard }: { dashboard: Dashboard }) {
   return (
     <div className="card" id="types-card">
       <div className="eyebrow">
-        <span className="star">Фишка</span> Постоянное и разовое
+        Постоянное и разовое
       </div>
       <h3 style={{ marginTop: 6, fontSize: 17 }}>
-        Что у тебя постоянное, а что нет — ближайшие {dashboard.horizon_days} дней
+        Что у вас постоянное, а что нет — ближайшие {dashboard.horizon_days} дней
       </h3>
       <p className="sub">
         Постоянные деньги мы ставим в прогноз на точную дату. Разовые — либо как отдельный вариант, либо как среднее
@@ -59,7 +59,7 @@ export function TypesCard({ dashboard }: { dashboard: Dashboard }) {
               <span className="how">На графике — пунктир. Показываем два варианта: если придёт и если нет.</span>
             </>
           ) : (
-            <span className="how">Если есть подработка без графика — добавь, покажем два варианта прогноза.</span>
+            <span className="how">Если есть подработка без графика — добавьте её, покажем два варианта прогноза.</span>
           )}
         </div>
 

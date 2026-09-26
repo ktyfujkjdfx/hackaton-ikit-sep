@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { getPersona, getPersonas } from '../api/client'
 import type { Persona } from '../types'
 import { useAppDispatch } from '../state/store'
+import { Brand } from '../components/Brand'
 
 export function Start() {
   const dispatch = useAppDispatch()
@@ -30,34 +31,31 @@ export function Start() {
       dispatch({ type: 'LOAD_PERSONA_DONE', personaId: id, who: detail.who, situation: detail.situation })
       dispatch({ type: 'GO', screen: 'app' })
     } catch {
-      setPickError('Не удалось загрузить профиль — сервер недоступен. Попробуй ещё раз.')
+      setPickError('Не удалось загрузить профиль — сервер недоступен. Попробуйте ещё раз.')
     }
   }
 
   return (
     <section id="start">
       <div className="start-card">
-        <div className="brand">
-          <span className="brand-mark">₽</span>Дотяну
-        </div>
+        <Brand />
         <h1 className="start-title">
-          Хватит ли денег <mark>до&nbsp;стипендии?</mark>
+          ФинКом — сервис по <mark>распределению&nbsp;дохода</mark>
         </h1>
-        <p className="start-sub">
-          Проверь покупку до того, как потратишь. Покажем, когда её можно сделать без минуса, и объясним, как
-          посчитали.
-        </p>
+        <p className="start-sub">Посчитайте сегодня, чтобы не жалеть завтра</p>
         <div className="feats">
           <div className="feat">
             <b>Когда можно купить</b>
-            <span>Не «да/нет», а дата, с которой покупка не уведёт в минус</span>
+            <span>Не «да/нет», а дата, с которой покупка не выведет за границы бюджета</span>
           </div>
           <div className="feat">
             <b>Постоянное и разовое</b>
-            <span>Отделяем стипендию от подработки, общагу от такси</span>
+            <span>
+              Разделяет стипендию и разовые поступления, обязательные платежи и повседневные траты
+            </span>
           </div>
           <div className="feat">
-            <b>План выхода из минуса</b>
+            <b>Как остаться в границах бюджета</b>
             <span>Три варианта с пометкой «легко» или «сложно»</span>
           </div>
           <div className="feat">
@@ -90,7 +88,9 @@ export function Start() {
         </div>
         <p className="safe-note">
           <span className="tag est">Учебный режим</span>
-          <span>Только придуманные данные. Не вводи номер карты, пароли и коды из СМС.</span>
+          <span>
+            Используйте только придуманные данные. Не указывайте номер карты, пароли и коды из СМС.
+          </span>
         </p>
       </div>
     </section>

@@ -153,7 +153,7 @@ def edge_checks(api: Api, anya: dict):
 
     def e_fraction():
         return first_error(api.dashboard({**anya, "daily": 250.5})), \
-            (422, "daily", None, None, "Укажи сумму в целых рублях, без копеек.")
+            (422, "daily", None, None, "Укажите сумму в целых рублях, без копеек.")
 
     def err(field, sub, msg, index=0):
         return (422, field, index, sub, msg)
@@ -234,7 +234,7 @@ def main() -> int:
     danya = api.call("/personas/danya")[1]["situation"]
 
     lines = [
-        "Финальная проверка API «Дотяну»",
+        "Финальная проверка API «ФинКом»",
         f"Сервер:  {args.base}",
         f"Время:   {dt.datetime.now().astimezone():%Y-%m-%d %H:%M %Z}",
         f"health:  {status} {json.dumps(health, ensure_ascii=False)} (первый ответ за {wake:.1f} с)",

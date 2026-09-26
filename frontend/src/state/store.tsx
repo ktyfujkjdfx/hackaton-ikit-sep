@@ -21,6 +21,9 @@ export type State = {
   loading: boolean
   error: string | null
   explainOpen: boolean
+  /* Обучающая карточка и примеры подработки — отдельные окна, открываются с дашборда и из чата. */
+  learnOpen: boolean
+  jobsOpen: boolean
 }
 
 export const initialState: State = {
@@ -35,6 +38,8 @@ export const initialState: State = {
   loading: false,
   error: null,
   explainOpen: false,
+  learnOpen: false,
+  jobsOpen: false,
 }
 
 export type Action =
@@ -50,6 +55,10 @@ export type Action =
   | { type: 'SET_SITUATION'; situation: Situation }
   | { type: 'OPEN_EXPLAIN' }
   | { type: 'CLOSE_EXPLAIN' }
+  | { type: 'OPEN_LEARN' }
+  | { type: 'CLOSE_LEARN' }
+  | { type: 'OPEN_JOBS' }
+  | { type: 'CLOSE_JOBS' }
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -75,7 +84,7 @@ function reducer(state: State, action: Action): State {
               headline: '',
               tone: 'neutral',
               facts: [],
-              text: 'Привет! Я считаю прогноз по твоим данным и отвечаю на вопросы о деньгах. Спроси, можно ли что-то купить, почему прогноз такой, или добавь трату одной фразой.',
+              text: 'Здравствуйте! Я считаю прогноз по вашим данным и отвечаю на вопросы о деньгах. Спросите, можно ли что-то купить, почему прогноз такой, или добавьте трату одной фразой.',
               source: null,
               purchase: null,
               proposed_entry: null,
@@ -106,6 +115,14 @@ function reducer(state: State, action: Action): State {
       return { ...state, explainOpen: true }
     case 'CLOSE_EXPLAIN':
       return { ...state, explainOpen: false }
+    case 'OPEN_LEARN':
+      return { ...state, learnOpen: true }
+    case 'CLOSE_LEARN':
+      return { ...state, learnOpen: false }
+    case 'OPEN_JOBS':
+      return { ...state, jobsOpen: true }
+    case 'CLOSE_JOBS':
+      return { ...state, jobsOpen: false }
     default:
       return state
   }

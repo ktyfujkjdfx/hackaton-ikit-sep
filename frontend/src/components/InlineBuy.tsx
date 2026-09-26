@@ -19,7 +19,7 @@ export function InlineBuy() {
     e.preventDefault()
     const amt = Number(amount)
     if (!(amt > 0)) {
-      setErr('Укажи цену больше нуля.')
+      setErr('Укажите цену больше нуля.')
       return
     }
     if (!situation) return
@@ -39,7 +39,7 @@ export function InlineBuy() {
     <div className="card">
       <form className="inline-buy" onSubmit={submit}>
         <div className="ib-title eyebrow">
-          <span className="star">Главная фишка</span> Проверь покупку до того, как потратишь
+          Проверьте покупку до того, как потратите
         </div>
         <label className="f">
           Что хочу купить
@@ -70,7 +70,7 @@ export function InlineBuy() {
             onChange={(e) => setDate(e.target.value)}
           />
         </label>
-        <button className="btn primary" type="submit">
+        <button className={`btn${purchase ? '' : ' primary'}`} type="submit">
           Когда можно купить?
         </button>
         {err && (

@@ -74,10 +74,10 @@
   "response": {
     "intent": "clarify",
     "tool_calls": [],
-    "headline": "Уточни, пожалуйста",
+    "headline": "Уточните, пожалуйста",
     "tone": "neutral",
     "facts": [],
-    "text": "Это покупка, которую ты хочешь проверить, или трата, которую нужно записать?",
+    "text": "Это покупка, которую нужно проверить, или трата, которую нужно записать?",
     "source": null,
     "purchase": null,
     "proposed_entry": null,

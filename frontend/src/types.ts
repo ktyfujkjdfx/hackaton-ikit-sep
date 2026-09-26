@@ -255,7 +255,7 @@ export type ChatResponse = {
   proposed_entry: ProposedEntry | null
   actions: ChatAction[]
   nlu: { mode: 'onnx' | 'sklearn' | 'rules'; label: string; confidence: number }
-  explainer: 'templates' | 'yandex' | 'anthropic'
+  explainer: 'templates' | 'local' | 'yandex' | 'anthropic'
   guarded: boolean
 }
 
