@@ -1,0 +1,1126 @@
+<title>Дотяну</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Unbounded:wght@600;700&display=swap">
+<style>
+:root{
+  --yellow:#FFDD2D; --yellow-soft:#FFF4B8; --on-yellow:#1C1C1E;
+  --bg:#F5F4EF; --surface:#FFFFFF; --surface-2:#F0EFE8;
+  --ink:#1C1C1E; --ink-2:#4A4944; --muted:#77756D;
+  --line:#E3E1D8; --line-strong:#C9C6BA;
+  --crit:#D03B3B; --crit-soft:#FBE9E7; --good:#0A7F0A; --good-soft:#E6F4E4;
+  --warn-soft:#FFF6D6;
+  --shadow:0 1px 2px rgba(28,28,30,.06),0 8px 24px rgba(28,28,30,.06);
+  --r:14px;
+  --font:"Onest",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --display:"Unbounded","Onest",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --yellow-soft:#3A3310; --bg:#101010; --surface:#1B1B1B; --surface-2:#242423;
+    --ink:#F4F3EE; --ink-2:#CFCDC4; --muted:#9C9A91; --line:#2D2D2B; --line-strong:#45443F;
+    --crit:#EF6B6B; --crit-soft:#3A1D1C; --good:#3CC23C; --good-soft:#16301A; --warn-soft:#2E2A14;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --yellow-soft:#3A3310; --bg:#101010; --surface:#1B1B1B; --surface-2:#242423;
+  --ink:#F4F3EE; --ink-2:#CFCDC4; --muted:#9C9A91; --line:#2D2D2B; --line-strong:#45443F;
+  --crit:#EF6B6B; --crit-soft:#3A1D1C; --good:#3CC23C; --good-soft:#16301A; --warn-soft:#2E2A14;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--bg)}
+body{font-family:var(--font);color:var(--ink);font-size:15px;line-height:1.45;padding-inline:16px}
+h1,h2,h3{margin:0;text-wrap:balance}
+p{margin:0}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--yellow);outline-offset:2px;border-radius:6px}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:1240px;margin:0 auto}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-strong);background:var(--surface);border-radius:10px;padding:9px 14px;font-weight:600;font-size:14px;transition:background .15s,border-color .15s}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--yellow);border-color:var(--yellow);color:var(--on-yellow)}
+.btn.primary:hover{background:#F5D21C}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.ghost:hover{background:var(--surface-2)}
+.btn.sm{padding:6px 10px;font-size:13px;border-radius:8px}
+.btn.lg{padding:14px 22px;font-size:16px;border-radius:12px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--surface-2);color:var(--ink-2);white-space:nowrap}
+.tag{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.02em;padding:1px 7px;border-radius:6px;white-space:nowrap}
+.tag.fact{background:var(--good-soft);color:var(--good)}
+.tag.exp{background:var(--yellow-soft);color:var(--ink)}
+.tag.est{background:var(--surface-2);color:var(--ink-2);border:1px dashed var(--line-strong)}
+.tag.unc{background:var(--warn-soft);color:var(--ink);border:1px dashed var(--line-strong)}
+.tag.big{background:var(--crit-soft);color:var(--crit)}
+.tag.reg{background:var(--surface-2);color:var(--ink-2)}
+
+/* ---------- start ---------- */
+#start{min-height:100vh;display:grid;place-items:center;padding-block:48px}
+.start-card{max-width:640px;width:100%;display:grid;gap:28px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:18px;letter-spacing:-.01em}
+.brand-mark{width:30px;height:30px;border-radius:9px;background:var(--yellow);color:var(--on-yellow);display:grid;place-items:center;font-family:var(--font);font-weight:800;font-size:17px}
+.start-title{font-family:var(--display);font-weight:700;font-size:clamp(30px,5vw,46px);line-height:1.08;letter-spacing:-.02em}
+.start-title mark{background:var(--yellow);color:var(--on-yellow);padding:0 .12em;border-radius:6px}
+.start-sub{font-size:18px;color:var(--ink-2);max-width:52ch}
+.choices{display:grid;gap:10px}
+.choice{display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:14px;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shadow);transition:border-color .15s,transform .15s}
+.choice:hover{border-color:var(--ink)}
+.choice .ico{width:44px;height:44px;border-radius:12px;background:var(--surface-2);display:grid;place-items:center;font-weight:800;font-size:18px}
+.choice.main .ico{background:var(--yellow);color:var(--on-yellow)}
+.choice b{display:block;font-size:16px}
+.choice span{color:var(--muted);font-size:14px}
+.choice .arrow{font-size:20px;color:var(--muted)}
+.safe-note{font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:flex-start}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line);margin-inline:-16px;padding:10px 16px}
+.topbar .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.topbar .spacer{flex:1}
+.demo-chip{background:var(--ink);color:var(--bg);font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px}
+
+/* ---------- form ---------- */
+#form .wrap{max-width:760px;padding-block:28px 60px;display:grid;gap:20px}
+.fblock{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:grid;gap:12px}
+.fblock h3{font-size:17px}
+.fblock .hint{font-size:13px;color:var(--muted)}
+.frow{display:grid;grid-template-columns:1.4fr 1fr 1fr 1.3fr 32px;gap:8px;align-items:start}
+.frow.ob{grid-template-columns:1.6fr 1fr 1fr 32px}
+.frow.goal{grid-template-columns:1.6fr 1fr 1fr 1fr}
+label.f{display:grid;gap:4px;font-size:12px;color:var(--muted);font-weight:600}
+input[type=text],input[type=number],input[type=date],select{width:100%;border:1px solid var(--line-strong);background:var(--surface);border-radius:9px;padding:9px 10px;font-size:15px;min-width:0}
+input.err{border-color:var(--crit);background:var(--crit-soft)}
+.errmsg{font-size:12px;color:var(--crit);font-weight:600}
+.x{border:none;background:none;color:var(--muted);font-size:18px;height:40px;margin-top:18px}
+.x:hover{color:var(--crit)}
+.presets{display:flex;gap:6px;flex-wrap:wrap}
+.form-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* ---------- app ---------- */
+.app-grid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:20px;padding-block:20px 60px;align-items:start}
+.col{display:grid;gap:16px;min-width:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;min-width:0}
+.card h3{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card .sub{font-size:13px;color:var(--muted)}
+
+.hero{display:grid;gap:14px;padding:24px}
+.hero-top{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.days{font-family:var(--display);font-weight:700;font-size:clamp(26px,3.4vw,38px);letter-spacing:-.02em;line-height:1.1}
+.days .n{background:var(--yellow);color:var(--on-yellow);padding:0 .15em;border-radius:8px}
+.verdict{font-size:19px;line-height:1.35;max-width:60ch}
+.verdict b{font-weight:700}
+.verdict .bad{color:var(--crit)}
+.state-pill{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:13px;padding:5px 11px;border-radius:999px}
+.state-pill.ok{background:var(--good-soft);color:var(--good)}
+.state-pill.tight{background:var(--warn-soft);color:var(--ink);border:1px solid var(--line-strong)}
+.state-pill.bad{background:var(--crit-soft);color:var(--crit)}
+.state-pill.unknown{background:var(--surface-2);color:var(--ink-2)}
+.hero-actions{display:flex;gap:8px;flex-wrap:wrap}
+.caveat{font-size:13px;color:var(--muted)}
+.scen{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.scen div{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px}
+.scen .lbl{font-size:12px;color:var(--muted);font-weight:600;display:block;margin-bottom:2px}
+
+.chart-card{padding:18px 18px 12px}
+.chart-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-2)}
+.legend i{display:inline-block;width:22px;height:0;border-top:2.5px solid var(--ink);vertical-align:middle;margin-right:6px}
+.legend i.base-when-buy{border-color:var(--muted)}
+.legend i.dash{border-top-style:dashed}
+.legend i.neg{border:none;height:10px;width:14px;background:var(--crit-soft);border-radius:2px}
+.legend i.inc{border:none;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:9px solid var(--good);margin-right:6px;width:0}
+.legend i.obl{border:none;width:9px;height:9px;border-radius:50%;background:var(--ink)}
+.chart-wrap{position:relative}
+svg.chart{width:100%;height:auto;display:block;overflow:visible}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12.5px;padding:8px 10px;border-radius:9px;min-width:150px;box-shadow:var(--shadow);z-index:5;line-height:1.4}
+.tip b{font-weight:700}
+.tip .ev{opacity:.8}
+
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.list{display:grid;gap:0;margin-top:10px}
+.li{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:14px}
+.li:first-child{border-top:none}
+.li .meta{font-size:12px;color:var(--muted)}
+.li .amt{font-weight:700;text-align:right}
+.li .amt.plus{color:var(--good)}
+.bars{display:grid;gap:10px;margin-top:12px}
+.bar{display:grid;grid-template-columns:120px 1fr 80px;gap:10px;align-items:center;font-size:14px}
+.bar .track{height:10px;background:var(--surface-2);border-radius:5px;overflow:hidden}
+.bar .fill{height:100%;background:var(--ink);border-radius:0 4px 4px 0}
+.bar .v{text-align:right;font-weight:600}
+
+.goal-row{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap;margin-top:6px}
+.goal-bar{height:12px;background:var(--surface-2);border-radius:6px;overflow:hidden;margin-top:10px}
+.goal-bar .fill{height:100%;background:var(--yellow);border-radius:0 5px 5px 0}
+.goal-meta{font-size:14px;color:var(--ink-2);margin-top:8px}
+.learn{border:1px dashed var(--line-strong);background:var(--surface-2);border-radius:12px;padding:14px;display:grid;gap:8px;margin-top:14px}
+.learn b{font-size:14px}
+.learn p{font-size:13.5px;color:var(--ink-2)}
+
+/* ---------- ask panel ---------- */
+.panel{position:sticky;top:76px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);display:flex;flex-direction:column;height:calc(100vh - 96px);min-height:560px;box-shadow:var(--shadow)}
+.msgs{min-height:0}
+.panel-head{padding:14px 16px;border-bottom:1px solid var(--line);display:grid;gap:4px}
+.panel-head b{font-size:15px}
+.panel-head span{font-size:12px;color:var(--muted)}
+.msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px}
+.msg.user{align-self:flex-end;background:var(--yellow);color:var(--on-yellow);padding:9px 13px;border-radius:14px 14px 4px 14px;max-width:85%;font-weight:500}
+.msg.bot{align-self:stretch;border:1px solid var(--line);border-radius:4px 14px 14px 14px;padding:12px 14px;display:grid;gap:10px;font-size:14px}
+.msg.bot .tool{font-family:ui-monospace,"SFMono-Regular",Menlo,monospace;font-size:11.5px;color:var(--muted);background:var(--surface-2);padding:4px 8px;border-radius:6px;overflow-x:auto;white-space:nowrap}
+.msg.bot .facts{display:grid;gap:4px}
+.msg.bot .facts div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dotted var(--line);padding-bottom:3px}
+.msg.bot .facts b{white-space:nowrap}
+.msg.bot .headline{font-weight:700;font-size:15px}
+.msg.bot .headline.bad{color:var(--crit)}
+.msg.bot .headline.good{color:var(--good)}
+.msg.bot .ai{font-size:13.5px;color:var(--ink-2)}
+.msg.bot .ai::before{content:"Пояснение AI · ";font-weight:700;color:var(--muted);font-size:11.5px;letter-spacing:.03em;text-transform:uppercase}
+.msg.bot .acts{display:flex;gap:6px;flex-wrap:wrap}
+.msg.bot a{color:inherit}
+.plan{display:grid;gap:8px}
+.opt{border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;gap:4px;font-size:13.5px}
+.opt-top{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.opt-top b{font-size:14px}
+.ease{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px}
+.ease.easy{background:var(--good-soft);color:var(--good)}
+.ease.hard{background:var(--crit-soft);color:var(--crit)}
+.example{border:1px dashed var(--line-strong);border-radius:10px;padding:8px 10px;font-size:13px;display:grid;gap:2px}
+.example .tag{justify-self:start}
+.sugg{display:flex;gap:6px;overflow-x:auto;padding:10px 14px 4px;scrollbar-width:thin;border-top:1px solid var(--line)}
+.sugg button{white-space:nowrap;flex:none}
+.sugg button{border:1px solid var(--line-strong);background:var(--surface);border-radius:999px;padding:5px 11px;font-size:12.5px}
+.sugg button:hover{border-color:var(--ink)}
+.ask-form{display:flex;gap:8px;padding:12px 14px 14px}
+.ask-form input{flex:1}
+.proto-note{font-size:11.5px;color:var(--muted);padding:0 14px 12px}
+
+/* ---------- drawer ---------- */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:40}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--bg);z-index:50;display:flex;flex-direction:column;box-shadow:-10px 0 30px rgba(0,0,0,.2)}
+.drawer-head{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;padding-top:calc(16px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--line);background:var(--surface)}
+.drawer-head h2{font-size:18px}
+.drawer-body{overflow-y:auto;padding:18px 20px 40px;display:grid;gap:16px;align-content:start}
+.lesson{background:var(--yellow);color:var(--on-yellow);border-radius:12px;padding:12px 14px;font-weight:600;font-size:14px}
+.formula{font-size:14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:6px}
+.formula code{font-family:inherit;font-weight:700}
+.edit-table{display:grid;gap:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.er{display:grid;grid-template-columns:1fr 110px 120px;gap:8px;align-items:center;padding:9px 12px;border-top:1px solid var(--line);font-size:14px}
+.er:first-child{border-top:none}
+.er.h{background:var(--surface-2);font-size:12px;font-weight:700;color:var(--muted)}
+.er input{padding:6px 8px;font-size:14px}
+.er .n{display:grid;gap:3px}
+.unknown{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:14px;display:grid;gap:6px}
+.unknown ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.live{font-size:14px;border-radius:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--line)}
+
+/* modal */
+.modal{position:fixed;z-index:60;top:50%;left:50%;transform:translate(-50%,-50%);width:min(460px,calc(100% - 32px));background:var(--surface);border-radius:16px;padding:20px;display:grid;gap:12px;box-shadow:var(--shadow)}
+.seg{display:flex;background:var(--surface-2);border-radius:10px;padding:3px}
+.seg button{flex:1;border:none;background:none;border-radius:8px;padding:7px;font-weight:600;font-size:14px}
+.seg button[aria-pressed=true]{background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.1)}
+
+/* checks */
+#checks .wrap{padding-block:24px 60px;display:grid;gap:16px}
+.score{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.score .big{font-family:var(--display);font-size:34px;font-weight:700}
+.tbl-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:14px}
+th,td{text-align:left;padding:10px 14px;border-top:1px solid var(--line);vertical-align:top}
+th{background:var(--surface-2);font-size:12px;color:var(--muted);border-top:none}
+td.ok{color:var(--good);font-weight:700;white-space:nowrap}
+td.fail{color:var(--crit);font-weight:700;white-space:nowrap}
+
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;gap:8px;align-items:center}
+.eyebrow .star{background:var(--yellow);color:var(--on-yellow);border-radius:6px;padding:1px 7px;letter-spacing:.04em}
+.inline-buy{display:flex;gap:10px;flex-wrap:wrap;align-items:end;background:var(--surface-2);border-radius:12px;padding:14px}
+.inline-buy label.f{flex:1 1 140px}
+.inline-buy .ib-title{flex-basis:100%;font-weight:700;font-size:14px}
+.buy-card{border:2px solid var(--ink);display:grid;gap:16px;padding:22px}
+.buy-card h2{font-size:20px}
+.buy-top{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
+.safe-big{display:grid;gap:2px;background:var(--yellow);color:var(--on-yellow);border-radius:14px;padding:14px 20px;min-width:220px}
+.safe-big small{font-size:13px;font-weight:600}
+.safe-big b{font-family:var(--display);font-size:26px;line-height:1.15}
+.safe-big.ok{background:var(--good-soft);color:var(--good)}
+.buy-why{font-size:16px}
+.kfacts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.kfacts div{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.kfacts span{font-size:12px;color:var(--muted);display:block}
+.kfacts b{font-size:18px}
+.buy-card .plan{grid-template-columns:repeat(3,1fr)}
+.plan-title{grid-column:1/-1;font-weight:700}
+.types{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.type{border-radius:12px;padding:14px;border:1px solid var(--line);display:grid;gap:6px;align-content:start}
+.type.inc-s{background:var(--good-soft);border-color:transparent}
+.type.inc-u{background:var(--warn-soft);border:1.5px dashed var(--line-strong)}
+.type.out-s{background:var(--surface-2);border-color:transparent}
+.type.out-v{border:1.5px dashed var(--line-strong)}
+.type h4{margin:0;font-size:14px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.type .sum{font-size:22px;font-weight:800}
+.type ul{margin:0;padding-left:16px;font-size:13px;color:var(--ink-2);display:grid;gap:2px}
+.type .how{font-size:12.5px;color:var(--muted)}
+.types-foot{margin-top:12px;font-size:14px;border-top:1px solid var(--line);padding-top:12px;display:grid;gap:4px}
+.feats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.feat{border-left:3px solid var(--yellow);padding:4px 0 4px 12px;display:grid;gap:2px}
+.feat b{font-size:14px}
+.feat span{font-size:13px;color:var(--muted)}
+@media (max-width:1000px){
+  .app-grid{grid-template-columns:1fr}
+  .panel{position:static;height:auto;min-height:0}
+  .msgs{max-height:560px}
+}
+@media (max-width:640px){
+  .two,.scen,.kfacts,.types,.buy-top,.feats,.buy-card .plan{grid-template-columns:1fr}
+  .frow,.frow.ob,.frow.goal{grid-template-columns:1fr 1fr}
+  .frow .x{margin-top:0}
+  .bar{grid-template-columns:90px 1fr 64px}
+  .er{grid-template-columns:1fr 90px}
+  .er > :nth-child(2){display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<!-- ============ START ============ -->
+<section id="start">
+  <div class="start-card">
+    <div class="brand"><span class="brand-mark">₽</span>Дотяну</div>
+    <h1 class="start-title">Хватит ли денег <mark>до&nbsp;стипендии?</mark></h1>
+    <p class="start-sub">Проверь покупку до того, как потратишь. Покажем, когда её можно сделать без минуса, и объясним, как посчитали.</p>
+    <div class="feats">
+      <div class="feat"><b>Когда можно купить</b><span>Не «да/нет», а дата, с которой покупка не уведёт в минус</span></div>
+      <div class="feat"><b>Постоянное и разовое</b><span>Отделяем стипендию от подработки, общагу от такси</span></div>
+      <div class="feat"><b>План выхода из минуса</b><span>Три варианта с пометкой «легко» или «сложно»</span></div>
+      <div class="feat"><b>Честно о точности</b><span>У каждой суммы метка: факт, ожидается или оценка</span></div>
+    </div>
+    <div class="choices">
+      <button class="choice main" id="go-anya"><span class="ico">А</span><span><b>Демо: студентка Аня</b><span>1 курс, общежитие, 2 месяца истории трат</span></span><span class="arrow">→</span></button>
+      <button class="choice" id="go-form"><span class="ico">+</span><span><b>Заполнить свою анкету</b><span>5 вопросов, около 2 минут</span></span><span class="arrow">→</span></button>
+      <button class="choice" id="go-danya"><span class="ico">Д</span><span><b>Демо: Даня с подработкой</b><span>доход без графика — прогноз в двух вариантах</span></span><span class="arrow">→</span></button>
+    </div>
+    <p class="safe-note"><span class="tag est">Учебный режим</span><span>Только придуманные данные. Не вводи номер карты, пароли и коды из СМС.</span></p>
+  </div>
+</section>
+
+<!-- ============ FORM ============ -->
+<section id="form" hidden>
+  <header class="topbar"><div class="wrap">
+    <div class="brand"><span class="brand-mark">₽</span>Дотяну</div>
+    <span class="demo-chip">Демо: 27 сентября 2026</span>
+    <span class="spacer"></span>
+    <button class="btn ghost sm" data-go="start">← На старт</button>
+  </div></header>
+  <div class="wrap">
+    <div>
+      <h2 style="font-family:var(--display);font-size:26px">Анкета</h2>
+      <p class="sub" style="color:var(--muted);margin-top:4px">Всё, что мы не знаем точно, пометим как оценку. Ничего не отправляется в банк.</p>
+    </div>
+    <form id="anketa" novalidate>
+      <div style="display:grid;gap:16px">
+        <div class="fblock">
+          <h3>1. Сколько сейчас денег на карте?</h3>
+          <label class="f" style="max-width:220px">Сумма, ₽<input type="number" id="f-balance" inputmode="numeric" placeholder="например, 6900"></label>
+          <div class="errmsg" data-err="balance"></div>
+        </div>
+        <div class="fblock">
+          <h3>2. Когда придут деньги?</h3>
+          <p class="hint">«Точно придёт» — постоянный доход по графику: стипендия, деньги от родителей. «Может не прийти» — разовый или нерегулярный: подработка, подарок.</p>
+          <div id="f-incomes" style="display:grid;gap:8px"></div>
+          <div><button type="button" class="btn sm" id="add-income">+ Ещё поступление</button></div>
+          <div class="errmsg" data-err="incomes"></div>
+        </div>
+        <div class="fblock">
+          <h3>3. Обязательные платежи в ближайший месяц</h3>
+          <p class="hint">Постоянные расходы с датой: общежитие, связь, проезд, подписки.</p>
+          <div class="presets" id="ob-presets"></div>
+          <div id="f-obls" style="display:grid;gap:8px"></div>
+          <div><button type="button" class="btn sm" id="add-obl">+ Ещё платёж</button></div>
+          <div class="errmsg" data-err="obligations"></div>
+        </div>
+        <div class="fblock">
+          <h3>4. Сколько в среднем тратишь в день на еду и мелочи?</h3>
+          <p class="hint">Разовые траты (такси, кафе) сюда входят в среднем. Если не знаешь — прикинь, мы пометим это как оценку.</p>
+          <div class="presets" id="daily-presets"></div>
+          <label class="f" style="max-width:220px">₽ в день<input type="number" id="f-daily" inputmode="numeric" placeholder="например, 300"></label>
+          <div class="errmsg" data-err="daily"></div>
+        </div>
+        <div class="fblock">
+          <h3>5. Копишь на что-то? <span class="chip">можно пропустить</span></h3>
+          <div class="frow goal">
+            <label class="f">Цель<input type="text" id="g-name" placeholder="Ноутбук"></label>
+            <label class="f">Нужно, ₽<input type="number" id="g-target" placeholder="40000"></label>
+            <label class="f">Уже есть, ₽<input type="number" id="g-current" placeholder="25000"></label>
+            <label class="f">К дате<input type="date" id="g-date"></label>
+          </div>
+          <div class="errmsg" data-err="goal"></div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn primary lg">Посчитать</button>
+          <button type="button" class="btn" id="fill-example">Заполнить примером</button>
+          <span class="errmsg" id="form-summary"></span>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- ============ APP ============ -->
+<section id="app" hidden>
+  <header class="topbar"><div class="wrap">
+    <div class="brand"><span class="brand-mark">₽</span>Дотяну</div>
+    <span class="demo-chip">Демо: 27 сентября 2026</span>
+    <span class="chip" id="who"></span>
+    <span class="spacer"></span>
+    <button class="btn ghost sm" id="open-explain">Как посчитали?</button>
+    <button class="btn ghost sm" id="open-learn">Учиться</button>
+    <button class="btn ghost sm" data-go="checks">Как мы проверяли</button>
+    <button class="btn sm" data-go="start">Сменить профиль</button>
+  </div></header>
+  <div class="wrap app-grid">
+    <div class="col">
+      <div class="card hero" id="hero"></div>
+      <div class="card buy-card" id="buy-card" hidden></div>
+      <div class="card chart-card">
+        <div class="chart-head">
+          <div><h3>Остаток по дням</h3><div class="sub">30 дней вперёд · на конец каждого дня</div></div>
+          <div class="legend" id="legend"></div>
+        </div>
+        <div class="chart-wrap" id="chart-wrap"><svg class="chart" id="chart" role="img" aria-label="График остатка по дням"></svg><div class="tip" id="tip" hidden></div></div>
+      </div>
+      <div class="card" id="types-card"></div>
+      <div class="two">
+        <div class="card"><h3>Ближайшие платежи и поступления</h3><div class="list" id="upcoming"></div></div>
+        <div class="card"><h3>На что уходят деньги <span class="tag est">оценка</span></h3><div class="sub" id="cats-sub"></div><div class="bars" id="cats"></div></div>
+      </div>
+      <div class="two">
+        <div class="card" id="goal-card"></div>
+        <div class="card"><h3>Последние операции</h3><div class="sub">Регулярные и крупные траты выделены автоматически</div><div class="list" id="ops"></div></div>
+      </div>
+      <div class="card" id="deferred-card" hidden><h3>Отложенные покупки</h3><div class="list" id="deferred"></div></div>
+    </div>
+    <aside class="panel" aria-label="Спросить">
+      <div class="panel-head"><b>Спросить</b><span>Пиши как удобно. AI понимает вопрос, а все суммы считает код.</span></div>
+      <div class="msgs" id="msgs" aria-live="polite"></div>
+      <div class="sugg" id="sugg"></div>
+      <form class="ask-form" id="ask-form"><input type="text" id="ask" placeholder="Могу купить наушники за 3000?" autocomplete="off"><button class="btn primary" type="submit">→</button></form>
+      <div class="proto-note">В прототипе вопрос разбирает простой шаблон. В продукте это LLM с вызовом функций расчёта.</div>
+      <div style="padding:0 14px 14px"><button class="btn sm" id="open-add" style="width:100%;justify-content:center">+ Добавить трату или доход</button></div>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ CHECKS ============ -->
+<section id="checks" hidden>
+  <header class="topbar"><div class="wrap">
+    <div class="brand"><span class="brand-mark">₽</span>Дотяну</div>
+    <span class="demo-chip">Демо: 27 сентября 2026</span>
+    <span class="spacer"></span>
+    <button class="btn sm" id="back-from-checks">← Назад</button>
+  </div></header>
+  <div class="wrap">
+    <div class="score"><span class="big" id="score"></span><div><h2 style="font-size:20px">Как мы проверяли расчёты</h2><p style="color:var(--muted)">Эти сценарии прогоняются через тот же код, что считает прогноз. Прямо сейчас, в твоём браузере.</p></div></div>
+    <div class="tbl-wrap"><table><thead><tr><th>#</th><th>Ситуация</th><th>Ожидаем</th><th>Получили</th><th>Итог</th></tr></thead><tbody id="checks-body"></tbody></table></div>
+    <p style="color:var(--muted);font-size:13px">Ожидаемые значения посчитаны командой вручную заранее. Риски, которые закрывают проверки: ошибки ручного ввода (сценарии 4, 6), нестабильная подработка (9), разовые траты (10), покупки больше всех денег (8).</p>
+  </div>
+</section>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-label="Как посчитали"></aside>
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true"></div>
+
+<script>
+/* ================= ДАТЫ ================= */
+const TODAY = new Date(2026,8,27);
+const H = 30;
+const MG = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+const MS = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+const parseD = s => { const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); };
+const idx = s => Math.round((parseD(s)-TODAY)/864e5);
+const dayDate = d => new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()+d);
+const iso = dt => dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+const fd = d => { const x=dayDate(d); return x.getDate()+' '+MG[x.getMonth()]; };
+const fdShort = d => { const x=dayDate(d); return x.getDate()+' '+MS[x.getMonth()]; };
+const fdIso = s => { const x=parseD(s); const y = x.getFullYear()!==TODAY.getFullYear() ? ' '+x.getFullYear() : ''; return x.getDate()+' '+MG[x.getMonth()]+y; };
+const rub = v => (v<0?'−':'')+new Intl.NumberFormat('ru-RU').format(Math.abs(Math.round(v)))+' ₽';
+const plural = (n,a,b,c) => { n=Math.abs(n)%100; const n1=n%10; if(n>10&&n<20) return c; if(n1>1&&n1<5) return b; if(n1===1) return a; return c; };
+const daysW = n => n+' '+plural(n,'день','дня','дней');
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ================= ДВИЖОК (все расчёты — только здесь) ================= */
+function series(sit,{purchase=null,reduce=0,reduceUntil=H-1,pess=false}={}){
+  let b = sit.balance; const out=[];
+  for(let d=0; d<H; d++){
+    b -= sit.daily - (d<=reduceUntil ? reduce : 0);
+    for(const o of sit.obligations) if(idx(o.date)===d) b -= o.amount;
+    for(const s of sit.spends) if(idx(s.date)===d) b -= s.amount;
+    for(const i of sit.incomes) if(idx(i.date)===d && (i.confirmed || !pess)) b += i.amount;
+    if(purchase && purchase.day===d) b -= purchase.amount;
+    out.push(b);
+  }
+  return out;
+}
+function stats(arr){
+  let min=Infinity,minDay=0,firstNeg=null,lastNeg=null;
+  arr.forEach((v,d)=>{ if(v<min){min=v;minDay=d;} if(v<0){ if(firstNeg===null) firstNeg=d; lastNeg=d; } });
+  return {min,minDay,firstNeg,lastNeg,maxDef:min<0?-min:0,firstNegAmt:firstNeg===null?0:-arr[firstNeg]};
+}
+function nextIncome(sit,onlyConfirmed=false){
+  return sit.incomes.filter(i=>idx(i.date)>=1 && idx(i.date)<H && (!onlyConfirmed||i.confirmed)).sort((a,b)=>idx(a.date)-idx(b.date))[0]||null;
+}
+function hasUncertain(sit){ return sit.incomes.some(i=>!i.confirmed && idx(i.date)>=0 && idx(i.date)<H); }
+function earliestSafe(sit,amount){
+  for(let D=0; D<H; D++){ if(stats(series(sit,{purchase:{amount,day:D}})).min>=0) return D; }
+  return null;
+}
+function reducePlan(arr,daily){
+  const st=stats(arr); if(st.firstNeg===null) return null;
+  let x=0; arr.forEach((v,d)=>{ if(v<0) x=Math.max(x,Math.ceil(-v/(d+1))); });
+  return {perDay:x,until:st.lastNeg,days:st.lastNeg+1,newDaily:daily-x,possible:x<=daily};
+}
+function checkPurchase(sit,amount,day=0){
+  const before=series(sit), after=series(sit,{purchase:{amount,day}});
+  const sb=stats(before), sa=stats(after);
+  const safe=earliestSafe(sit,amount);
+  let safeRelies=null;
+  if(safe!==null){ const pess=stats(series(sit,{purchase:{amount,day:safe},pess:true})); if(pess.min<0) safeRelies=true; }
+  return {before,after,sb,sa,safe,safeRelies,plan:reducePlan(after,sit.daily),goal:goalPlan(sit,amount)};
+}
+function goalPlan(sit,extra=0){
+  const g=sit.goal; if(!g) return null;
+  const inc=sit.incomes.filter(i=>{const d=idx(i.date);return d>=0&&d<H;}).reduce((s,i)=>s+i.amount,0);
+  const obl=sit.obligations.filter(o=>{const d=idx(o.date);return d>=0&&d<H;}).reduce((s,o)=>s+o.amount,0);
+  const oneoff=sit.spends.filter(s=>{const d=idx(s.date);return d>=0&&d<H;}).reduce((s,x)=>s+x.amount,0);
+  const monthly=inc-obl-sit.daily*H;
+  const perDay=monthly/H;
+  const remaining=Math.max(0,g.target-g.current);
+  if(perDay<=0) return {monthly,perDay,remaining,eta:null,etaExtra:null,late:null};
+  const days=Math.ceil((remaining+oneoff)/perDay);
+  const daysX=Math.ceil((remaining+oneoff+extra)/perDay);
+  const eta=iso(dayDate(days)), etaExtra=iso(dayDate(daysX));
+  const late=Math.round((parseD(eta)-parseD(g.date))/864e5);
+  const needMonthly=Math.ceil(remaining/Math.max(1,idx(g.date))*H);
+  return {monthly,perDay,remaining,eta,etaExtra,shift:daysX-days,late,needMonthly};
+}
+function validate(sit){
+  const e=[];
+  if(!Number.isFinite(sit.balance)) e.push({f:'balance',m:'Укажи сумму на карте (можно 0).'});
+  else if(sit.balance<0) e.push({f:'balance',m:'Сумма не может быть отрицательной. Если на карте минус по кредитке — укажи 0 и добавь долг как платёж.'});
+  sit.incomes.forEach((i,k)=>{
+    if(!Number.isFinite(i.amount)||i.amount<=0) e.push({f:'incomes',k,field:'amount',m:'Сумма поступления должна быть больше нуля.'});
+    if(!i.date) e.push({f:'incomes',k,field:'date',m:'Укажи дату поступления.'});
+    else if(idx(i.date)<0) e.push({f:'incomes',k,field:'date',m:'Дата поступления уже прошла. Укажи следующую.'});
+  });
+  sit.obligations.forEach((o,k)=>{
+    if(!Number.isFinite(o.amount)||o.amount<=0) e.push({f:'obligations',k,field:'amount',m:'Сумма платежа должна быть больше нуля.'});
+    if(!o.date) e.push({f:'obligations',k,field:'date',m:'Укажи дату платежа.'});
+    else if(idx(o.date)<0) e.push({f:'obligations',k,field:'date',m:'Дата платежа уже прошла.'});
+  });
+  if(!Number.isFinite(sit.daily)) e.push({f:'daily',m:'Укажи примерные траты в день или выбери диапазон.'});
+  else if(sit.daily<0) e.push({f:'daily',m:'Траты не могут быть отрицательными.'});
+  if(sit.goal){
+    const g=sit.goal;
+    if(!(g.target>0)) e.push({f:'goal',m:'Укажи, сколько нужно на цель.'});
+    else if(!(g.current>=0)) e.push({f:'goal',m:'Сколько уже накоплено — число от 0.'});
+    else if(g.current>=g.target) e.push({f:'goal',m:'Цель уже накоплена — поздравляем! Убери её или увеличь сумму.'});
+    if(!g.date||idx(g.date)<=0) e.push({f:'goal',m:'Дата цели должна быть в будущем.'});
+  }
+  return e;
+}
+
+/* ================= ДАННЫЕ ================= */
+const PERSONAS = {
+  anya:{ who:'Аня · 1 курс · общежитие',
+    sit:{ balance:6900, daily:300,
+      incomes:[{name:'Стипендия',amount:3200,date:'2026-10-10',confirmed:true},{name:'Перевод от родителей',amount:10000,date:'2026-10-15',confirmed:true}],
+      obligations:[{name:'Подписка на музыку',amount:200,date:'2026-10-01'},{name:'Связь',amount:400,date:'2026-10-03'},{name:'Общежитие',amount:1800,date:'2026-10-05'}],
+      spends:[], goal:{name:'Ноутбук',target:40000,current:25000,date:'2027-06-01'} },
+    cats:[['Еда',180],['Транспорт',60],['Кафе и доставка',40],['Прочее',20]],
+    ops:[['2026-09-24','Продукты у общежития',-640,'Еда'],['2026-09-22','Доставка еды',-520,'Кафе и доставка'],['2026-09-19','Кроссовки',-4200,'Прочее'],['2026-09-15','Перевод от родителей',10000,'Доход'],['2026-09-10','Стипендия',3200,'Доход'],['2026-09-05','Общежитие',-1800,'Обязательное'],['2026-09-03','Связь',-400,'Обязательное'],['2026-09-01','Подписка на музыку',-200,'Обязательное']] },
+  danya:{ who:'Даня · 2 курс · подработка курьером',
+    sit:{ balance:5000, daily:280,
+      incomes:[{name:'Подработка курьером',amount:4000,date:'2026-10-03',confirmed:false},{name:'Стипендия',amount:2800,date:'2026-10-20',confirmed:true}],
+      obligations:[{name:'Проездной',amount:900,date:'2026-09-30'},{name:'Связь',amount:350,date:'2026-10-02'},{name:'Подписка на кино',amount:150,date:'2026-10-08'}],
+      spends:[], goal:{name:'Билет домой на Новый год',target:12000,current:3000,date:'2026-12-20'} },
+    cats:[['Еда',170],['Кафе и доставка',50],['Транспорт',30],['Прочее',30]],
+    ops:[['2026-09-25','Подработка курьером',2600,'Доход'],['2026-09-23','Кафе с друзьями',-1900,'Кафе и доставка'],['2026-09-20','Стипендия',2800,'Доход'],['2026-09-18','Продукты',-760,'Еда'],['2026-09-11','Подработка курьером',1500,'Доход'],['2026-09-08','Подписка на кино',-150,'Обязательное'],['2026-09-02','Связь',-350,'Обязательное']] }
+};
+const clone = o => JSON.parse(JSON.stringify(o));
+const S = { sit:null, who:'', cats:null, ops:[], purchase:null, deferred:[], msgs:[], pending:null };
+
+const TERMS = {
+  'подушк':{t:'Финансовая подушка',d:'Запас денег на случай, если доход пропал или случилась непредвиденная трата. Её держат отдельно от денег на каждый день и не тратят на покупки.'},
+  'кассов':{t:'Кассовый разрыв',d:'Ситуация, когда деньги в итоге придут, но в какие-то дни их не хватает на расходы. Именно его показывает красная зона на графике.'},
+  'рассроч':{t:'Рассрочка',d:'Покупка, которую оплачиваешь частями. Каждый будущий платёж — это обязательный расход, его нужно добавить в платежи.'},
+  'кредитн':{t:'Кредитный лимит',d:'Деньги банка, которые можно потратить и потом вернуть, часто с процентами. Это не твой остаток: в прогнозе мы его не учитываем.'}
+};
+
+/* ================= НАВИГАЦИЯ ================= */
+let lastView='start';
+function show(v){
+  for(const id of ['start','form','app','checks']) document.getElementById(id).hidden = id!==v;
+  if(v!=='checks') lastView=v;
+  if(v==='checks') runChecks();
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.go)));
+document.getElementById('back-from-checks').onclick=()=>show(S.sit?'app':'start');
+function loadPersona(key){
+  const p=PERSONAS[key];
+  Object.assign(S,{sit:clone(p.sit),who:p.who,cats:p.cats,ops:p.ops,purchase:null,deferred:[],msgs:[],pending:null});
+  greet(); show('app'); renderApp();
+}
+document.getElementById('go-anya').onclick=()=>loadPersona('anya');
+document.getElementById('go-danya').onclick=()=>loadPersona('danya');
+document.getElementById('go-form').onclick=()=>{ buildForm(); show('form'); };
+
+/* ================= ГЛАВНЫЙ ЭКРАН ================= */
+function renderApp(){
+  const sit=S.sit;
+  document.getElementById('who').textContent=S.who;
+  const base=series(sit), sb=stats(base);
+  const unc=hasUncertain(sit);
+  const pess=unc?series(sit,{pess:true}):null, sp=pess?stats(pess):null;
+  const buy=S.purchase?series(sit,{purchase:S.purchase}):null, sbuy=buy?stats(buy):null;
+  const ni=nextIncome(sit), nic=nextIncome(sit,true);
+
+  // HERO
+  let h='';
+  const titleFor = inc => /стипенд/i.test(inc.name) ? 'До стипендии' : 'До поступления «'+esc(inc.name)+'»';
+  if(!ni){
+    h+=`<div class="hero-top"><span class="state-pill unknown">Нет даты дохода</span></div>
+      <div class="days">Не знаем, когда придут деньги</div>
+      <p class="verdict">Показываем только остаток и известные платежи. ${sb.firstNeg!==null?`Без новых поступлений деньги закончатся <b class="bad">${fd(sb.firstNeg)}</b>.`:`Без новых поступлений на 30 дней хватит: минимум <b>${rub(sb.min)}</b>.`}</p>
+      <div class="hero-actions"><button class="btn primary" onclick="openAdd('income')">Указать дату поступления</button></div>`;
+  } else {
+    const n=idx(ni.date);
+    let pill, verdict;
+    if(sb.firstNeg!==null){ pill='<span class="state-pill bad">⚠ Может не хватить</span>'; verdict=`Может не хватить <b class="bad">${rub(sb.maxDef)}</b>. Минус начнётся <b>${fd(sb.firstNeg)}</b>.`; }
+    else if(unc && sp.firstNeg!==null){ pill='<span class="state-pill tight">Зависит от подработки</span>'; verdict=`Хватит, <b>если придёт подработка</b>. Если нет — не хватит <b class="bad">${rub(sp.maxDef)}</b> с ${fd(sp.firstNeg)}.`; }
+    else if(sb.min < sit.daily*3){ pill='<span class="state-pill tight">Впритык</span>'; verdict=`Хватит впритык: к <b>${fd(sb.minDay)}</b> останется <b>${rub(sb.min)}</b>. Это ${sit.daily>0?daysW(Math.floor(sb.min/sit.daily)):''} обычных трат.`; }
+    else { pill='<span class="state-pill ok">✓ Хватит</span>'; verdict=`Хватит. Самый низкий остаток — <b>${rub(sb.min)}</b>, ${fd(sb.minDay)}.`; }
+    h+=`<div class="hero-top">${pill}${!ni.confirmed?'<span class="tag unc">поступление может не прийти</span>':''}</div>
+      <div class="days">${titleFor(ni)} <span class="n">${daysW(n)}</span></div>
+      <p class="verdict">${verdict}</p>`;
+    if(unc){
+      const u=sit.incomes.filter(i=>!i.confirmed);
+      h+=`<div class="scen">
+        <div><span class="lbl">Если ${esc(u[0].name.toLowerCase())} будет</span>${sb.firstNeg===null?`хватит, минимум <b>${rub(sb.min)}</b>`:`минус <b>${rub(sb.maxDef)}</b> с ${fd(sb.firstNeg)}`}</div>
+        <div><span class="lbl">Если не будет</span>${sp.firstNeg===null?`хватит, минимум <b>${rub(sp.min)}</b>`:`<span style="color:var(--crit)">минус <b>${rub(sp.maxDef)}</b> с ${fd(sp.firstNeg)}</span>`}</div></div>`;
+      if(nic && nic!==ni) h+=`<p class="caveat">Точно придёт: ${esc(nic.name.toLowerCase())}, ${fdIso(nic.date)}.</p>`;
+    }
+    h+=`<div class="hero-actions">
+      ${sb.firstNeg!==null||(sp&&sp.firstNeg!==null)?'<button class="btn" onclick="ask(\'Что делать, чтобы не уйти в минус?\')">Что делать?</button>':''}
+      <button class="btn" onclick="openExplain()">Как посчитали?</button>
+      <button class="btn" onclick="document.getElementById('types-card').scrollIntoView({behavior:'smooth',block:'start'})">Что у меня постоянное?</button></div>`;
+  }
+  h+=`<p class="caveat">Это прогноз, а не гарантия. Обычные траты — ${rub(sit.daily)} в день, оценка ${S.cats?'по истории за 2 месяца':'из анкеты'}.</p>`;
+  const P=S.purchase||{};
+  h+=`<form class="inline-buy" onsubmit="inlineBuy(event)">
+    <div class="ib-title eyebrow"><span class="star">Главная фишка</span> Проверь покупку до того, как потратишь</div>
+    <label class="f">Что хочу купить<input type="text" id="ib-name" value="${esc(P.name||'')}" placeholder="Наушники"></label>
+    <label class="f">Сколько стоит, ₽<input type="number" id="ib-amt" value="${P.amount||''}" placeholder="3000" min="1"></label>
+    <label class="f">Когда<input type="date" id="ib-date" value="${iso(dayDate(P.day||0))}" min="2026-09-27" max="${iso(dayDate(H-1))}"></label>
+    <button class="btn primary" type="submit">Когда можно купить?</button>
+    <span class="errmsg" id="ib-err" style="flex-basis:100%"></span></form>`;
+  document.getElementById('hero').innerHTML=h;
+
+  // BUY CARD
+  const bc=document.getElementById('buy-card');
+  if(!S.purchase) bc.hidden=true;
+  else {
+    bc.hidden=false;
+    const r=checkPurchase(sit,S.purchase.amount,S.purchase.day);
+    const when=S.purchase.day===0?'сегодня':fd(S.purchase.day);
+    const nm=S.purchase.name?esc(S.purchase.name):'Покупка';
+    let b=`<div class="eyebrow"><span class="star">Главная фишка</span> Проверка покупки · считает код</div><h2>${nm} за ${rub(S.purchase.amount)}, ${when}</h2>`;
+    if(r.sa.firstNeg===null){
+      b+=`<div class="buy-top"><div class="safe-big ok"><small>Минуса не будет</small><b>Можно ${S.purchase.day===0?'сейчас':when}</b></div><p class="buy-why">Самый низкий остаток после покупки — <b>${rub(r.sa.min)}</b>, ${fd(r.sa.minDay)}.${r.sa.min<sit.daily*3?' Это меньше трёх дней обычных трат — впритык.':''} Решение за тобой.</p></div>`;
+      b+=`<div class="kfacts"><div><span>Остаток до покупки, минимум</span><b class="num">${rub(r.sb.min)}</b></div><div><span>После покупки, минимум</span><b class="num">${rub(r.sa.min)}</b></div><div><span>Цель сдвинется</span><b>${r.goal&&r.goal.eta?'на '+daysW(r.goal.shift):'—'}</b></div></div>`;
+    } else {
+      b+=`<div class="buy-top"><div class="safe-big"><small>Без минуса можно купить</small><b>${r.safe===null?'не в ближайшие 30 дней':'с '+fd(r.safe)}</b></div><p class="buy-why">Если купить ${when}, денег не хватит с <b style="color:var(--crit)">${fd(r.sa.firstNeg)}</b>.${r.safe!==null&&r.safeRelies?' Безопасная дата зависит от непостоянного дохода.':''} Решать тебе — ниже варианты, как купить раньше.</p></div>`;
+      b+=`<div class="kfacts"><div><span>Первый день без денег</span><b>${fd(r.sa.firstNeg)}</b></div><div><span>Самый большой минус</span><b class="num" style="color:var(--crit)">${rub(r.sa.maxDef)}</b></div><div><span>Цель сдвинется</span><b>${r.goal&&r.goal.eta?'на '+daysW(r.goal.shift):'—'}</b></div></div>`;
+      b+=`<div><div class="eyebrow" style="margin-bottom:8px"><span class="star">Фишка</span> План выхода из минуса</div>${planBlock(r.after,r.sa,r.safe,S.purchase.amount)}</div>`;
+    }
+    b+=`<div class="hero-actions">${r.safe!==null&&r.sa.firstNeg!==null?`<button class="btn primary" onclick="defer(${S.purchase.amount},${r.safe},'${nm.replace(/'/g,'')}')">Отложить до ${fdShort(r.safe)}</button>`:''}<button class="btn" onclick="openExplain()">Как посчитали?</button><button class="btn ghost" onclick="S.purchase=null;renderApp()">Убрать покупку</button></div>`;
+    bc.innerHTML=b;
+  }
+
+  // TYPES CARD
+  document.getElementById('types-card').innerHTML=typesCard(sit);
+
+  // CHART
+  const lines=[];
+  if(buy){ lines.push({vals:base,kind:'base-dim',label:'Без покупки'}); lines.push({vals:buy,kind:'main',label:'С покупкой'}); }
+  else lines.push({vals:base,kind:'main',label:unc?'Если подработка будет':'Прогноз'});
+  if(pess) lines.push({vals:buy?series(sit,{purchase:S.purchase,pess:true}):pess,kind:'dash',label:'Если подработки не будет'});
+  drawChart(lines,sit);
+
+  // UPCOMING
+  const up=[...sit.obligations.map(o=>({...o,t:'o'})),...sit.incomes.map(i=>({...i,t:'i'})),...sit.spends.map(s=>({...s,t:'s'}))]
+    .filter(x=>idx(x.date)>=0&&idx(x.date)<H).sort((a,b)=>idx(a.date)-idx(b.date));
+  document.getElementById('upcoming').innerHTML = up.length? up.map(x=>`<div class="li"><div>${esc(x.name)}<div class="meta">${fdIso(x.date)} · ${x.t==='o'?'<span class="tag reg">постоянный расход</span>':x.t==='s'?'<span class="tag fact">разовая трата</span>':x.confirmed?'<span class="tag exp">постоянный доход · ожидается</span>':'<span class="tag unc">непостоянный · может не прийти</span>'}</div></div><div class="amt num ${x.t==='i'?'plus':''}">${x.t==='i'?'+':'−'}${rub(x.amount)}</div></div>`).join('') : '<p class="sub">Нет платежей и поступлений в ближайшие 30 дней.</p>';
+
+  // CATS
+  const cats=S.cats || [['Все обычные траты',sit.daily]];
+  const mx=Math.max(...cats.map(c=>c[1]));
+  document.getElementById('cats-sub').textContent = S.cats?'В среднем в день, по истории за 2 месяца':'Категории появятся, когда начнёшь добавлять траты';
+  document.getElementById('cats').innerHTML=cats.map(c=>`<div class="bar"><span>${esc(c[0])}</span><div class="track"><div class="fill" style="width:${c[1]/mx*100}%"></div></div><span class="v num">${rub(c[1])}</span></div>`).join('')+`<div class="bar" style="border-top:1px solid var(--line);padding-top:8px"><b>В месяц</b><span></span><b class="v num">${rub(sit.daily*30)}</b></div>`;
+
+  // GOAL + LEARN
+  const gc=document.getElementById('goal-card');
+  const showLearn = sb.firstNeg===null && !(sbuy&&sbuy.firstNeg!==null) && !(sp&&sp.firstNeg!==null);
+  const learn = showLearn ? learnCard() : '';
+  if(sit.goal){
+    const g=sit.goal, gp=goalPlan(sit), pct=Math.min(100,g.current/g.target*100);
+    let meta;
+    if(gp.eta===null) meta=`При текущем темпе на цель ничего не остаётся: траты и платежи больше дохода на ${rub(-gp.monthly)} в месяц. <span class="tag est">оценка</span>`;
+    else meta=`Остаётся ≈ <b>${rub(gp.monthly)}</b> в месяц <span class="tag est">оценка</span>. Накопишь примерно к <b>${fdIso(gp.eta)}</b>${gp.late>0?` — на ${daysW(gp.late)} позже цели. Чтобы успеть к сроку, нужно откладывать ≈ ${rub(gp.needMonthly)} в месяц.`:gp.late<0?` — раньше срока.`:'.'}`;
+    if(S.purchase&&gp.eta){ const gx=goalPlan(sit,S.purchase.amount); meta+=` С покупкой — к <b>${fdIso(gx.etaExtra)}</b> (+${daysW(gx.shift)}).`; }
+    gc.innerHTML=`<h3>Цель: ${esc(g.name)}</h3><div class="goal-row"><span class="num"><b style="font-size:20px">${rub(g.current)}</b> из ${rub(g.target)}</span><span class="sub">срок — ${fdIso(g.date)}</span></div><div class="goal-bar"><div class="fill" style="width:${pct}%"></div></div><p class="goal-meta">${meta}</p>${learn}`;
+  } else gc.innerHTML=`<h3>Цель</h3><p class="sub" style="margin-top:6px">Цель не задана. Её можно добавить в анкете.</p>${learn}`;
+
+  // OPS
+  const big=sit.daily*5;
+  document.getElementById('ops').innerHTML = S.ops.length ? S.ops.map(o=>{
+    const regular = o[3]==='Обязательное' || (o[2]>0 && sit.incomes.some(i=>i.name===o[1]&&i.confirmed));
+    const isBig = o[2]<0 && !regular && -o[2]>=big;
+    return `<div class="li"><div>${esc(o[1])}<div class="meta">${fdIso(o[0])} · ${esc(o[3])} ${regular?'<span class="tag reg">регулярный</span>':''} ${isBig?'<span class="tag big">крупная трата</span>':''}</div></div><div class="amt num ${o[2]>0?'plus':''}">${o[2]>0?'+':''}${rub(o[2])}</div></div>`;}).join('')
+    : '<p class="sub">Истории пока нет. Добавляй траты — через неделю посчитаем средние точнее.</p>';
+
+  // DEFERRED
+  const dc=document.getElementById('deferred-card'); dc.hidden=!S.deferred.length;
+  document.getElementById('deferred').innerHTML=S.deferred.map(p=>`<div class="li"><div>${esc(p.label)}<div class="meta">без минуса можно с ${fd(p.safe)}</div></div><div class="amt num">${rub(p.amount)}</div></div>`).join('');
+
+  renderMsgs(); renderSugg();
+}
+function inlineBuy(e){
+  e.preventDefault();
+  const amt=parseFloat(document.getElementById('ib-amt').value), date=document.getElementById('ib-date').value, name=document.getElementById('ib-name').value.trim();
+  const err=document.getElementById('ib-err');
+  if(!(amt>0)){ err.textContent='Укажи цену больше нуля.'; return; }
+  if(!date||idx(date)<0||idx(date)>=H){ err.textContent='Дата должна быть в ближайшие 30 дней.'; return; }
+  const text=`Могу купить ${name?name.toLowerCase()+' ':''}за ${amt}${idx(date)?' '+fd(idx(date)):''}?`;
+  S.pendingName=name;
+  S.msgs.push({role:'user',text});
+  S.msgs.push({role:'bot',html:purchaseAnswer(amt,idx(date),text)});
+  renderApp();
+  document.getElementById('buy-card').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function typesCard(sit){
+  const inH=x=>{const d=idx(x.date);return d>=0&&d<H;};
+  const sI=sit.incomes.filter(i=>i.confirmed&&inH(i)), uI=sit.incomes.filter(i=>!i.confirmed&&inH(i));
+  const sO=sit.obligations.filter(inH), oneoff=sit.spends.filter(inH);
+  const sum=a=>a.reduce((s,x)=>s+x.amount,0);
+  const li=a=>a.map(x=>`<li>${esc(x.name)} — ${rub(x.amount)}, ${fdIso(x.date)}</li>`).join('');
+  const reliable=sit.balance+sum(sI)-sum(sO), varOut=sit.daily*H+sum(oneoff);
+  return `<div class="eyebrow"><span class="star">Фишка</span> Постоянное и разовое</div>
+  <h3 style="margin-top:6px;font-size:17px">Что у тебя постоянное, а что нет — ближайшие 30 дней</h3>
+  <p class="sub">Постоянные деньги мы ставим в прогноз на точную дату. Разовые — либо как отдельный вариант, либо как среднее в день.</p>
+  <div class="types">
+    <div class="type inc-s"><h4><span>Постоянный доход</span><span class="tag exp">ожидается</span></h4><span class="sum num" style="color:var(--good)">+${rub(sum(sI))}</span>${sI.length?`<ul>${li(sI)}</ul>`:'<span class="how">Нет подтверждённых поступлений в ближайший месяц.</span>'}<span class="how">На графике — сплошная линия, приходит по графику.</span></div>
+    <div class="type inc-u"><h4><span>Непостоянный доход</span><span class="tag unc">может не прийти</span></h4><span class="sum num">${uI.length?'+'+rub(sum(uI)):'нет'}</span>${uI.length?`<ul>${li(uI)}</ul><span class="how">На графике — пунктир. Показываем два варианта: если придёт и если нет.</span>`:`<span class="how">Если есть подработка без графика — добавь, покажем два варианта прогноза.</span><div><button class="btn sm" onclick="openAdd('income')">+ Добавить подработку</button></div>`}</div>
+    <div class="type out-s"><h4><span>Постоянные расходы</span><span class="tag reg">обязательные</span></h4><span class="sum num">−${rub(sum(sO))}</span>${sO.length?`<ul>${li(sO)}</ul>`:'<span class="how">Нет обязательных платежей.</span>'}<span class="how">Вычитаем в день платежа. На графике — чёрные точки.</span></div>
+    <div class="type out-v"><h4><span>Непостоянные расходы</span><span class="tag est">оценка</span></h4><span class="sum num">−${rub(varOut)}</span><ul><li>Обычные траты: ${rub(sit.daily)} × ${H} дней = ${rub(sit.daily*H)}</li>${oneoff.map(x=>`<li>${esc(x.name)} — ${rub(x.amount)}, ${fdIso(x.date)} <span class="tag fact">факт</span></li>`).join('')}</ul><span class="how">Еду, такси и кафе не знаем по датам — берём среднее в день ${S.cats?'по истории за 2 месяца':'из анкеты'}.</span></div>
+  </div>
+  <div class="types-foot"><span>Надёжная часть: на карте ${rub(sit.balance)} + постоянный доход − постоянные расходы = <b>${rub(reliable)}</b>.</span><span>Из неё покрываются обычные траты ≈ <b>${rub(varOut)}</b>${uI.length?` и, возможно, поможет непостоянный доход +${rub(sum(uI))}`:''}.</span></div>`;
+}
+function learnCard(){
+  return `<div class="learn"><b>Как устроены накопления и инвестиции?</b><p>Сначала — подушка безопасности, потом накопления на цели, и только потом инвестиции. Инвестиции могут принести доход, но могут и уменьшиться: гарантий нет.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm primary" onclick="openLearn()">Курс Т‑Банка об инвестициях</button><a class="btn sm ghost" href="https://fincult.info" target="_blank" rel="noopener">fincult.info — сайт Банка России</a></div></div>`;
+}
+
+/* ================= ГРАФИК ================= */
+function drawChart(lines,sit){
+  const svg=document.getElementById('chart');
+  const W=760,Hh=300,m={l:62,r:14,t:14,b:52};
+  const all=lines.flatMap(l=>l.vals);
+  let lo=Math.min(0,...all), hi=Math.max(...all,sit.balance);
+  const span=hi-lo||1;
+  const raw=span/5, mag=Math.pow(10,Math.floor(Math.log10(raw)));
+  const step=[1,2,2.5,5,10].map(k=>k*mag).find(s=>s>=raw);
+  lo=Math.floor(lo/step)*step; hi=Math.ceil(hi/step)*step;
+  const X=d=>m.l+d*(W-m.l-m.r)/(H-1), Y=v=>m.t+(hi-v)*(Hh-m.t-m.b)/(hi-lo);
+  let s=`<defs><clipPath id="negclip"><rect x="${m.l}" y="${Y(0)}" width="${W-m.l-m.r}" height="${Math.max(0,Y(lo)-Y(0))}"/></clipPath></defs>`;
+  if(lo<0) s+=`<rect x="${m.l}" y="${Y(0)}" width="${W-m.l-m.r}" height="${Y(lo)-Y(0)}" fill="var(--crit-soft)"/>`;
+  for(let v=lo; v<=hi+1e-6; v+=step){
+    s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="${v===0?'var(--line-strong)':'var(--line)'}" stroke-width="${v===0?1.5:1}"/>`;
+    s+=`<text x="${m.l-8}" y="${Y(v)+4}" text-anchor="end" font-size="11.5" fill="var(--muted)" class="num">${new Intl.NumberFormat('ru-RU').format(v)}</text>`;
+  }
+  for(let d=0; d<H; d+=7) s+=`<text x="${X(d)}" y="${Hh-m.b+34}" text-anchor="middle" font-size="11.5" fill="var(--muted)">${d===0?'сегодня':fdShort(d)}</text>`;
+  // events row
+  const evY=Hh-m.b+14;
+  sit.incomes.forEach(i=>{const d=idx(i.date); if(d>=0&&d<H){ const x=X(d); s+=`<path d="M${x-6} ${evY+5} L${x+6} ${evY+5} L${x} ${evY-5} Z" fill="${i.confirmed?'var(--good)':'none'}" stroke="var(--good)" stroke-width="1.5"/>`; }});
+  sit.obligations.forEach(o=>{const d=idx(o.date); if(d>=0&&d<H) s+=`<circle cx="${X(d)}" cy="${evY}" r="4.5" fill="var(--ink)"/>`;});
+  sit.spends.forEach(o=>{const d=idx(o.date); if(d>=0&&d<H) s+=`<circle cx="${X(d)}" cy="${evY}" r="4.5" fill="none" stroke="var(--ink)" stroke-width="1.5"/>`;});
+  // corridor between dash and main
+  const dash=lines.find(l=>l.kind==='dash'), main=lines.find(l=>l.kind==='main');
+  if(dash&&main){ const pts=main.vals.map((v,d)=>`${X(d)},${Y(v)}`).concat(dash.vals.map((v,d)=>`${X(d)},${Y(v)}`).reverse()); s+=`<polygon points="${pts.join(' ')}" fill="var(--yellow)" opacity=".18"/>`; }
+  const pth=v=>v.map((y,d)=>(d?'L':'M')+X(d).toFixed(1)+' '+Y(y).toFixed(1)).join(' ');
+  for(const l of lines){
+    const st = l.kind==='base-dim'?'stroke="var(--muted)" stroke-width="2"':l.kind==='dash'?'stroke="var(--ink)" stroke-width="2" stroke-dasharray="6 5"':'stroke="var(--ink)" stroke-width="2.5"';
+    s+=`<path d="${pth(l.vals)}" fill="none" ${st} stroke-linejoin="round" stroke-linecap="round"/>`;
+    if(l.kind==='main'||l.kind==='dash'){ s+=`<path d="${pth(l.vals)}" fill="none" stroke="var(--crit)" stroke-width="${l.kind==='main'?3:2}" ${l.kind==='dash'?'stroke-dasharray="6 5"':''} clip-path="url(#negclip)" stroke-linejoin="round"/>`; }
+  }
+  // min marker of main
+  const st=stats(main.vals); const mx=X(st.minDay), my=Y(st.min);
+  s+=`<circle cx="${mx}" cy="${my}" r="5" fill="${st.min<0?'var(--crit)':'var(--yellow)'}" stroke="var(--surface)" stroke-width="2"/>`;
+  s+=`<text x="${Math.min(Math.max(mx,m.l+40),W-m.r-40)}" y="${my + (my>Hh-m.b-30? -12: 20)}" text-anchor="middle" font-size="12" font-weight="700" fill="${st.min<0?'var(--crit)':'var(--ink)'}">${rub(st.min)}</text>`;
+  s+=`<line id="xh" x1="0" x2="0" y1="${m.t}" y2="${Hh-m.b}" stroke="var(--ink-2)" stroke-width="1" opacity="0"/>`;
+  s+=`<rect id="hit" x="${m.l}" y="${m.t}" width="${W-m.l-m.r}" height="${Hh-m.t-m.b+24}" fill="transparent"/>`;
+  svg.setAttribute('viewBox',`0 0 ${W} ${Hh}`);
+  svg.innerHTML=s;
+  // legend
+  const lg=[];
+  for(const l of lines) lg.push(`<span><i class="${l.kind==='base-dim'?'base-when-buy':l.kind==='dash'?'dash':''}"></i>${l.label}</span>`);
+  lg.push('<span><i class="inc"></i>поступление</span>','<span><i class="obl"></i>платёж</span>');
+  if(lo<0) lg.push('<span><i class="neg"></i>минус</span>');
+  document.getElementById('legend').innerHTML=lg.join('');
+  // hover
+  const tip=document.getElementById('tip'), wrap=document.getElementById('chart-wrap'), xh=svg.querySelector('#xh');
+  const hit=svg.querySelector('#hit');
+  const move=e=>{
+    const r=svg.getBoundingClientRect(); const px=(e.clientX-r.left)/r.width*W;
+    const d=Math.max(0,Math.min(H-1,Math.round((px-m.l)/((W-m.l-m.r)/(H-1)))));
+    xh.setAttribute('x1',X(d)); xh.setAttribute('x2',X(d)); xh.setAttribute('opacity',.5);
+    const ev=[...sit.incomes.filter(i=>idx(i.date)===d).map(i=>'+'+rub(i.amount)+' '+esc(i.name)),...sit.obligations.filter(o=>idx(o.date)===d).map(o=>'−'+rub(o.amount)+' '+esc(o.name)),...sit.spends.filter(o=>idx(o.date)===d).map(o=>'−'+rub(o.amount)+' '+esc(o.name))];
+    if(S.purchase&&S.purchase.day===d) ev.push('−'+rub(S.purchase.amount)+' покупка');
+    tip.innerHTML=`<b>${fd(d)}</b>`+lines.map(l=>`<div>${l.label}: <b class="num">${rub(l.vals[d])}</b></div>`).join('')+ev.map(x=>`<div class="ev">${x}</div>`).join('');
+    tip.hidden=false;
+    const wr=wrap.getBoundingClientRect(); let left=(X(d)/W)*r.width+14; if(left+180>wr.width) left-=200; tip.style.left=left+'px'; tip.style.top='8px';
+  };
+  hit.addEventListener('mousemove',move);
+  hit.addEventListener('mouseleave',()=>{tip.hidden=true;xh.setAttribute('opacity',0);});
+}
+
+/* ================= ПАНЕЛЬ «СПРОСИТЬ» ================= */
+function greet(){
+  S.msgs=[{role:'bot',html:`<div>Привет! Я считаю прогноз по твоим данным и отвечаю на вопросы о деньгах. Спроси, можно ли что-то купить, почему прогноз такой, или добавь трату одной фразой.</div>`}];
+}
+function renderMsgs(){
+  const el=document.getElementById('msgs');
+  el.innerHTML=S.msgs.map(m=>m.role==='user'?`<div class="msg user">${esc(m.text)}</div>`:`<div class="msg bot">${m.html}</div>`).join('');
+  el.scrollTop=el.scrollHeight;
+}
+function renderSugg(){
+  const base=['Могу купить наушники за 3000?','Почему такой прогноз?','Сегодня такси 800','Подработка 1500 4 октября, не точно','Что такое финансовая подушка?','Куда вложить 5000?'];
+  document.getElementById('sugg').innerHTML=base.map(t=>`<button type="button">${esc(t)}</button>`).join('');
+  document.querySelectorAll('#sugg button').forEach(b=>b.onclick=()=>ask(b.textContent));
+}
+function focusAsk(prefill){ const i=document.getElementById('ask'); i.value=prefill; i.focus(); }
+document.getElementById('ask-form').addEventListener('submit',e=>{e.preventDefault(); const v=document.getElementById('ask').value.trim(); if(v){ ask(v); document.getElementById('ask').value=''; }});
+
+function parseAmount(t){
+  const m=t.replace(/(\d)\s+(?=\d{3}\b)/g,'$1').match(/(\d+(?:[.,]\d+)?)\s*(к|k|тыс|т\.?р)?/i);
+  if(!m) return null; let v=parseFloat(m[1].replace(',','.')); if(m[2]) v*=1000; return Math.round(v);
+}
+function parseDay(t){
+  if(/завтра/.test(t)) return 1;
+  if(/послезавтра/.test(t)) return 2;
+  const mn={'сен':8,'окт':9,'ноя':10,'дек':11};
+  const m=t.match(/(\d{1,2})\s*(сен|окт|ноя|дек)/);
+  if(m){ const d=Math.round((new Date(2026,mn[m[2]],+m[1])-TODAY)/864e5); return d; }
+  const m2=t.match(/\b(\d{1,2})\.(\d{1,2})\b/);
+  if(m2){ return Math.round((new Date(2026,+m2[2]-1,+m2[1])-TODAY)/864e5); }
+  return 0;
+}
+function tool(name,args){ return `<div class="tool">→ вызов: ${name}(${args})</div>`; }
+
+function ask(text){
+  const t=text.toLowerCase().replace(/ё/g,'е');
+  S.msgs.push({role:'user',text});
+  let html;
+  const amt=parseAmount(t.replace(/\b\d{1,2}\s*(сен|окт|ноя|дек)\w*/g,'').replace(/\b\d{1,2}\.\d{1,2}\b/g,''));
+  if(/парол|код из|смс|sms|cvv|номер карт/.test(t)) html=refuse('Я никогда не прошу пароли, коды из СМС, CVV и номер карты. Если кто-то их просит — это мошенники. Для прогноза они не нужны.');
+  else if(/переведи|оплати|отправь|перевести деньги|сделай перевод/.test(t)) html=refuse('Я не совершаю операций с деньгами: не перевожу и не оплачиваю. Могу только посчитать, как платёж повлияет на прогноз.');
+  else if(/влож|инвест|акци|облигац|крипт|депозит|вклад/.test(t)) html=investAnswer(t);
+  else if(Object.keys(TERMS).some(k=>t.includes(k))) html=termAnswer(t);
+  else if(/что делать|как не уйти|план|выйти из минус/.test(t)) html=planAnswer();
+  else if(/почему|как посчит|откуда/.test(t)) html=explainAnswer();
+  else if(/(на что|куда).*(трач|уход)|больше всего/.test(t)) html=catsAnswer();
+  else if(/(подработ|получил|пришл|заработ|перевел|скинул|доход|стипенд)/.test(t) && amt) html=addAnswer('income',amt,parseDay(t),text,!/не точно|может|не увер|наверн|вроде/.test(t));
+  else if(/(куп|покуп|взять|позволить|хватит на)/.test(t) && amt) html=purchaseAnswer(amt,parseDay(t),text);
+  else if(/(такси|потратил|заплатил|кафе|доставк|продукт|еда|обед|кофе|трата)/.test(t) && amt) html=addAnswer('spend',amt,parseDay(t),text,true);
+  else if(/хватит|до стипенд|прогноз|остан/.test(t)) html=forecastAnswer();
+  else if(amt) html=`<div>Это покупка, которую ты хочешь проверить, или трата, которую нужно записать?</div><div class="acts"><button class="btn sm primary" onclick="ask('Могу купить за ${amt}?')">Проверить покупку ${rub(amt)}</button><button class="btn sm" onclick="ask('Потратил ${amt}')">Записать трату</button></div>`;
+  else html=refuse('Я помогаю только с деньгами до следующего поступления: прогноз, покупки, траты, цель и финансовые термины. Попробуй спросить: «Могу купить кроссовки за 4000?»');
+  S.msgs.push({role:'bot',html});
+  renderApp();
+}
+function refuse(msg){ return `${tool('policy_check','риск')}<div class="headline">Не могу помочь с этим</div><div>${msg}</div>`; }
+
+function purchaseAnswer(amount,day,text){
+  if(day<0) day=0; if(day>=H) return `<div>Дата покупки за пределами прогноза на 30 дней. Могу проверить покупку в ближайший месяц.</div>`;
+  const r=checkPurchase(S.sit,amount,day);
+  const nmm=text.match(/купить\s+([А-Яа-яЁёA-Za-z-]+)/i);
+  S.purchase={amount,day,label:text,name:S.pendingName||(nmm&&!/^за$/i.test(nmm[1])?nmm[1][0].toUpperCase()+nmm[1].slice(1):'')}; S.pendingName=null;
+  let h=tool('check_purchase',`amount=${amount}, date="${iso(dayDate(day))}"`);
+  const baseBad=r.sb.firstNeg!==null;
+  if(r.sa.firstNeg===null){
+    h+=`<div class="headline good">Можно купить без минуса</div><div class="facts"><div><span>Самый низкий остаток после покупки</span><b class="num">${rub(r.sa.min)}</b></div><div><span>Когда</span><b>${fd(r.sa.minDay)}</b></div></div>`;
+    if(r.sa.min<S.sit.daily*3) h+=`<div class="ai">Покупка укладывается, но запас станет маленьким — меньше трёх дней обычных трат. Решать тебе.</div>`;
+    else h+=`<div class="ai">До поступлений денег хватит и с этой покупкой. Решение за тобой.</div>`;
+  } else {
+    h+=`<div class="headline bad">${baseBad?'Минус станет больше':'Если купить '+(day===0?'сейчас':fd(day))+' — будет минус'}</div>
+      <div class="facts">
+        <div><span>Первый день без денег</span><b>${fd(r.sa.firstNeg)}</b></div>
+        <div><span>Самый большой минус</span><b class="num" style="color:var(--crit)">${rub(r.sa.maxDef)}</b></div>
+        ${baseBad?`<div><span>Без покупки минус был</span><b class="num">${rub(r.sb.maxDef)} с ${fd(r.sb.firstNeg)}</b></div>`:''}
+        <div><span>Без минуса можно купить</span><b>${r.safe===null?'не в ближайшие 30 дней':'с '+fd(r.safe)}</b></div>
+        ${r.goal&&r.goal.eta?`<div><span>Цель «${esc(S.sit.goal.name)}» сдвинется</span><b>на ${daysW(r.goal.shift)}</b></div>`:''}
+      </div>`;
+    let ai = r.safe!==null ? `Если подождать до ${fd(r.safe)}, покупка не уведёт в минус${r.safeRelies?' — но только если придёт непостоянный доход':''}. ` : `В ближайший месяц безопасной даты нет — нужны дополнительные деньги или меньше трат. `;
+    ai+='Решение за тобой: ниже варианты, как купить раньше.';
+    h+=`<div class="ai">${ai}</div>`+planBlock(r.after,r.sa,r.safe,amount,text);
+  }
+  h+=`<div class="acts"><button class="btn sm" onclick="openExplain()">Как посчитали?</button>${r.safe!==null&&r.sa.firstNeg!==null?`<button class="btn sm" onclick="defer(${amount},${r.safe},'${esc(text).replace(/'/g,'')}')">Отложить до ${fdShort(r.safe)}</button>`:''}</div>`;
+  return h;
+}
+function planBlock(arr,st,safe,amount){
+  const p=reducePlan(arr,S.sit.daily);
+  const flexible=(S.cats||[]).filter(c=>/кафе|прочее/i.test(c[0])).reduce((s,c)=>s+c[1],0);
+  let h=`<div class="plan"><div class="plan-title">Чтобы не уйти в минус, нужно закрыть ${rub(st.maxDef)}</div>`;
+  if(safe!==null && amount) h+=`<div class="opt"><div class="opt-top"><b>Перенести покупку на ${fd(safe)}</b><span class="ease easy">легко</span></div><span>Тогда минуса не будет.</span></div>`;
+  if(p){
+    const easy=p.perDay<=Math.max(flexible,S.sit.daily*0.2);
+    h+=`<div class="opt"><div class="opt-top"><b>Тратить на ${rub(p.perDay)} в день меньше</b><span class="ease ${easy?'easy':'hard'}">${easy?'легко':'сложно'}</span></div><span>${p.possible?`С ${rub(S.sit.daily)} до ${rub(p.newDaily)} в день, ${daysW(p.days)} — до ${fd(p.until)}.`:'Даже без обычных трат денег не хватит — этот вариант не сработает.'} ${flexible&&p.perDay>flexible?`Кафе и прочее дают только ${rub(flexible)} в день — остальное пришлось бы урезать на еде.`:flexible?'Можно покрыть за счёт кафе и доставки.':''}</span></div>`;
+  }
+  const easyEarn=st.maxDef<=1500;
+  h+=`<div class="opt"><div class="opt-top"><b>Найти ${rub(st.maxDef)} до ${fd(st.minDay)}</b><span class="ease ${easyEarn?'easy':'hard'}">${easyEarn?'легко':'сложно'}</span></div><span>Из них ${rub(st.firstNegAmt)} нужны уже к ${fd(st.firstNeg)}.</span><div><button class="btn sm" onclick="showJobs(${st.maxDef})">Где искать подработку</button></div></div></div>`;
+  return h;
+}
+function planAnswer(){
+  const sit=S.sit; let arr=series(sit), st=stats(arr), note='';
+  if(st.firstNeg===null && hasUncertain(sit)){ arr=series(sit,{pess:true}); st=stats(arr); note='Считаю вариант, если непостоянный доход не придёт. '; }
+  if(st.firstNeg===null) return `${tool('forecast','horizon=30')}<div class="headline good">Минуса не видно</div><div>По прогнозу на 30 дней денег хватает. Если захочешь что-то купить — проверь покупку здесь.</div>`;
+  return `${tool('deficit_plan',`deficit=${st.maxDef}, day="${iso(dayDate(st.firstNeg))}"`)}<div class="ai">${note}Вот варианты. Выбираешь ты — я только считаю.</div>`+planBlock(arr,st,null,0);
+}
+function forecastAnswer(){
+  const st=stats(series(S.sit)), ni=nextIncome(S.sit);
+  if(!ni) return `${tool('forecast','horizon=30')}<div>Мне нужна дата следующего поступления. Пока могу показать только остаток и известные платежи.</div><div class="acts"><button class="btn sm primary" onclick="openAdd('income')">Указать поступление</button></div>`;
+  return `${tool('forecast','horizon=30')}<div class="facts"><div><span>До «${esc(ni.name)}»</span><b>${daysW(idx(ni.date))}</b></div><div><span>Самый низкий остаток</span><b class="num">${rub(st.min)}, ${fd(st.minDay)}</b></div></div><div class="ai">${st.firstNeg===null?'По прогнозу денег хватает.':'Есть риск минуса — нажми «Что делать?», покажу варианты.'} Это оценка: будущие необычные траты мы не знаем.</div>`;
+}
+function explainAnswer(){
+  const sit=S.sit, st=stats(series(sit));
+  const n=st.minDay+1, obl=sit.obligations.filter(o=>idx(o.date)>=0&&idx(o.date)<=st.minDay);
+  const inc=sit.incomes.filter(i=>idx(i.date)>=0&&idx(i.date)<=st.minDay);
+  const ob=obl.reduce((s,o)=>s+o.amount,0), ic=inc.reduce((s,o)=>s+o.amount,0);
+  return `${tool('forecast','horizon=30, explain=true')}<div>Самый низкий остаток — <b>${fd(st.minDay)}</b>. До этого дня:</div>
+  <div class="facts"><div><span>Сейчас на карте <span class="tag fact">факт</span></span><b class="num">${rub(sit.balance)}</b></div>
+  <div><span>Обычные траты: ${rub(sit.daily)} × ${n} <span class="tag est">оценка</span></span><b class="num">−${rub(sit.daily*n)}</b></div>
+  <div><span>Обязательные платежи <span class="tag reg">постоянные</span></span><b class="num">−${rub(ob)}</b></div>
+  ${ic?`<div><span>Поступления <span class="tag exp">ожидается</span></span><b class="num">+${rub(ic)}</b></div>`:''}
+  <div><span><b>Итог</b></span><b class="num">${rub(st.min)}</b></div></div>
+  <div class="ai">Больше всего на прогноз влияют обычные траты в день${ob?` и ${esc(obl.sort((a,b)=>b.amount-a.amount)[0].name.toLowerCase())}`:''}. Любую цифру можно поменять в разделе «Как посчитали?».</div><div class="acts"><button class="btn sm" onclick="openExplain()">Открыть «Как посчитали?»</button></div>`;
+}
+function catsAnswer(){
+  if(!S.cats) return `<div>Истории трат пока нет. Добавляй траты — и я покажу, на что уходит больше всего.</div>`;
+  const c=[...S.cats].sort((a,b)=>b[1]-a[1]); const tot=c.reduce((s,x)=>s+x[1],0);
+  return `${tool('categories','period="2 месяца"')}<div class="facts">${c.map(x=>`<div><span>${esc(x[0])}</span><b class="num">${rub(x[1]*30)}/мес · ${Math.round(x[1]/tot*100)}%</b></div>`).join('')}</div><div class="ai">Больше всего уходит на «${esc(c[0][0].toLowerCase())}». Это средние за 2 месяца, а не точные будущие траты.</div>`;
+}
+function termAnswer(t){
+  const k=Object.keys(TERMS).find(k=>t.includes(k)), x=TERMS[k];
+  return `${tool('knowledge_search',`"${x.t}"`)}<div class="headline">${x.t}</div><div>${x.d}</div><div style="font-size:12.5px;color:var(--muted)">Источник: <a href="https://fincult.info" target="_blank" rel="noopener">fincult.info</a> — сайт Банка России о финансовой грамотности</div>`;
+}
+function investAnswer(){
+  return `${tool('policy_check','инвестиции')}<div>Я не советую, во что вкладывать, и не использую твои суммы для таких советов. Могу рассказать, как это устроено.</div>${learnCard()}`;
+}
+function addAnswer(type,amount,day,text,confirmed){
+  if(day<0) day=0;
+  const cat = /такси|автобус|метро|проезд/.test(text.toLowerCase())?'Транспорт':/кафе|доставк|кофе|обед/.test(text.toLowerCase())?'Кафе и доставка':/продукт|еда/.test(text.toLowerCase())?'Еда':'Прочее';
+  const name = type==='income' ? (/подработ/i.test(text)?'Подработка':/стипенд/i.test(text)?'Стипендия':'Поступление') : ({'Транспорт':'Такси','Кафе и доставка':'Кафе и доставка','Еда':'Продукты','Прочее':'Трата'})[cat];
+  S.pending={type,amount,day,name,confirmed,cat};
+  return `${tool('parse_entry',`"${esc(text)}"`)}<div>Я понял так. Проверь и сохрани:</div><div class="facts"><div><span>Тип</span><b>${type==='income'?'Доход':'Разовая трата'}</b></div><div><span>Сумма</span><b class="num">${rub(amount)}</b></div><div><span>Дата</span><b>${day===0?'сегодня':fd(day)}</b></div>${type==='income'?`<div><span>Надёжность</span><b>${confirmed?'точно придёт':'может не прийти'}</b></div>`:`<div><span>Категория</span><b>${cat}</b></div>`}</div><div class="acts"><button class="btn sm primary" onclick="savePending()">Сохранить</button><button class="btn sm" onclick="openAdd('${type}',true)">Исправить</button></div>`;
+}
+function savePending(){
+  const p=S.pending; if(!p) return; S.pending=null;
+  const date=iso(dayDate(p.day));
+  const before=stats(series(S.sit));
+  if(p.type==='income') S.sit.incomes.push({name:p.name,amount:p.amount,date,confirmed:p.confirmed});
+  else S.sit.spends.push({name:p.name,amount:p.amount,date});
+  const arr=series(S.sit), st=stats(arr);
+  let h=`${tool('forecast','recalc')}<div class="headline ${st.firstNeg!==null?'bad':'good'}">Сохранено. Прогноз пересчитан</div><div class="facts"><div><span>Самый низкий остаток был</span><b class="num">${rub(before.min)}</b></div><div><span>Стал</span><b class="num">${rub(st.min)}, ${fd(st.minDay)}</b></div></div>`;
+  if(st.firstNeg!==null) h+=planBlock(arr,st,null,0);
+  if(p.type==='income'&&!p.confirmed) h+=`<div class="ai">Этот доход не подтверждён, поэтому на графике появился пунктир: вариант, если деньги не придут.</div>`;
+  S.msgs.push({role:'bot',html:h}); renderApp();
+}
+function defer(amount,safe,label){ S.deferred.push({amount,safe,label}); S.msgs.push({role:'bot',html:`<div>Записал в «Отложенные покупки»: ${rub(amount)}, без минуса — с ${fd(safe)}. В продукте здесь будет напоминание.</div>`}); renderApp(); }
+function showJobs(need){
+  openModal(`<h3 style="font-size:17px">Где искать подработку</h3><p style="font-size:14px">Нужно найти <b>${rub(need)}</b>. Ниже учебные примеры, это не настоящие вакансии.</p>
+  <div class="example"><span class="tag unc">Пример</span><b>Раздача листовок у ТЦ</b><span>2 вечера · ≈ 1 500 ₽</span></div>
+  <div class="example"><span class="tag unc">Пример</span><b>Пеший курьер по вечерам</b><span>3–4 заказа в день · ≈ 800 ₽ за вечер</span></div>
+  <div class="example"><span class="tag unc">Пример</span><b>Помощь на мероприятии в вузе</b><span>1 день · ≈ 1 200 ₽</span></div>
+  <p style="font-size:13px;color:var(--muted)">Где искать на самом деле: центр карьеры своего вуза, hh.ru, Авито Работа. Не соглашайся на работу, где просят заплатить вперёд или дать данные карты.</p>
+  <div><button class="btn primary" onclick="closeAll()">Понятно</button></div>`);
+}
+
+/* ================= «КАК ПОСЧИТАЛИ?» ================= */
+function openExplain(){
+  const sit=S.sit, d=document.getElementById('drawer');
+  const rowI=(i,k)=>`<div class="er"><div class="n">${esc(i.name)}<span>${i.confirmed?'<span class="tag exp">постоянный · ожидается</span>':'<span class="tag unc">непостоянный · может не прийти</span>'}</span></div><input type="date" data-e="inc-date" data-k="${k}" value="${i.date}"><input type="number" data-e="inc" data-k="${k}" value="${i.amount}"></div>`;
+  const rowO=(o,k)=>`<div class="er"><div class="n">${esc(o.name)}<span><span class="tag reg">постоянный расход</span></span></div><input type="date" data-e="obl-date" data-k="${k}" value="${o.date}"><input type="number" data-e="obl" data-k="${k}" value="${o.amount}"></div>`;
+  d.innerHTML=`<div class="drawer-head"><h2>Как посчитали?</h2><button class="btn sm" onclick="closeAll()">Закрыть</button></div>
+  <div class="drawer-body">
+    <div class="lesson">Это не просто цифра, а способ понимать свои деньги. Меняй значения ниже и смотри, как меняется прогноз.</div>
+    <div class="live" id="live-sum"></div>
+    <div class="formula"><b>Как считаем остаток на каждый день</b><span><code>остаток вчера − обычные траты за день − платежи этого дня + поступления этого дня</code></span><span style="color:var(--muted);font-size:13px">Считает обычный код, а не нейросеть. AI только понимает вопрос и пересказывает готовый результат.</span></div>
+    <div class="edit-table">
+      <div class="er h"><span>Что учли</span><span>Дата</span><span>Сумма, ₽</span></div>
+      <div class="er"><div class="n">Сейчас на карте<span><span class="tag fact">факт</span></span></div><span class="sub">сегодня</span><input type="number" data-e="balance" value="${sit.balance}"></div>
+      <div class="er"><div class="n">Обычные траты в день<span><span class="tag est">оценка ${S.cats?'по среднему за 2 месяца':'из анкеты'}</span></span></div><span class="sub">каждый день</span><input type="number" data-e="daily" value="${sit.daily}"></div>
+      ${sit.incomes.map(rowI).join('')}
+      ${sit.obligations.map(rowO).join('')}
+      ${sit.spends.map(s=>`<div class="er"><div class="n">${esc(s.name)}<span><span class="tag fact">разовая трата</span></span></div><span class="sub">${fdIso(s.date)}</span><span class="num" style="text-align:right">${rub(s.amount)}</span></div>`).join('')}
+      ${S.purchase?`<div class="er"><div class="n">Проверяемая покупка<span><span class="tag unc">гипотеза</span></span></div><span class="sub">${S.purchase.day===0?'сегодня':fd(S.purchase.day)}</span><input type="number" data-e="purchase" value="${S.purchase.amount}"></div>`:''}
+    </div>
+    <div class="unknown"><b>Чего мы не знаем</b><ul>
+      <li>Будущие необычные траты: подарки, поломки, внезапные поездки.</li>
+      <li>Придут ли деньги точно в срок. Если перевод задержится, график станет хуже.</li>
+      <li>Как изменятся твои привычки. Траты в день — это среднее, а не план.</li>
+      <li>Что будет после ${fd(H-1)}: прогноз строится на 30 дней.</li>
+    </ul></div>
+    <p style="font-size:13px;color:var(--muted)">Метки: <span class="tag fact">факт</span> — известно точно; <span class="tag exp">ожидается</span> — постоянный доход по графику; <span class="tag unc">может не прийти</span> — непостоянный доход; <span class="tag est">оценка</span> — посчитано по среднему.</p>
+  </div>`;
+  d.querySelectorAll('input[data-e]').forEach(inp=>inp.addEventListener('input',()=>{
+    const v=parseFloat(inp.value), k=+inp.dataset.k, e=inp.dataset.e;
+    if(e==='inc-date'||e==='obl-date'){ if(!inp.value) return; (e==='inc-date'?sit.incomes:sit.obligations)[k].date=inp.value; }
+    else { if(!Number.isFinite(v)||v<0){ inp.classList.add('err'); return; } inp.classList.remove('err');
+      if(e==='balance') sit.balance=v; else if(e==='daily') sit.daily=v; else if(e==='inc') sit.incomes[k].amount=v; else if(e==='obl') sit.obligations[k].amount=v; else if(e==='purchase') S.purchase.amount=v; }
+    renderApp(); liveSum();
+  }));
+  liveSum(); open(d);
+}
+function liveSum(){
+  const el=document.getElementById('live-sum'); if(!el) return;
+  const st=stats(series(S.sit)); const b=S.purchase?stats(series(S.sit,{purchase:S.purchase})):null;
+  el.innerHTML=`Сейчас: самый низкий остаток <b class="num">${rub(st.min)}</b>, ${fd(st.minDay)}${st.firstNeg!==null?` · <b style="color:var(--crit)">минус с ${fd(st.firstNeg)}</b>`:''}${b?`<br>С покупкой ${rub(S.purchase.amount)}: ${b.firstNeg!==null?`<b style="color:var(--crit)">минус ${rub(b.maxDef)} с ${fd(b.firstNeg)}</b>`:'без минуса'}`:''}`;
+}
+function openLearn(){
+  openModal(`<h3 style="font-size:17px">Как устроены накопления и инвестиции</h3>
+  <ol style="margin:0;padding-left:20px;display:grid;gap:6px;font-size:14px"><li><b>Подушка безопасности.</b> Запас на несколько месяцев обычных трат на случай, если доход пропадёт.</li><li><b>Накопления на цели.</b> Деньги на конкретную покупку к сроку.</li><li><b>Инвестиции.</b> Могут приносить доход, но могут и уменьшиться. Гарантий нет.</li></ol>
+  <p style="font-size:13.5px;color:var(--muted)">Мы учим, а не советуем: этот текст одинаковый для всех и не использует твои суммы.</p>
+  <div class="example"><b>Курс Т‑Банка об инвестициях для начинающих</b><span style="font-size:13px;color:var(--muted)">В продукте здесь будет проверенная ссылка на обучающий курс Т‑Банка.</span></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn" href="https://fincult.info" target="_blank" rel="noopener">fincult.info</a><button class="btn primary" onclick="closeAll()">Понятно</button></div>`);
+}
+document.getElementById('open-explain').onclick=openExplain;
+document.getElementById('open-learn').onclick=openLearn;
+
+/* ================= ДОБАВИТЬ ================= */
+function openAdd(type='spend',fromPending=false){
+  const p=fromPending&&S.pending?S.pending:null;
+  let t=p?p.type:type;
+  const render=()=>{
+    openModal(`<h3 style="font-size:17px">Добавить ${t==='income'?'доход':'трату'}</h3>
+    <div class="seg"><button type="button" aria-pressed="${t==='spend'}" id="seg-s">Трата</button><button type="button" aria-pressed="${t==='income'}" id="seg-i">Доход</button></div>
+    <label class="f">Название<input type="text" id="a-name" value="${p?esc(p.name):''}" placeholder="${t==='income'?'Подработка':'Такси'}"></label>
+    <div class="frow ob" style="grid-template-columns:1fr 1fr"><label class="f">Сумма, ₽<input type="number" id="a-amt" value="${p?p.amount:''}"></label><label class="f">Дата<input type="date" id="a-date" value="${iso(dayDate(p?p.day:0))}" min="2026-09-27"></label></div>
+    ${t==='income'?`<label class="f">Надёжность<select id="a-conf"><option value="1" ${p&&!p.confirmed?'':'selected'}>Точно придёт — постоянный доход</option><option value="0" ${p&&!p.confirmed?'selected':''}>Может не прийти — непостоянный</option></select></label>`:''}
+    <div class="errmsg" id="a-err"></div>
+    <div style="display:flex;gap:8px"><button class="btn primary" id="a-save">Сохранить и пересчитать</button><button class="btn" onclick="closeAll()">Отмена</button></div>`);
+    document.getElementById('seg-s').onclick=()=>{t='spend';render();};
+    document.getElementById('seg-i').onclick=()=>{t='income';render();};
+    document.getElementById('a-save').onclick=()=>{
+      const amount=parseFloat(document.getElementById('a-amt').value), date=document.getElementById('a-date').value, name=document.getElementById('a-name').value.trim()||(t==='income'?'Поступление':'Трата');
+      const err=document.getElementById('a-err');
+      if(!(amount>0)) return err.textContent='Сумма должна быть больше нуля.';
+      if(!date||idx(date)<0) return err.textContent='Дата не может быть в прошлом.';
+      S.pending={type:t,amount,day:idx(date),name,confirmed:t==='income'?document.getElementById('a-conf').value==='1':true};
+      closeAll(); savePending();
+    };
+  };
+  render();
+}
+document.getElementById('open-add').onclick=()=>openAdd('spend');
+
+/* ================= ОБЩЕЕ: модалки ================= */
+function open(el){ document.getElementById('scrim').hidden=false; el.hidden=false; }
+function openModal(html){ const m=document.getElementById('modal'); m.innerHTML=html; open(m); }
+function closeAll(){ ['scrim','drawer','modal'].forEach(id=>document.getElementById(id).hidden=true); }
+document.getElementById('scrim').onclick=closeAll;
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeAll(); });
+
+/* ================= АНКЕТА ================= */
+const OB_PRESETS=[['Общежитие',1800],['Связь',400],['Проездной',900],['Подписка',200]];
+function incRow(i={}){ return `<div class="frow" data-row="inc">
+  <label class="f">Откуда<input type="text" data-f="name" value="${esc(i.name||'')}" placeholder="Стипендия"></label>
+  <label class="f">Сумма, ₽<input type="number" data-f="amount" value="${i.amount??''}" placeholder="3200"></label>
+  <label class="f">Дата<input type="date" data-f="date" value="${i.date||''}" min="2026-09-27"></label>
+  <label class="f">Надёжность<select data-f="confirmed"><option value="1" ${i.confirmed===false?'':'selected'}>Точно придёт</option><option value="0" ${i.confirmed===false?'selected':''}>Может не прийти</option></select></label>
+  <button type="button" class="x" aria-label="Удалить" onclick="this.parentElement.remove()">×</button></div>`; }
+function oblRow(o={}){ return `<div class="frow ob" data-row="obl">
+  <label class="f">Платёж<input type="text" data-f="name" value="${esc(o.name||'')}" placeholder="Общежитие"></label>
+  <label class="f">Сумма, ₽<input type="number" data-f="amount" value="${o.amount??''}" placeholder="1800"></label>
+  <label class="f">Дата<input type="date" data-f="date" value="${o.date||''}" min="2026-09-27"></label>
+  <button type="button" class="x" aria-label="Удалить" onclick="this.parentElement.remove()">×</button></div>`; }
+function buildForm(fill){
+  const s=fill||{balance:'',daily:'',incomes:[{}],obligations:[],goal:null};
+  document.getElementById('f-balance').value=s.balance;
+  document.getElementById('f-daily').value=s.daily;
+  document.getElementById('f-incomes').innerHTML=s.incomes.map(incRow).join('');
+  document.getElementById('f-obls').innerHTML=s.obligations.map(oblRow).join('');
+  const g=s.goal||{};
+  document.getElementById('g-name').value=g.name||''; document.getElementById('g-target').value=g.target||''; document.getElementById('g-current').value=g.current??''; document.getElementById('g-date').value=g.date||'';
+  document.getElementById('ob-presets').innerHTML=OB_PRESETS.map(p=>`<button type="button" class="btn sm" data-p="${p[0]}|${p[1]}">+ ${p[0]}</button>`).join('');
+  document.querySelectorAll('#ob-presets button').forEach(b=>b.onclick=()=>{ const [n,a]=b.dataset.p.split('|'); document.getElementById('f-obls').insertAdjacentHTML('beforeend',oblRow({name:n,amount:+a})); });
+  document.getElementById('daily-presets').innerHTML=[['до 200',150],['200–400',300],['больше 400',500]].map(p=>`<button type="button" class="btn sm" data-v="${p[1]}">${p[0]} ₽</button>`).join('');
+  document.querySelectorAll('#daily-presets button').forEach(b=>b.onclick=()=>document.getElementById('f-daily').value=b.dataset.v);
+  clearErr();
+}
+document.getElementById('add-income').onclick=()=>document.getElementById('f-incomes').insertAdjacentHTML('beforeend',incRow());
+document.getElementById('add-obl').onclick=()=>document.getElementById('f-obls').insertAdjacentHTML('beforeend',oblRow());
+document.getElementById('fill-example').onclick=()=>buildForm({balance:4500,daily:250,incomes:[{name:'Стипендия',amount:2600,date:'2026-10-12',confirmed:true},{name:'Подработка',amount:2000,date:'2026-10-05',confirmed:false}],obligations:[{name:'Общежитие',amount:1500,date:'2026-10-01'},{name:'Связь',amount:350,date:'2026-10-04'}],goal:{name:'Наушники',target:6000,current:1000,date:'2026-12-01'}});
+function clearErr(){ document.querySelectorAll('#anketa .errmsg').forEach(e=>e.textContent=''); document.querySelectorAll('#anketa input.err').forEach(i=>i.classList.remove('err')); document.getElementById('form-summary').textContent=''; }
+document.getElementById('anketa').addEventListener('submit',e=>{
+  e.preventDefault(); clearErr();
+  const num=id=>{const v=document.getElementById(id).value; return v===''?NaN:parseFloat(v);};
+  const rows=sel=>[...document.querySelectorAll(sel)].map(r=>{const o={el:r}; r.querySelectorAll('[data-f]').forEach(i=>{const f=i.dataset.f; o[f]= f==='amount'?(i.value===''?NaN:parseFloat(i.value)) : f==='confirmed'? i.value==='1' : i.value;}); return o;})
+    .filter(o=>!(o.name===''&&Number.isNaN(o.amount)&&!o.date));
+  const inc=rows('[data-row=inc]'), obl=rows('[data-row=obl]');
+  const gName=document.getElementById('g-name').value.trim(), gT=num('g-target');
+  const goal = (gName||Number.isFinite(gT)) ? {name:gName||'Цель',target:gT,current:Number.isFinite(num('g-current'))?num('g-current'):0,date:document.getElementById('g-date').value} : null;
+  const sit={balance:num('f-balance'),daily:num('f-daily'),incomes:inc.map(i=>({name:i.name||'Поступление',amount:i.amount,date:i.date,confirmed:i.confirmed})),obligations:obl.map(o=>({name:o.name||'Платёж',amount:o.amount,date:o.date})),spends:[],goal};
+  const errs=validate(sit);
+  if(errs.length){
+    errs.forEach(er=>{
+      const box=document.querySelector(`[data-err="${er.f}"]`); if(box&&!box.textContent) box.textContent=er.m;
+      if(er.f==='balance') document.getElementById('f-balance').classList.add('err');
+      if(er.f==='daily') document.getElementById('f-daily').classList.add('err');
+      if(er.k!==undefined){ const list=er.f==='incomes'?inc:obl; list[er.k].el.querySelector(`[data-f="${er.field}"]`).classList.add('err'); }
+    });
+    document.getElementById('form-summary').textContent='Исправь поля, отмеченные красным — без этого прогноз не строится.';
+    return;
+  }
+  Object.assign(S,{sit,who:'Твоя анкета',cats:null,ops:[],purchase:null,deferred:[],pending:null});
+  greet();
+  if(!sit.incomes.length) S.msgs.push({role:'bot',html:`<div>Ты не указал(а), когда придут деньги. Показываю только остаток и платежи. Добавь поступление — и я посчитаю, хватит ли до него.</div>`});
+  show('app'); renderApp();
+});
+
+/* ================= ПРОВЕРКИ ================= */
+function runChecks(){
+  const A=()=>clone(PERSONAS.anya.sit), Dn=()=>clone(PERSONAS.danya.sit);
+  const empty={balance:0,daily:300,incomes:[],obligations:[],spends:[],goal:null};
+  const T=[];
+  const add=(s,exp,fn)=>{ let got,ok; try{ [got,ok]=fn(); }catch(e){ got='ошибка: '+e.message; ok=false; } T.push({s,exp,got,ok}); };
+  add('Аня без покупок','минимум 600 ₽, 9 октября',()=>{const st=stats(series(A()));return [`${rub(st.min)}, ${fd(st.minDay)}`,st.min===600&&fd(st.minDay)==='9 октября'];});
+  add('Аня покупает наушники за 3 000 ₽ сегодня','минус с 5 октября, до 2 400 ₽; без минуса — с 15 октября',()=>{const r=checkPurchase(A(),3000);return [`минус с ${fd(r.sa.firstNeg)}, до ${rub(r.sa.maxDef)}; с ${fd(r.safe)}`,fd(r.sa.firstNeg)==='5 октября'&&r.sa.maxDef===2400&&fd(r.safe)==='15 октября'];});
+  add('Жюри: покупка за 1 000 ₽ сегодня','минус с 8 октября, до 400 ₽; без минуса — с 10 октября; урезать 31 ₽/день',()=>{const r=checkPurchase(A(),1000);return [`минус с ${fd(r.sa.firstNeg)}, до ${rub(r.sa.maxDef)}; с ${fd(r.safe)}; ${r.plan.perDay} ₽/день`,fd(r.sa.firstNeg)==='8 октября'&&r.sa.maxDef===400&&fd(r.safe)==='10 октября'&&r.plan.perDay===31];});
+  add('Пустой остаток: 0 ₽, траты 300 ₽/день, поступлений нет','минус с сегодняшнего дня, нет даты дохода',()=>{const st=stats(series(clone(empty)));const ni=nextIncome(clone(empty));return [`минус с ${fd(st.firstNeg)}, дата дохода: ${ni?'есть':'нет'}`,st.firstNeg===0&&ni===null];});
+  add('Отрицательная сумма на карте (−500 ₽)','анкета не принимается, понятная ошибка',()=>{const e=validate({...clone(empty),balance:-500});return [e.length?`ошибка: «${e[0].m.slice(0,40)}…»`:'принято',e.length>0&&e[0].f==='balance'];});
+  add('Дата дохода в прошлом (20 сентября)','анкета не принимается',()=>{const s=A();s.incomes[0].date='2026-09-20';const e=validate(s);return [e.length?'ошибка по дате':'принято',e.some(x=>x.field==='date')];});
+  add('Покупка ровно на весь остаток Ани (6 900 ₽)','минус с сегодняшнего дня',()=>{const r=checkPurchase(A(),6900);return [`минус с ${fd(r.sa.firstNeg)}`,r.sa.firstNeg===0];});
+  add('Платёж и поступление в один день: 1 000 ₽, 100 ₽/день, 30 сент +2 000 и −3 000','минус 400 ₽ с 30 сентября',()=>{const s={balance:1000,daily:100,incomes:[{name:'x',amount:2000,date:'2026-09-30',confirmed:true}],obligations:[{name:'y',amount:3000,date:'2026-09-30'}],spends:[],goal:null};const st=stats(series(s));return [`минус ${rub(st.firstNegAmt)} с ${fd(st.firstNeg)}`,st.firstNeg===3&&st.firstNegAmt===400];});
+  add('Покупка за 50 000 ₽ — больше всех денег за 30 дней','безопасной даты нет',()=>{const r=checkPurchase(A(),50000);return [r.safe===null?'даты нет':'дата '+fd(r.safe),r.safe===null];});
+  add('Даня: подработка не пришла','с подработкой хватает; без неё минус с 9 октября, до 2 840 ₽',()=>{const a=stats(series(Dn())),b=stats(series(Dn(),{pess:true}));return [`с: мин ${rub(a.min)}; без: минус с ${fd(b.firstNeg)}, до ${rub(b.maxDef)}`,a.min>=0&&fd(b.firstNeg)==='9 октября'&&b.maxDef===2840];});
+  add('Аня записала «такси 800» сегодня','минимум −200 ₽; урезать 16 ₽/день',()=>{const s=A();s.spends.push({name:'Такси',amount:800,date:'2026-09-27'});const arr=series(s),st=stats(arr),p=reducePlan(arr,s.daily);return [`мин ${rub(st.min)}; ${p.perDay} ₽/день`,st.min===-200&&p.perDay===16];});
+  add('Цель «Ноутбук» без покупки','≈ 1 800 ₽/мес, накопит к 4 июня 2027',()=>{const g=goalPlan(A());return [`${rub(g.monthly)}/мес, к ${fdIso(g.eta)}`,g.monthly===1800&&g.eta==='2027-06-04'];});
+  add('Цель «Ноутбук» с наушниками за 3 000 ₽','к 24 июля 2027, сдвиг на 50 дней',()=>{const g=goalPlan(A(),3000);return [`к ${fdIso(g.etaExtra)}, +${daysW(g.shift)}`,g.etaExtra==='2027-07-24'&&g.shift===50];});
+  const ok=T.filter(x=>x.ok).length;
+  document.getElementById('score').textContent=`${ok}/${T.length}`;
+  document.getElementById('score').style.color= ok===T.length?'var(--good)':'var(--crit)';
+  document.getElementById('checks-body').innerHTML=T.map((x,i)=>`<tr><td class="num">${i+1}</td><td>${esc(x.s)}</td><td>${esc(x.exp)}</td><td class="num">${esc(x.got)}</td><td class="${x.ok?'ok':'fail'}">${x.ok?'✓ совпало':'✗ не совпало'}</td></tr>`).join('');
+}
+</script>
