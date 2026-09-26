@@ -1,0 +1,93 @@
+{
+  "request": {
+    "situation": {
+      "today": "2026-09-27",
+      "balance": 6900,
+      "daily": 300,
+      "incomes": [
+        {
+          "id": "i1",
+          "name": "Стипендия",
+          "amount": 3200,
+          "date": "2026-10-10",
+          "confirmed": true
+        },
+        {
+          "id": "i2",
+          "name": "Перевод от родителей",
+          "amount": 10000,
+          "date": "2026-10-15",
+          "confirmed": true
+        }
+      ],
+      "obligations": [
+        {
+          "id": "o1",
+          "name": "Подписка на музыку",
+          "amount": 200,
+          "date": "2026-10-01"
+        },
+        {
+          "id": "o2",
+          "name": "Связь",
+          "amount": 400,
+          "date": "2026-10-03"
+        },
+        {
+          "id": "o3",
+          "name": "Общежитие",
+          "amount": 1800,
+          "date": "2026-10-05"
+        }
+      ],
+      "spends": [],
+      "goal": {
+        "name": "Ноутбук",
+        "target": 40000,
+        "current": 25000,
+        "date": "2027-06-01"
+      },
+      "categories": [
+        {
+          "name": "Еда",
+          "per_day": 180
+        },
+        {
+          "name": "Транспорт",
+          "per_day": 60
+        },
+        {
+          "name": "Кафе и доставка",
+          "per_day": 40
+        },
+        {
+          "name": "Прочее",
+          "per_day": 20
+        }
+      ],
+      "history": []
+    },
+    "purchase": null,
+    "message": "4000",
+    "history": []
+  },
+  "response": {
+    "intent": "clarify",
+    "tool_calls": [],
+    "headline": "Уточни, пожалуйста",
+    "tone": "neutral",
+    "facts": [],
+    "text": "Это покупка, которую ты хочешь проверить, или трата, которую нужно записать?",
+    "source": null,
+    "purchase": null,
+    "proposed_entry": null,
+    "actions": [],
+    "nlu": {
+      "mode": "sklearn",
+      "label": null,
+      "confidence": 0.0
+    },
+    "explainer": "templates",
+    "guarded": false
+  }
+}
