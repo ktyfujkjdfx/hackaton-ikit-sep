@@ -10,7 +10,7 @@ services:
       - key: PYTHON_VERSION
         value: 3.11.9
       - key: NLU_MODE
-        value: sklearn
+        value: onnx
       - key: EXPLAIN_MODE
         value: templates
       - key: DEMO_TODAY
