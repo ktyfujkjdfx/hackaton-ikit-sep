@@ -1,4 +1,6 @@
-> Источник: общая часть файлов docs/plans/ROLE_*.md. Менять только через PR и сообщение в чат команды.
+> Источник истины — этот файл. Финальная версия, сверена с `main` 26.09.2026 (после PR #11).
+> Общая часть в `docs/plans/ROLE_*.md` — исходный план на начало хакатона и может отставать.
+> Менять только через PR и сообщение в чат команды.
 
 # ОБЩАЯ ЧАСТЬ — одинакова у всех четырёх
 
@@ -45,7 +47,7 @@
 |---|---|---|
 | Backend | **Python 3.11, FastAPI, Pydantic v2, Uvicorn** | быстро, автодокументация `/docs`, типы |
 | Тесты | **pytest** | 13 эталонных сценариев + API + AI |
-| AI: понимание запроса (NLU) | **своя обученная модель — классификатор намерений.** Шаг 1: TF‑IDF + логистическая регрессия (scikit‑learn). Шаг 2: дообученная нейросеть `rubert-tiny2` (обучение — `transformers` на ноутбуке или в Colab; на сервере — только `onnxruntime` + `tokenizers`). Суммы и даты достаёт парсер на правилах. Запасной слой — правила | своя модель, лёгкая, работает без интернета |
+| AI: понимание запроса (NLU) | **своя обученная модель — классификатор намерений.** Шаг 1: TF‑IDF + логистическая регрессия (scikit‑learn). Шаг 2: дообученная нейросеть `rubert-tiny2` (обучение — `transformers` на ноутбуке или в Colab; на сервере — только `onnxruntime` + `tokenizers`). Суммы и даты достаёт парсер на правилах. Запасной слой — правила. **В проде — ONNX** (`NLU_MODE=onnx` в `render.yaml`, решение чекпоинта 23:00); если модель не загрузилась — автоматически sklearn, затем правила, фактический режим показывает `/api/health` | своя модель, лёгкая, работает без интернета |
 | AI: пояснение | **шаблоны** по умолчанию; по желанию — готовый API (YandexGPT или Claude Haiku) только для перефразирования, с guard | числа всегда из движка |
 | Frontend | **React 18 + TypeScript + Vite**, чистый CSS с токенами из прототипа, график — свой SVG‑компонент (порт из прототипа) | без UI‑китов, вид как в прототипе |
 | Деплой (без Docker) | **Render, два сервиса:** backend — Web Service (Python), frontend — Static Site. Описаны в `render.yaml` | бесплатно, деплой из `main` |
@@ -64,7 +66,7 @@ cd frontend; npm install; npm run dev   # http://localhost:5173, /api прокс
 
 **Переменные окружения** (`backend/.env`, в git только `.env.example`):
 ```
-NLU_MODE=sklearn              # onnx | sklearn | rules  — чем понимаем вопрос
+NLU_MODE=sklearn              # onnx | sklearn | rules — чем понимаем вопрос. Локально sklearn, на проде onnx (render.yaml)
 NLU_MIN_CONFIDENCE=0.6        # ниже — переходим на правила
 EXPLAIN_MODE=templates        # templates | yandex | anthropic — чем пишем пояснение
 YANDEX_API_KEY=
@@ -75,6 +77,22 @@ DEMO_TODAY=2026-09-27
 CORS_ORIGINS=http://localhost:5173
 ```
 Frontend (`frontend/.env.production`): `VITE_API_URL=https://dotyanu-api.onrender.com`. Локально `VITE_API_URL` пустой — работает прокси Vite.
+
+**Зависимости backend** — `backend/requirements.txt`, финальный состав:
+```
+fastapi
+uvicorn[standard]
+pydantic>=2
+python-dotenv
+pytest
+httpx
+scikit-learn==1.9.1   # ровно та версия, на которой обучен intent_sklearn.joblib
+joblib
+numpy
+onnxruntime
+tokenizers
+```
+`torch` и `transformers` на сервер не ставим — они только в `training/requirements-train.txt`.
 
 ## 3. Репозиторий и владельцы папок
 
@@ -93,30 +111,37 @@ hackaton-ikit-sep/
 │  ├─ prototype.html            C   (эталон вида и формул)
 │  ├─ plans/ROLE_*.md           C   (эти 4 файла)
 │  ├─ checks.md                 A   (таблица 13 сценариев)
+│  ├─ final_check_log.txt       A   (вывод финальной проверки: 13 эталонов + крайние случаи)
+│  ├─ design-system.md          C   (цвета и компоненты интерфейса)
 │  ├─ ai/model_card.md          B   (как обучали модель, метрики)
+│  ├─ ai/prod_setup.md          B   (что нужно AI-слою на проде)
 │  └─ pitch/                    D   (исследование, опрос, презентация)
 ├─ backend/
-│  ├─ requirements.txt          A   (B дописывает scikit-learn, onnxruntime, tokenizers, numpy, joblib через PR)
+│  ├─ requirements.txt          A   (финальный состав — раздел 2)
 │  ├─ .env.example              B
 │  ├─ app/
 │  │  ├─ main.py                A   (роутеры + CORS)
 │  │  ├─ models.py              A   (все Pydantic‑схемы из разделов 5–6)
 │  │  ├─ engine/                A   (весь расчёт; чистые функции)
+│  │  │  ├─ dates.py  series.py  headline.py  purchase.py  plans.py  goal.py
+│  │  │  ├─ validate.py  types.py  history.py  events.py  dashboard.py  format.py
+│  │  │  └─ checks.py (таблица 13 эталонов)  personas.py (чтение data/personas.json)
 │  │  ├─ api/
 │  │  │  ├─ routes.py           A   (всё, кроме чата)
 │  │  │  └─ chat.py             B   (POST /api/chat)
 │  │  ├─ ai/                    B
-│  │  │  ├─ orchestrator.py  parse.py  tools.py  templates.py  guard.py  knowledge.py
+│  │  │  ├─ orchestrator.py  parse.py  tools.py  templates.py  guard.py  knowledge.py  schemas.py  engine_port.py
 │  │  │  ├─ nlu/ labels.py  rules.py  sklearn_nlu.py  onnx_nlu.py
-│  │  │  ├─ explain/ templates_x.py  api_explainer.py
+│  │  │  ├─ explain/ api_explainer.py
 │  │  │  └─ models/ intent_sklearn.joblib  rubert_intent/{model.onnx, tokenizer.json, labels.json}
 │  │  └─ data/                  D   (personas.json, knowledge.json)
 │  ├─ scripts/dump_fixtures.py  A
 │  └─ tests/
-│     ├─ test_engine.py  test_checks.py  test_api.py   A
+│     ├─ test_engine.py  test_checks.py  test_api.py  test_health.py   A
 │     └─ test_ai.py                                    B
 ├─ training/                    B   (НЕ деплоится: датасет, обучение, экспорт, оценка)
-│  ├─ requirements-train.txt  gen_dataset.py  train_sklearn.py  train_rubert.py  export_onnx.py  eval.py
+│  ├─ requirements-train.txt  gen_dataset.py  manual_phrases.py  train_sklearn.py  train_rubert.py
+│  ├─ export_onnx.py  eval.py  dump_chat_fixtures.py  reports/
 │  └─ data/ intents_train.jsonl  intents_test.jsonl  intents_holdout_team.jsonl
 └─ frontend/                    C   (весь фронт)
    └─ src/api/fixtures/*.json   A и B генерируют, C использует
@@ -177,8 +202,8 @@ hackaton-ikit-sep/
 | Метод | Путь | Вход | Выход | Владелец |
 |---|---|---|---|---|
 | GET | `/api/health` | — | `{ "ok": true, "nlu": "onnx"\|"sklearn"\|"rules", "explain": "templates"\|"yandex"\|"anthropic" }` | A |
-| GET | `/api/personas` | — | `[{ "id": "anya", "title": "Аня", "subtitle": "1 курс · общежитие" }]` | A |
-| GET | `/api/personas/{id}` | — | `{ "id", "who", "situation": Situation }` | A |
+| GET | `/api/personas` | — | `[{ "id": "anya", "title": "Аня", "subtitle": "1 курс, общежитие, 2 месяца истории" }]` | A |
+| GET | `/api/personas/{id}` | — | `{ "id", "who", "situation": Situation }`; неизвестный id → 404 | A |
 | POST | `/api/validate` | `{ "situation" }` | `{ "ok": bool, "errors": [ValidationError] }` | A |
 | POST | `/api/dashboard` | `{ "situation", "purchase": Purchase\|null }` | `Dashboard` | A |
 | POST | `/api/purchase/check` | `{ "situation", "purchase" }` | `PurchaseCheck` | A |
@@ -189,6 +214,9 @@ hackaton-ikit-sep/
 // ValidationError
 { "field": "balance" | "daily" | "incomes" | "obligations" | "spends" | "goal" | "purchase",
   "index": 0 | null, "subfield": "amount" | "date" | null, "message": "Дата поступления уже прошла. Укажи следующую." }
+// Тот же формат 422 и для ошибок формы запроса (до движка): текст вместо числа → «Укажи число без букв и пробелов.»,
+// дробная сумма → «Укажи сумму в целых рублях, без копеек.», неверная дата → «Укажи дату в формате ГГГГ-ММ-ДД.»,
+// нет обязательного поля → «Заполни это поле.» (если нет всего situation — field = "body").
 
 // SeriesStats
 { "min": 600, "min_date": "2026-10-09",
@@ -204,7 +232,7 @@ hackaton-ikit-sep/
   "next_confirmed_income": {...} | null,
   "min_balance": 600, "min_date": "2026-10-09",
   "first_negative_date": null, "max_deficit": 0,
-  "days_of_spending_left": 2 }            // floor(min_balance / daily), если min ≥ 0
+  "days_of_spending_left": 2 }            // floor(min_balance / daily); null, если min < 0 или daily = 0
 
 // Event (для графика и списка «Ближайшие»)
 { "date": "2026-10-05", "kind": "income" | "obligation" | "spend" | "purchase",
@@ -229,8 +257,8 @@ hackaton-ikit-sep/
       "first_amount": 1200, "first_date": "2026-10-05", "ease": "hard" } ] }
 
 // GoalPlan
-{ "monthly_surplus": 1800, "per_day": 60, "remaining": 15000,
-  "eta": "2027-06-04" | null, "late_days": 3 | null, "need_monthly": 1822 | null,
+{ "monthly_surplus": 1800, "per_day": 60.0, "remaining": 15000,      // per_day — дробное (monthly_surplus / 30)
+  "eta": "2027-06-04" | null, "late_days": 3 | null, "need_monthly": 1822,
   "eta_with_purchase": "2027-07-24" | null, "shift_days": 50 | null }
 
 // PurchaseCheck
@@ -258,18 +286,27 @@ hackaton-ikit-sep/
   "deficit_plan": DeficitPlan | null,                      // для base, а если base без минуса — для pessimistic
   "history": [HistoryItem],
   "show_learn_card": bool,
-  "assumptions": ["Обычные траты — 300 ₽ в день, оценка по истории за 2 месяца", "..."],
-  "unknowns": ["Будущие необычные траты: подарки, поломки", "Придут ли деньги точно в срок", "Что будет после 26 октября: прогноз на 30 дней"] }
+  "assumptions": ["Обычные траты — 300 ₽ в день, оценка по истории за 2 месяца",   // «из анкеты», если categories нет
+                  "Постоянный доход придёт в указанную дату и в указанной сумме",
+                  "Обязательные платежи спишутся в указанные даты",
+                  "Прошлые операции уже учтены в остатке на карте и в прогноз не входят"],
+                  // + «„X“ может не прийти — …», «Разовые траты, которые ты записал, — это факт»,
+                  //   «Покупка — только проверка: …» — если есть непостоянный доход / траты / покупка
+  "unknowns": ["Будущие необычные траты: подарки, поломки, внезапные поездки",
+               "Придут ли деньги точно в срок. Если перевод задержится, график станет хуже",
+               "Как изменятся твои привычки. Траты в день — это среднее, а не план",
+               "Что будет после 26 октября: прогноз строится на 30 дней"] }
 
 // ChecksResult
 { "passed": 13, "total": 13,
-  "items": [{ "id": 1, "title": "Аня без покупок", "expected": "минимум 600 ₽, 9 октября",
-              "got": "600 ₽, 9 октября", "ok": true }] }
+  "items": [{ "id": 1, "title": "Аня без покупок",
+              "expected": "минимум 600 ₽, 9 октября; «впритык»; до стипендии 13 дней",
+              "got": "600 ₽, 9 октября; впритык; Стипендия, 13 дней", "ok": true }] }
 
 // ChatRequest
 { "situation": Situation, "purchase": Purchase | null,
   "message": "Могу купить наушники за 3000?",
-  "history": [{ "role": "user" | "assistant", "text": "..." }] }   // последние ≤ 6
+  "history": [{ "role": "user" | "assistant", "text": "...", "label": "forecast" | null }] }   // последние ≤ 6; label — необязательно
 
 // ChatResponse
 { "intent": "purchase_check" | "forecast" | "explain" | "deficit_plan" | "categories" |
@@ -277,7 +314,7 @@ hackaton-ikit-sep/
   "tool_calls": [{ "name": "check_purchase", "args": { "amount": 3000, "date": "2026-09-27" } }],
   "headline": "Если купить сейчас — будет минус",
   "tone": "good" | "bad" | "neutral",
-  "facts": [{ "label": "Первый день без денег", "value": "5 октября", "tone": null },
+  "facts": [{ "label": "Первый день без денег", "value": "5 октября", "tone": null },   // tone: "good" | "bad" | null
             { "label": "Самый большой минус", "value": "2 400 ₽", "tone": "bad" }],
   "text": "Если подождать до 15 октября, покупка не уведёт в минус. Решение за тобой.",
   "source": { "title": "fincult.info — сайт Банка России", "url": "https://fincult.info" } | null,
@@ -324,10 +361,13 @@ CORS: backend разрешает домены из `CORS_ORIGINS`. Фронт х
   `days = ceil((remaining + one_off) / per_day)`, `eta = today + days`, `late_days = eta − goal.date` (в днях),
   `need_monthly = ceil(remaining / days_to_goal_date × 30)`.
   С покупкой: `days_x = ceil((remaining + one_off + amount) / per_day)`, `shift_days = days_x − days`.
+  Если `days` (или `days_x`) больше 100 лет (36 500 дней) — цель при таком темпе недостижима: `eta` (или `eta_with_purchase`) = `null`, а не 500.
+  `need_monthly` считается всегда: `ceil(remaining × 30 / max(1, days_to_goal_date))`. Округления — точные (дроби, не float).
 - **money_types:** см. раздел 6. `variable_expenses.total = daily × 30 + Σspends`.
 - **history flags:** `regular = category == "Обязательное" или (amount > 0 и имя совпадает с confirmed‑доходом)`; `large = amount < 0 и не regular и −amount ≥ 5 × daily`.
 - **show_learn_card = base без минуса И (нет покупки ИЛИ покупка без минуса) И (нет pessimistic ИЛИ pessimistic без минуса).**
-- **Валидация:** `balance` число ≥ 0; каждое поступление `amount > 0`, дата есть и `≥ today`; каждый платёж `amount > 0`, дата `≥ today`; каждая разовая трата `amount > 0` (ошибка `field = "spends"`, `index`, `subfield = "amount"`); `daily ≥ 0`; цель: `target > 0`, `0 ≤ current < target`, дата `> today`; покупка: `amount > 0`, дата в горизонте. Тексты ошибок — простые, говорят, как исправить.
+- **Валидация:** `balance` число ≥ 0; каждое поступление `amount > 0`, дата есть и `≥ today`; каждый платёж `amount > 0`, дата `≥ today`; каждая разовая трата `amount > 0` (ошибка `field = "spends"`, `index`, `subfield = "amount"`); `daily ≥ 0`; цель: `target > 0`, `0 ≤ current < target`, дата `> today`; покупка: `amount > 0`, дата в горизонте («Можно проверить покупку в ближайшие 30 дней.»). Все суммы — целые рубли. Тексты ошибок — простые, говорят, как исправить.
+  `/api/dashboard` и `/api/purchase/check` при ошибках отвечают 422 `{ "errors": [...] }`; `/api/validate` — 200 `{ "ok": false, "errors": [...] }`.
 
 ### 7.1 Сигнатуры функций движка (владелец A; B вызывает именно их)
 
@@ -340,6 +380,7 @@ from app.models import (Situation, Purchase, SeriesStats, DaySeries, Headline, M
 
 H = 30
 def day_index(sit: Situation, d: date | str) -> int: ...
+def date_at(sit: Situation, d: int) -> date: ...          # today + d дней
 def series(sit: Situation, purchase: Purchase | None = None, reduce: int = 0,
            reduce_until: int = H - 1, pessimistic: bool = False) -> list[int]: ...
 def stats(sit: Situation, values: list[int]) -> SeriesStats: ...
@@ -434,6 +475,9 @@ def days_word(n: int) -> str: ...           # "1 день", "2 дня", "5 дн�
 сообщение ─▶ [1] NLU: НАША МОДЕЛЬ → намерение + уверенность (0…1)
             │    parse.py (правила) → сумма, дата, название
             │    уверенность < 0.6 → правила; правила не уверены → «уточни»
+            ├▶ [1a] ПРОВЕРКА ВВОДА: для purchase_check, forecast, explain, deficit_plan, categories —
+            │    validate() движка; есть ошибки → clarify с текстом первой ошибки (по битым данным не считаем).
+            │    Отказы, термины, invest_info, запись трат/доходов — без проверки
             ├▶ [2] ВЫПОЛНЕНИЕ: функции движка A → facts (готовые строки)
             ├▶ [3] ПОЯСНЕНИЕ: шаблон (по умолчанию) или готовый API (перефразировать facts)
             └▶ [4] GUARD: число/дата в тексте API не из facts → берём шаблон
@@ -445,7 +489,7 @@ def days_word(n: int) -> str: ...           # "1 день", "2 дня", "5 дн�
 Как метки превращаются в ответ (`ChatResponse.intent`): `add_spend`/`add_income` → `add_entry`; `invest_advice` → `invest_info` (вежливый отказ + карточка обучения); `credentials`/`money_operation` → `refusal`; нет суммы там, где она нужна → `clarify`.
 
 **Своя модель:** обучаем классификатор на синтетическом датасете (~2 000 фраз, 12 классов). Проверяем на отложенных фразах, которые написали **другие участники команды**, не видевшие обучающих данных. Метрики и матрица ошибок — в `docs/ai/model_card.md` и на слайде. Генеративную LLM не обучаем: за сутки это невозможно и не нужно — считать всё равно должен код.
-**Демо обязано работать при `NLU_MODE=sklearn` и `EXPLAIN_MODE=templates` — без интернета и ключей.**
+**На проде `NLU_MODE=onnx`, `EXPLAIN_MODE=templates`. Демо обязано работать и при `NLU_MODE=sklearn` / `rules` — без интернета и ключей.**
 
 ## 10. Таймлайн команды (время Красноярска)
 
