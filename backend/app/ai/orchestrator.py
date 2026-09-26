@@ -113,7 +113,8 @@ def handle(request: Any) -> ChatResponse:
 
     explainer, guarded = "templates", False
     if execution.intent not in TEMPLATE_ONLY_INTENTS and execution.facts:
-        rephrased = api_explainer.rephrase(execution.intent, message, execution.facts)
+        rephrased = api_explainer.rephrase(execution.intent, message, execution.facts,
+                                           execution.headline)
         if rephrased is not None:
             if guard.check(rephrased, execution.facts, extra=[execution.headline]):
                 execution.text = rephrased

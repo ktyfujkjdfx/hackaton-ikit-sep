@@ -1,7 +1,12 @@
-"""По желанию (B.6): готовый API перефразирует готовые факты в 1–2 предложения.
+"""Пояснитель (B.6): кто-то переписывает готовые факты движка в 1–2 предложения.
 
-Выключено по умолчанию (EXPLAIN_MODE=templates). Ошибка, таймаут или отсутствие ключа →
-возвращаем None, и orchestrator берёт шаблон. Числа API не придумывает: за этим следит guard.py.
+EXPLAIN_MODE выбирает кто:
+    templates — никто, текст берётся из шаблонов (по умолчанию и на Render);
+    local     — наша дообученная модель, локально, без интернета и ключей (local_llm.py);
+    yandex | anthropic — готовый API.
+
+Ошибка, таймаут, нет ключа или нет модели → возвращаем None, и orchestrator берёт шаблон.
+Числа пояснитель не придумывает: за этим следит guard.py.
 """
 from __future__ import annotations
 
@@ -67,9 +72,14 @@ def _anthropic(prompt: str) -> str | None:
     return "".join(block.text for block in message.content if block.type == "text")
 
 
-def rephrase(intent: str, message: str, facts: list[dict]) -> str | None:
-    """Текст от API или None. None — это норма: значит, показываем шаблон."""
+def rephrase(intent: str, message: str, facts: list[dict],
+             headline: str = "") -> str | None:
+    """Текст пояснителя или None. None — это норма: значит, показываем шаблон."""
     explain_mode = mode()
+    if explain_mode == "local":
+        from app.ai.explain import local_llm
+
+        return local_llm.generate(message, intent, headline, facts, timeout_seconds())
     if explain_mode not in ("yandex", "anthropic"):
         return None
     prompt = USER_PROMPT.format(intent=intent, message=message, facts=_facts_line(facts))

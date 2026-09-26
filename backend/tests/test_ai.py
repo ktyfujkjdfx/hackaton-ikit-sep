@@ -587,7 +587,7 @@ def test_api_text_passes_guard_and_replaces_template(monkeypatch):
     monkeypatch.setattr("app.ai.explain.api_explainer.mode", lambda: "yandex")
     monkeypatch.setattr(
         "app.ai.explain.api_explainer.rephrase",
-        lambda intent, message, facts: "Минус начнётся 5 октября, всего 2 400 ₽.",
+        lambda intent, message, facts, headline='': "Минус начнётся 5 октября, всего 2 400 ₽.",
     )
     response = ask("Могу купить наушники за 3000?")
     assert response.explainer == "yandex"
@@ -601,7 +601,7 @@ def test_api_text_with_invented_number_is_replaced_by_template(monkeypatch):
     monkeypatch.setattr("app.ai.explain.api_explainer.mode", lambda: "yandex")
     monkeypatch.setattr(
         "app.ai.explain.api_explainer.rephrase",
-        lambda intent, message, facts: "Просто накопи 7 500 ₽ к 3 ноября.",
+        lambda intent, message, facts, headline='': "Просто накопи 7 500 ₽ к 3 ноября.",
     )
     response = ask("Могу купить наушники за 3000?")
     assert response.guarded is True
@@ -613,7 +613,7 @@ def test_api_failure_falls_back_to_template(monkeypatch):
     monkeypatch.setenv("EXPLAIN_MODE", "yandex")
     monkeypatch.setattr("app.ai.explain.api_explainer.mode", lambda: "yandex")
     monkeypatch.setattr("app.ai.explain.api_explainer.rephrase",
-                        lambda intent, message, facts: None)
+                        lambda intent, message, facts, headline='': None)
     response = ask("Могу купить наушники за 3000?")
     assert response.explainer == "templates"
     assert response.guarded is False
@@ -693,3 +693,93 @@ def test_chat_fixtures_match_current_answers():
                     purchase=saved["request"].get("purchase"),
                     history=saved["request"].get("history"))
         assert fresh.model_dump(mode="json") == saved["response"], path.name
+
+
+# ------------------------------------------------------------------ генеративный пояснитель (B.6, шаг 3)
+
+def test_prompt_format_is_stable():
+    """Формат промпта — договор между обучением и продом: меняем только вместе с датасетом."""
+    from app.ai.explain import prompt
+
+    text = prompt.user_prompt("Могу купить кроссовки за 4000?", "purchase_check",
+                              "Если купить сейчас — будет минус",
+                              [{"label": "Первый день без денег", "value": "4 октября"}])
+    assert text.splitlines()[0] == "ВОПРОС: Могу купить кроссовки за 4000?"
+    assert "НАМЕРЕНИЕ: purchase_check" in text
+    assert "- Первый день без денег: 4 октября" in text
+    assert prompt.messages("привет", "off_topic", "", [])[0]["role"] == "system"
+    assert prompt.NO_FACTS in prompt.user_prompt("привет", "off_topic", "", [])
+
+
+def test_local_llm_without_model_returns_none(monkeypatch):
+    """Модели нет — пояснитель молчит, пользователь видит шаблон, а не ошибку."""
+    from app.ai.explain import local_llm
+
+    monkeypatch.delenv("LLM_MODEL_PATH", raising=False)
+    monkeypatch.delenv("LLM_ADAPTER_PATH", raising=False)
+    assert local_llm.configured() is False
+    assert local_llm.generate("хватит ли до стипендии", "forecast", "", [], 1.0) is None
+
+
+def test_explain_mode_local_falls_back_to_template(monkeypatch):
+    """EXPLAIN_MODE=local без весов модели не ломает чат."""
+    monkeypatch.setenv("EXPLAIN_MODE", "local")
+    monkeypatch.delenv("LLM_MODEL_PATH", raising=False)
+    monkeypatch.delenv("LLM_ADAPTER_PATH", raising=False)
+    response = ask("Могу купить наушники за 3000?")
+    assert response.explainer == "templates"
+    assert response.guarded is False
+    assert response.text
+
+
+def test_local_llm_text_goes_through_guard(monkeypatch):
+    """Выдуманное моделью число не доходит до пользователя — как и у внешнего API."""
+    monkeypatch.setenv("EXPLAIN_MODE", "local")
+    monkeypatch.setattr("app.ai.explain.api_explainer.mode", lambda: "local")
+    monkeypatch.setattr("app.ai.explain.local_llm.generate",
+                        lambda message, intent, headline, facts, timeout: "Добавь 9 999 ₽ и хватит.")
+    response = ask("Могу купить наушники за 3000?")
+    assert response.guarded is True
+    assert "9 999" not in response.text
+
+
+def test_guard_allows_the_word_samaya():
+    """«Самая низкая точка» — не май: месяц ищем только с начала слова."""
+    from app.ai import guard
+
+    facts = [{"label": "Самый низкий остаток", "value": "600 ₽, 9 октября"}]
+    assert guard.check("Самая низкая точка — 600 ₽, 9 октября.", facts) is True
+    assert guard.check("Минус будет в мае.", facts) is False
+
+
+def test_chat_dataset_answers_are_grounded():
+    """Каждый ответ в датасете модели проходит guard: чисел «от себя» в обучении нет.
+
+    Датасет генерируется (`training/gen_chat_dataset.py`) и лежит в репозитории. Если кто-то
+    добавит формулировку со своей цифрой, модель научится врать в деньгах — этот тест не даст.
+    """
+    import re
+    from pathlib import Path
+
+    from app.ai import guard
+
+    data_dir = Path(__file__).resolve().parents[2] / "training" / "data"
+    files = sorted(data_dir.glob("chat_sft_*.jsonl"))
+    if not files:
+        pytest.skip("датасет генеративной модели ещё не собран")
+
+    fact_line = re.compile(r"^- (.+?): (.+)$", re.MULTILINE)
+    checked = 0
+    for path in files:
+        for line in path.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            row = json.loads(line)
+            user_prompt, answer = row["messages"][1]["content"], row["messages"][2]["content"]
+            facts = [{"label": label, "value": value}
+                     for label, value in fact_line.findall(user_prompt.split("ФАКТЫ:\n", 1)[-1])]
+            headline = re.search(r"^ЗАГОЛОВОК: (.+)$", user_prompt, re.MULTILINE)
+            extra = [headline.group(1)] if headline and headline.group(1) != "нет" else []
+            assert guard.check(answer, facts, extra=extra), f"{path.name}: {answer}"
+            checked += 1
+    assert checked > 1000, "датасет подозрительно маленький"
