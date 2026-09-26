@@ -339,6 +339,10 @@ button {
   display: grid;
   gap: 14px;
   padding: 24px;
+  box-shadow: var(--shadow);
+}
+#types-card {
+  box-shadow: var(--shadow);
 }
 .hero-top {
   display: flex;
@@ -358,6 +362,8 @@ button {
   color: var(--on-yellow);
   padding: 0 0.15em;
   border-radius: 8px;
+  white-space: nowrap;
+  display: inline-block;
 }
 .verdict {
   font-size: 19px;
@@ -651,11 +657,28 @@ input.err {
 }
 
 /* ---------- explain drawer ---------- */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+}
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+}
 .scrim {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.35);
   z-index: 40;
+  animation: fade-in 0.15s ease-out;
 }
 .drawer {
   position: fixed;
@@ -668,6 +691,7 @@ input.err {
   display: flex;
   flex-direction: column;
   box-shadow: -10px 0 30px rgba(0, 0, 0, 0.2);
+  animation: slide-in-right 0.2s ease-out;
 }
 .drawer-head {
   display: flex;
@@ -790,6 +814,7 @@ input.err {
   display: grid;
   gap: 12px;
   box-shadow: var(--shadow);
+  animation: pop-in 0.15s ease-out;
 }
 .seg {
   display: flex;
@@ -1253,5 +1278,6 @@ td.fail {
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;
+    animation: none !important;
   }
 }
