@@ -18,6 +18,8 @@ log = logging.getLogger(__name__)
 
 MAX_MESSAGE_LENGTH = 2000
 # Метки, где текст пишет только шаблон: отказы, обучение и определения не отдаём в API
+# Ответы с суммами из движка: по битым данным их не считаем. Отказы, термины и запись — без проверки
+MONEY_LABELS = ("purchase_check", "forecast", "explain", "deficit_plan", "categories")
 TEMPLATE_ONLY_INTENTS = ("refusal", "invest_info", "term", "clarify", "off_topic")
 
 
@@ -65,16 +67,18 @@ def handle(request: Any) -> ChatResponse:
     if len(message) > MAX_MESSAGE_LENGTH:
         message = message[:MAX_MESSAGE_LENGTH]
 
-    try:
-        errors = port.engine().validate(situation, active_purchase)
-    except Exception:  # noqa: BLE001 — проверку пропускаем, ниже сработает общий обработчик
-        log.exception("валидация ситуации не удалась")
-        errors = []
-    if errors:
-        # Ошибка ввода (например, трата с отрицательной суммой) — не считаем, просим исправить
-        return _failure("rules", errors[0].message)
-
     prediction = predict(message, history)
+    if prediction.label in MONEY_LABELS:
+        try:
+            errors = port.engine().validate(situation, active_purchase)
+        except Exception:  # noqa: BLE001 — проверку пропускаем, ниже сработает общий обработчик
+            log.exception("валидация ситуации не удалась")
+            errors = []
+        if errors:
+            # Ошибка ввода — не считаем по битым данным, просим исправить
+            return _response(tools.Execution("clarify", templates.HEADLINE_CLARIFY,
+                                             text=errors[0].message),
+                             prediction.mode, prediction.label, prediction.confidence)
     slots = parse.parse(message, prediction.label or "", _today(situation))
 
     try:
