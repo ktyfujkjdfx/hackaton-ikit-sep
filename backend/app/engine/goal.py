@@ -5,6 +5,9 @@ from fractions import Fraction
 from app.engine.dates import H, day_index, in_horizon
 from app.models import GoalPlan, Situation
 
+# Дальше 100 лет срок не показываем: при таком темпе цель недостижима (и дата бы переполнилась).
+MAX_GOAL_DAYS = 100 * 365
+
 
 def goal_plan(sit: Situation, extra: int = 0) -> GoalPlan | None:
     """Когда накопится на цель при текущем темпе; extra — сумма покупки."""
@@ -27,10 +30,14 @@ def goal_plan(sit: Situation, extra: int = 0) -> GoalPlan | None:
 
     # ceil(x / per_day) при per_day = monthly / H, без ошибок округления float
     days = math.ceil(Fraction((remaining + one_off) * H, monthly))
+    if days > MAX_GOAL_DAYS:
+        return plan
     plan.eta = sit.today + dt.timedelta(days=days)
     plan.late_days = (plan.eta - g.date).days
     if extra:
         days_x = math.ceil(Fraction((remaining + one_off + extra) * H, monthly))
+        if days_x > MAX_GOAL_DAYS:
+            return plan
         plan.eta_with_purchase = sit.today + dt.timedelta(days=days_x)
         plan.shift_days = days_x - days
     return plan

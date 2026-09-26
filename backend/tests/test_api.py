@@ -129,3 +129,22 @@ def test_cors_allows_frontend_origin():
     r = client.options("/api/checks", headers={"Origin": "http://localhost:5173",
                                               "Access-Control-Request-Method": "GET"})
     assert r.headers.get("access-control-allow-origin") == "http://localhost:5173"
+
+
+def test_fractional_amount_asks_for_whole_rubles():
+    r = client.post("/api/dashboard", json={"situation": {**ANYA, "daily": 250.5}})
+    assert r.status_code == 422
+    assert r.json()["errors"][0]["field"] == "daily"
+    assert "целых рублях" in r.json()["errors"][0]["message"]
+
+
+def test_unreachable_goal_is_not_500():
+    sit = {**ANYA, "daily": 359, "goal": {**ANYA["goal"], "target": 10_000_000}}
+    r = client.post("/api/dashboard", json={"situation": sit, "purchase": BUY_3000})
+    assert r.status_code == 200
+    assert r.json()["goal"]["eta"] is None
+
+
+def test_empty_body_is_422_errors():
+    r = client.post("/api/dashboard", json={})
+    assert r.status_code == 422 and "errors" in r.json()
