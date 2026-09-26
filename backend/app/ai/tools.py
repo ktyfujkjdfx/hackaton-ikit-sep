@@ -6,6 +6,8 @@
 """
 from __future__ import annotations
 
+import re
+
 from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
@@ -390,9 +392,54 @@ def _refusal(label: str) -> Execution:
     )
 
 
+# Вопрос про накопительную цель («когда накоплю на ноутбук?») модель относит к проверке покупки,
+# и без суммы разговор уходил в «за сколько?». Ловим такие вопросы по формулировке: цель движок
+# уже посчитал, ответить есть чем.
+GOAL_RE = re.compile(
+    r"накопл|накопит|накоплен|когда.{0,20}(цель|соберу)|на цель|до цели|хватит на (?:цель|ноут)"
+)
+
+
+def _goal(sit: Any) -> Execution:
+    """Срок и темп накопления — всё из goal_plan движка, здесь только раскладка по фактам."""
+    goal = _get(sit, "goal")
+    if goal is None:
+        return Execution("explain", headline=templates.HEADLINE_NO_GOAL, text=templates.GOAL_NOT_SET)
+
+    plan = port.engine().goal_plan(sit)
+    if plan is None:
+        return Execution("explain", headline=templates.HEADLINE_NO_GOAL, text=templates.GOAL_NOT_SET)
+
+    eta = _get(plan, "eta")
+    late = _get(plan, "late_days")
+    facts = [
+        _fact("Осталось накопить", port.rub(_get(plan, "remaining"))),
+        _fact("Откладывается в месяц", port.rub(_get(plan, "monthly_surplus"))),
+    ]
+    if eta is None:
+        facts.append(_fact("Накопите к", "при таком темпе — не накопится", TONE_BAD))
+        text = templates.GOAL_NEVER
+        tone = TONE_BAD
+    else:
+        in_time = late is not None and late <= 0
+        facts.append(_fact("Накопите к", port.day(eta), TONE_GOOD if in_time else TONE_BAD))
+        text = templates.GOAL_IN_TIME if in_time else templates.GOAL_LATE
+        tone = TONE_GOOD if in_time else TONE_BAD
+    return Execution(
+        "explain",
+        headline=templates.HEADLINE_GOAL.format(name=_get(goal, "name", "Цель")),
+        tone=tone,
+        facts=facts,
+        text=text,
+        tool_calls=[{"name": "goal_plan", "args": {}}],
+    )
+
+
 def execute(label: str | None, slots: Slots, sit: Any, purchase: Any = None,
             message: str = "") -> Execution:
     """label + слоты → готовый ответ. Единственная точка входа для orchestrator."""
+    if GOAL_RE.search(message.lower()) and label in (None, "purchase_check", "forecast", "explain"):
+        return _goal(sit)
     if label == "purchase_check":
         return _purchase_check(slots, sit, purchase)
     if label == "forecast":

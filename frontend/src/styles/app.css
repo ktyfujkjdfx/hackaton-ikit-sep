@@ -855,6 +855,50 @@ input.err {
   font-size: 18px;
 }
 
+/* ---------- накопительная цель ---------- */
+.goal-card {
+  display: grid;
+  gap: 12px;
+}
+.goal-card h3 {
+  font-size: 17px;
+}
+.goal-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.goal-row .num {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+.goal-row .num b {
+  font-size: 22px;
+  color: var(--text-primary);
+}
+.goal-bar {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.goal-bar .fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 999px;
+}
+.goal-card .kfacts b.good {
+  color: var(--status-good);
+}
+.goal-card .kfacts b.bad {
+  color: var(--status-warning);
+}
+.bad-note {
+  color: var(--status-warning);
+}
+
 /* ---------- учись и подработай ---------- */
 /* Короткая подсказка прямо под полем: «основной или дополнительный» — не всегда очевидно. */
 .field-hint {

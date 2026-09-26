@@ -13,7 +13,7 @@ C — фронтенд и тимлид (dev/c-frontend) · D — данные, �
 - Пиши только в папки своей роли (раздел 3 CONTRACT.md). Чужие папки не трогай.
 - Только синтетические данные. Никаких ключей, .env и паролей в git.
 - Каждая функция движка — с тестом; эталонные значения — раздел 8 CONTRACT.md.
-- Docker не используем. Деплой — Render (render.yaml).
+- Docker не используем. Сейчас сервис поднимается локально; публикация — за реверс-прокси на VDS (см. README).
 
 ## Команды (Windows PowerShell)
 backend:  cd backend; python -m venv .venv; .venv\Scripts\Activate.ps1; pip install -r requirements.txt

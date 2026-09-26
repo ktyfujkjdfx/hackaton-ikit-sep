@@ -4,6 +4,7 @@ import { TopBar } from '../components/TopBar'
 import { Hero } from '../components/Hero'
 import { BalanceChart } from '../components/BalanceChart'
 import { TypesCard } from '../components/TypesCard'
+import { GoalCard } from '../components/GoalCard'
 import { InlineBuy } from '../components/InlineBuy'
 import { BuyCard } from '../components/BuyCard'
 import { ExplainDrawer } from '../components/ExplainDrawer'
@@ -105,6 +106,7 @@ export function Dashboard() {
               {dashboard.purchase && <BuyCard dashboard={dashboard} />}
               <BalanceChart dashboard={dashboard} />
               <TypesCard dashboard={dashboard} />
+              <GoalCard dashboard={dashboard} situation={situation} />
               {dashboard.show_learn_card && <LearnCard />}
               <ExplainDrawer dashboard={dashboard} situation={situation} />
             </div>
