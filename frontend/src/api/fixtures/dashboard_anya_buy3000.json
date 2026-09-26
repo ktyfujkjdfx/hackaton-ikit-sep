@@ -1,0 +1,146 @@
+{
+  "today": "2026-09-27",
+  "horizon_days": 30,
+  "headline": {
+    "state": "tight",
+    "next_income": { "name": "Стипендия", "date": "2026-10-10", "days": 13, "confirmed": true },
+    "next_confirmed_income": { "name": "Стипендия", "date": "2026-10-10", "days": 13, "confirmed": true },
+    "min_balance": 600,
+    "min_date": "2026-10-09",
+    "first_negative_date": null,
+    "max_deficit": 0,
+    "days_of_spending_left": 2
+  },
+  "scenarios": {
+    "base": {
+      "days": [
+        { "date": "2026-09-27", "balance": 6600 }, { "date": "2026-09-28", "balance": 6300 },
+        { "date": "2026-09-29", "balance": 6000 }, { "date": "2026-09-30", "balance": 5700 },
+        { "date": "2026-10-01", "balance": 5200 }, { "date": "2026-10-02", "balance": 4900 },
+        { "date": "2026-10-03", "balance": 4200 }, { "date": "2026-10-04", "balance": 3900 },
+        { "date": "2026-10-05", "balance": 1800 }, { "date": "2026-10-06", "balance": 1500 },
+        { "date": "2026-10-07", "balance": 1200 }, { "date": "2026-10-08", "balance": 900 },
+        { "date": "2026-10-09", "balance": 600 }, { "date": "2026-10-10", "balance": 3500 },
+        { "date": "2026-10-11", "balance": 3200 }, { "date": "2026-10-12", "balance": 2900 },
+        { "date": "2026-10-13", "balance": 2600 }, { "date": "2026-10-14", "balance": 2300 },
+        { "date": "2026-10-15", "balance": 12000 }, { "date": "2026-10-16", "balance": 11700 },
+        { "date": "2026-10-17", "balance": 11400 }, { "date": "2026-10-18", "balance": 11100 },
+        { "date": "2026-10-19", "balance": 10800 }, { "date": "2026-10-20", "balance": 10500 },
+        { "date": "2026-10-21", "balance": 10200 }, { "date": "2026-10-22", "balance": 9900 },
+        { "date": "2026-10-23", "balance": 9600 }, { "date": "2026-10-24", "balance": 9300 },
+        { "date": "2026-10-25", "balance": 9000 }, { "date": "2026-10-26", "balance": 8700 }
+      ],
+      "stats": {
+        "min": 600, "min_date": "2026-10-09", "first_negative_date": null, "last_negative_date": null,
+        "max_deficit": 0, "first_negative_amount": 0
+      }
+    },
+    "pessimistic": null,
+    "with_purchase": {
+      "days": [
+        { "date": "2026-09-27", "balance": 3600 }, { "date": "2026-09-28", "balance": 3300 },
+        { "date": "2026-09-29", "balance": 3000 }, { "date": "2026-09-30", "balance": 2700 },
+        { "date": "2026-10-01", "balance": 2200 }, { "date": "2026-10-02", "balance": 1900 },
+        { "date": "2026-10-03", "balance": 1200 }, { "date": "2026-10-04", "balance": 900 },
+        { "date": "2026-10-05", "balance": -1200 }, { "date": "2026-10-06", "balance": -1500 },
+        { "date": "2026-10-07", "balance": -1800 }, { "date": "2026-10-08", "balance": -2100 },
+        { "date": "2026-10-09", "balance": -2400 }, { "date": "2026-10-10", "balance": 500 },
+        { "date": "2026-10-11", "balance": 200 }, { "date": "2026-10-12", "balance": -100 },
+        { "date": "2026-10-13", "balance": -400 }, { "date": "2026-10-14", "balance": -700 },
+        { "date": "2026-10-15", "balance": 9000 }, { "date": "2026-10-16", "balance": 8700 },
+        { "date": "2026-10-17", "balance": 8400 }, { "date": "2026-10-18", "balance": 8100 },
+        { "date": "2026-10-19", "balance": 7800 }, { "date": "2026-10-20", "balance": 7500 },
+        { "date": "2026-10-21", "balance": 7200 }, { "date": "2026-10-22", "balance": 6900 },
+        { "date": "2026-10-23", "balance": 6600 }, { "date": "2026-10-24", "balance": 6300 },
+        { "date": "2026-10-25", "balance": 6000 }, { "date": "2026-10-26", "balance": 5700 }
+      ],
+      "stats": {
+        "min": -2400, "min_date": "2026-10-09", "first_negative_date": "2026-10-05", "last_negative_date": "2026-10-14",
+        "max_deficit": 2400, "first_negative_amount": 1200
+      }
+    },
+    "with_purchase_pessimistic": null
+  },
+  "events": [
+    { "date": "2026-09-27", "kind": "purchase", "name": "Наушники", "amount": 3000, "confirmed": null },
+    { "date": "2026-10-01", "kind": "obligation", "name": "Подписка на музыку", "amount": 200, "confirmed": null },
+    { "date": "2026-10-03", "kind": "obligation", "name": "Связь", "amount": 400, "confirmed": null },
+    { "date": "2026-10-05", "kind": "obligation", "name": "Общежитие", "amount": 1800, "confirmed": null },
+    { "date": "2026-10-10", "kind": "income", "name": "Стипендия", "amount": 3200, "confirmed": true },
+    { "date": "2026-10-15", "kind": "income", "name": "Перевод от родителей", "amount": 10000, "confirmed": true }
+  ],
+  "money_types": {
+    "stable_income": {
+      "total": 13200,
+      "items": [
+        { "id": "i1", "name": "Стипендия", "amount": 3200, "date": "2026-10-10", "confirmed": true },
+        { "id": "i2", "name": "Перевод от родителей", "amount": 10000, "date": "2026-10-15", "confirmed": true }
+      ]
+    },
+    "unstable_income": { "total": 0, "items": [] },
+    "stable_expenses": {
+      "total": 2400,
+      "items": [
+        { "id": "o1", "name": "Подписка на музыку", "amount": 200, "date": "2026-10-01" },
+        { "id": "o2", "name": "Связь", "amount": 400, "date": "2026-10-03" },
+        { "id": "o3", "name": "Общежитие", "amount": 1800, "date": "2026-10-05" }
+      ]
+    },
+    "variable_expenses": { "total": 9000, "daily": 300, "days": 30, "one_off": [] },
+    "reliable_total": 17700
+  },
+  "goal": {
+    "monthly_surplus": 1800, "per_day": 60, "remaining": 15000,
+    "eta": "2027-06-04", "late_days": 3, "need_monthly": 1822,
+    "eta_with_purchase": "2027-07-24", "shift_days": 50
+  },
+  "purchase": {
+    "purchase": { "amount": 3000, "date": "2026-09-27", "name": "Наушники" },
+    "verdict": "deficit",
+    "before": {
+      "min": 600, "min_date": "2026-10-09", "first_negative_date": null, "last_negative_date": null,
+      "max_deficit": 0, "first_negative_amount": 0
+    },
+    "after": {
+      "min": -2400, "min_date": "2026-10-09", "first_negative_date": "2026-10-05", "last_negative_date": "2026-10-14",
+      "max_deficit": 2400, "first_negative_amount": 1200
+    },
+    "earliest_safe_date": "2026-10-15",
+    "safe_depends_on_unconfirmed": false,
+    "goal": {
+      "monthly_surplus": 1800, "per_day": 60, "remaining": 15000,
+      "eta": "2027-06-04", "late_days": 3, "need_monthly": 1822,
+      "eta_with_purchase": "2027-07-24", "shift_days": 50
+    },
+    "plan": {
+      "deficit": 2400, "by_date": "2026-10-09", "first_needed_amount": 1200, "first_needed_date": "2026-10-05",
+      "based_on": "purchase",
+      "options": [
+        { "kind": "postpone", "date": "2026-10-15", "ease": "easy" },
+        { "kind": "reduce", "per_day": 185, "new_daily": 115, "until": "2026-10-14", "days": 18, "possible": true, "ease": "hard", "flexible_per_day": 60 },
+        { "kind": "earn", "amount": 2400, "by_date": "2026-10-09", "first_amount": 1200, "first_date": "2026-10-05", "ease": "hard" }
+      ]
+    }
+  },
+  "deficit_plan": null,
+  "history": [
+    { "date": "2026-09-24", "name": "Продукты у общежития", "amount": -640, "category": "Еда", "regular": false, "large": false },
+    { "date": "2026-09-22", "name": "Доставка еды", "amount": -520, "category": "Кафе и доставка", "regular": false, "large": false },
+    { "date": "2026-09-19", "name": "Кроссовки", "amount": -4200, "category": "Прочее", "regular": false, "large": true },
+    { "date": "2026-09-15", "name": "Перевод от родителей", "amount": 10000, "category": "Доход", "regular": true, "large": false },
+    { "date": "2026-09-10", "name": "Стипендия", "amount": 3200, "category": "Доход", "regular": true, "large": false },
+    { "date": "2026-09-05", "name": "Общежитие", "amount": -1800, "category": "Обязательное", "regular": true, "large": false },
+    { "date": "2026-09-03", "name": "Связь", "amount": -400, "category": "Обязательное", "regular": true, "large": false },
+    { "date": "2026-09-01", "name": "Подписка на музыку", "amount": -200, "category": "Обязательное", "regular": true, "large": false }
+  ],
+  "show_learn_card": false,
+  "assumptions": [
+    "Обычные траты — 300 ₽ в день, оценка по истории за 2 месяца",
+    "Стипендия и перевод от родителей — постоянный доход, приходят по графику"
+  ],
+  "unknowns": [
+    "Будущие необычные траты: подарки, поломки",
+    "Придут ли деньги точно в срок",
+    "Что будет после 26 октября: прогноз на 30 дней"
+  ]
+}

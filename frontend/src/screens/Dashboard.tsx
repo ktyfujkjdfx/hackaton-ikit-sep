@@ -1,9 +1,11 @@
 import { useEffect } from 'react'
-import { getDashboard } from '../api/client'
+import { DASHBOARD_MOCK_UNSUPPORTED, getDashboard } from '../api/client'
 import { TopBar } from '../components/TopBar'
 import { Hero } from '../components/Hero'
 import { BalanceChart } from '../components/BalanceChart'
 import { TypesCard } from '../components/TypesCard'
+import { InlineBuy } from '../components/InlineBuy'
+import { BuyCard } from '../components/BuyCard'
 import { useAppDispatch, useAppState } from '../state/store'
 
 export function Dashboard() {
@@ -12,12 +14,27 @@ export function Dashboard() {
 
   useEffect(() => {
     if (!situation || !personaId) return
+    let cancelled = false
     dispatch({ type: 'DASHBOARD_LOADING' })
-    getDashboard(personaId, situation, purchase)
-      .then((d) => dispatch({ type: 'DASHBOARD_LOADED', dashboard: d }))
-      .catch(() => dispatch({ type: 'DASHBOARD_ERROR', error: 'Сервер недоступен — расчёт не выполнен' }))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [personaId])
+    const timer = setTimeout(() => {
+      getDashboard(personaId, situation, purchase)
+        .then((d) => {
+          if (!cancelled) dispatch({ type: 'DASHBOARD_LOADED', dashboard: d })
+        })
+        .catch((e: Error) => {
+          if (cancelled) return
+          const message =
+            e.message === DASHBOARD_MOCK_UNSUPPORTED
+              ? `В демо-режиме посчитаны только суммы 1000 и 3000 ₽ — остальные подключим вместе с /api/dashboard роли A.`
+              : 'Сервер недоступен — расчёт не выполнен'
+          dispatch({ type: 'DASHBOARD_ERROR', error: message })
+        })
+    }, 250)
+    return () => {
+      cancelled = true
+      clearTimeout(timer)
+    }
+  }, [personaId, purchase, situation, dispatch])
 
   if (!situation) return null
 
@@ -39,6 +56,8 @@ export function Dashboard() {
           {dashboard && (
             <>
               <Hero dashboard={dashboard} situation={situation} />
+              <InlineBuy />
+              {dashboard.purchase && <BuyCard dashboard={dashboard} />}
               <BalanceChart dashboard={dashboard} />
               <TypesCard dashboard={dashboard} />
             </>
