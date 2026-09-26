@@ -1,7 +1,8 @@
 Финальная проверка API «Дотяну»
 Сервер:  https://dotyanu-api.onrender.com
-Время:   2026-09-26 21:33 +07
-health:  200 {"ok": true, "nlu": "onnx", "explain": "templates"} (первый ответ за 0.6 с)
+Время:   2026-09-26 23:43 +07
+Код:     main 434459f (после PR #19); pytest — 275 passed, 1 skipped
+health:  200 {"ok": true, "nlu": "onnx", "explain": "templates"} (первый ответ за 0.7 с)
 
 == 13 эталонных сценариев (раздел 8 CONTRACT.md) — через /dashboard и /purchase/check ==
  1. OK   Аня без покупок
