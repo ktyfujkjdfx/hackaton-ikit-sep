@@ -568,6 +568,69 @@ svg.chart {
   opacity: 0.8;
 }
 
+/* ---------- types card ---------- */
+.types {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+.type {
+  border-radius: 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  display: grid;
+  gap: 6px;
+  align-content: start;
+}
+.type.inc-s {
+  background: var(--good-soft);
+  border-color: transparent;
+}
+.type.inc-u {
+  background: var(--warn-soft);
+  border: 1.5px dashed var(--line-strong);
+}
+.type.out-s {
+  background: var(--surface-2);
+  border-color: transparent;
+}
+.type.out-v {
+  border: 1.5px dashed var(--line-strong);
+}
+.type h4 {
+  margin: 0;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: baseline;
+}
+.type .sum {
+  font-size: 22px;
+  font-weight: 800;
+}
+.type ul {
+  margin: 0;
+  padding-left: 16px;
+  font-size: 13px;
+  color: var(--ink-2);
+  display: grid;
+  gap: 2px;
+}
+.type .how {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.types-foot {
+  margin-top: 12px;
+  font-size: 14px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+  display: grid;
+  gap: 4px;
+}
+
 @media (max-width: 1000px) {
   .app-grid {
     grid-template-columns: 1fr;
@@ -575,7 +638,8 @@ svg.chart {
 }
 @media (max-width: 640px) {
   .scen,
-  .feats {
+  .feats,
+  .types {
     grid-template-columns: 1fr;
   }
 }

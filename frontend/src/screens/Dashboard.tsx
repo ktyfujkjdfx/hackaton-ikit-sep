@@ -3,6 +3,7 @@ import { getDashboard } from '../api/client'
 import { TopBar } from '../components/TopBar'
 import { Hero } from '../components/Hero'
 import { BalanceChart } from '../components/BalanceChart'
+import { TypesCard } from '../components/TypesCard'
 import { useAppDispatch, useAppState } from '../state/store'
 
 export function Dashboard() {
@@ -39,6 +40,7 @@ export function Dashboard() {
             <>
               <Hero dashboard={dashboard} situation={situation} />
               <BalanceChart dashboard={dashboard} />
+              <TypesCard dashboard={dashboard} />
             </>
           )}
         </div>
