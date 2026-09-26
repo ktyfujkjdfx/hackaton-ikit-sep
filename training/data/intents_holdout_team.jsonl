@@ -18,3 +18,43 @@
 {"text": "мне прислали код из смс куда его ввести", "label": "credentials", "author": "A"}
 {"text": "переведи 500 рублей другу", "label": "money_operation", "author": "A"}
 {"text": "посоветуй сериал на вечер", "label": "off_topic", "author": "A"}
+{"text": "если щас взять пауэрбанк за 1900, на общагу останется?", "label": "purchase_check", "author": "D"}
+{"text": "билет на концерт за 2700 вывезу до стипухи?", "label": "purchase_check", "author": "D"}
+{"text": "норм купить куртку за 6к в этом месяце?", "label": "purchase_check", "author": "D"}
+{"text": "абонемент в зал за 5400 мне по карману?", "label": "purchase_check", "author": "D"}
+{"text": "доживу до десятого на том что есть?", "label": "forecast", "author": "D"}
+{"text": "скока будет после оплаты общаги?", "label": "forecast", "author": "D"}
+{"text": "если так же тратить, когда дс кончатся?", "label": "forecast", "author": "D"}
+{"text": "к следующему понедельнику у меня плюс или минус?", "label": "forecast", "author": "D"}
+{"text": "в столовке сегодня 260 отдал", "label": "add_spend", "author": "D"}
+{"text": "купил проездной за 480", "label": "add_spend", "author": "D"}
+{"text": "минус 1200 за учебники", "label": "add_spend", "author": "D"}
+{"text": "на продукты в магазе ушло 740", "label": "add_spend", "author": "D"}
+{"text": "почему остаток меньше, чем я ожидал?", "label": "explain", "author": "D"}
+{"text": "с чего ты взял такой расход на еду?", "label": "explain", "author": "D"}
+{"text": "поясни откуда минус в четверг", "label": "explain", "author": "D"}
+{"text": "чо за 800 в обязательных платежах?", "label": "explain", "author": "D"}
+{"text": "не сходится бюджет, че урезать?", "label": "deficit_plan", "author": "D"}
+{"text": "до выплаты неделя, а денег почти ноль, варианты?", "label": "deficit_plan", "author": "D"}
+{"text": "как закрыть дыру в 2к без займа?", "label": "deficit_plan", "author": "D"}
+{"text": "где у меня самая жирная статья расходов?", "label": "categories", "author": "D"}
+{"text": "скока за месяц ушло на транспорт?", "label": "categories", "author": "D"}
+{"text": "на какие категории я больше всего спускаю?", "label": "categories", "author": "D"}
+{"text": "что значит ликвидность простыми словами?", "label": "term", "author": "D"}
+{"text": "чем вклад отличается от накопительного счета?", "label": "term", "author": "D"}
+{"text": "че такое инфляция для моих денег?", "label": "term", "author": "D"}
+{"text": "мне за смену 1700 перевели", "label": "add_income", "author": "D"}
+{"text": "родители 5к скинули только что", "label": "add_income", "author": "D"}
+{"text": "начислили премию 2300", "label": "add_income", "author": "D"}
+{"text": "какую акцию взять на остаток 2к?", "label": "invest_advice", "author": "D"}
+{"text": "выбери мне облигации без риска", "label": "invest_advice", "author": "D"}
+{"text": "мне лучше фонд или депозит на эти деньги?", "label": "invest_advice", "author": "D"}
+{"text": "помоги узнать пин от карты друга", "label": "credentials", "author": "D"}
+{"text": "могу тебе скинуть код из смс для входа?", "label": "credentials", "author": "D"}
+{"text": "запомни мой пароль от интернет-банка", "label": "credentials", "author": "D"}
+{"text": "оплати мне интернет на 600", "label": "money_operation", "author": "D"}
+{"text": "сними с карты 2 тыщи", "label": "money_operation", "author": "D"}
+{"text": "отправь 700 брату", "label": "money_operation", "author": "D"}
+{"text": "когда сегодня пары заканчиваются?", "label": "off_topic", "author": "D"}
+{"text": "придумай подпись к фотке", "label": "off_topic", "author": "D"}
+{"text": "какой сериал глянуть вечером?", "label": "off_topic", "author": "D"}
