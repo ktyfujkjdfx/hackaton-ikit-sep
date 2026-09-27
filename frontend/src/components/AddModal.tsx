@@ -8,6 +8,7 @@ export type AddModalPrefill = {
   amount?: number
   date?: string
   category?: string
+  confirmed?: boolean
 }
 
 export function AddModal({ prefill, onClose }: { prefill: AddModalPrefill; onClose: () => void }) {
@@ -18,7 +19,7 @@ export function AddModal({ prefill, onClose }: { prefill: AddModalPrefill; onClo
   const [amount, setAmount] = useState(prefill.amount ? String(prefill.amount) : '')
   const [date, setDate] = useState(prefill.date ?? situation?.today ?? '')
   const [category, setCategory] = useState(prefill.category ?? 'Прочее')
-  const [confirmed, setConfirmed] = useState(true)
+  const [confirmed, setConfirmed] = useState(prefill.confirmed ?? true)
   const [err, setErr] = useState<string | null>(null)
 
   if (!situation) return null

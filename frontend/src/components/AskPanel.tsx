@@ -44,7 +44,7 @@ export function AskPanel() {
       if (resp.purchase) dispatch({ type: 'SET_PURCHASE', purchase: resp.purchase })
       if (resp.proposed_entry) {
         const pe = resp.proposed_entry
-        setModal({ type: pe.type, name: pe.name, amount: pe.amount, date: pe.date, category: pe.category })
+        setModal({ type: pe.type, name: pe.name, amount: pe.amount, date: pe.date, category: pe.category, confirmed: pe.confirmed })
       }
     } catch {
       dispatch({
