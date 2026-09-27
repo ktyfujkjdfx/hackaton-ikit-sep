@@ -29,7 +29,8 @@
 
 **Материалы к сдаче:** код — этот репозиторий · аналитический отчёт —
 [`docs/pitch/FinKom_analytical_report.pdf`](docs/pitch/FinKom_analytical_report.pdf) ·
-презентация и скринкаст — будут добавлены в `docs/pitch/` следом.
+презентация — [`docs/pitch/FinKom_presentation.pptx`](docs/pitch/FinKom_presentation.pptx) ·
+скринкаст — [`docs/pitch/FinKom_screencast.mp4`](docs/pitch/FinKom_screencast.mp4).
 
 ---
 
