@@ -27,10 +27,14 @@
 | Бэкенд / документация API (Swagger) | http://localhost:8000/docs |
 | Живая самопроверка расчётов | «Как мы проверяли» на фронтенде |
 
-**Материалы к сдаче:** код — этот репозиторий · аналитический отчёт —
-[`docs/pitch/FinKom_analytical_report.pdf`](docs/pitch/FinKom_analytical_report.pdf) ·
-презентация — [`docs/pitch/FinKom_presentation.pptx`](docs/pitch/FinKom_presentation.pptx) ·
-скринкаст — [`docs/pitch/FinKom_screencast.mp4`](docs/pitch/FinKom_screencast.mp4).
+## Материалы к сдаче
+
+| Материал | Где лежит |
+|---|---|
+| Код | этот репозиторий |
+| Аналитический отчёт | [`report/FinKom_analytical_report.pdf`](report/FinKom_analytical_report.pdf) |
+| Презентация | [`presentation/FinKom_presentation.pptx`](presentation/FinKom_presentation.pptx) |
+| Скринкаст | [`screencast/FinKom_screencast.mp4`](screencast/FinKom_screencast.mp4) |
 
 ---
 
