@@ -75,7 +75,9 @@ def build_dashboard(sit: Situation, purchase: Purchase | None) -> Dashboard:
         purchase=check_purchase(sit, purchase) if purchase is not None else None,
         deficit_plan=plan,
         history=history_items(sit),
-        show_learn_card=not (_has_negative(base) or _has_negative(buy) or _has_negative(pess)),
+        show_learn_card=not (
+            _has_negative(base) or _has_negative(buy) or _has_negative(pess) or _has_negative(buy_pess)
+        ),
         assumptions=assumptions(sit, purchase),
         unknowns=unknowns(sit),
     )
